@@ -12,10 +12,15 @@
   "description": "",
   "dependencies": {
     "cookie-parser": "^1.4.6",
+    "cookie-session": "^2.1.0",
+    "ejs": "^3.1.10",
     "express": "^4.21.0",
+    "express-session": "^1.18.0",
     "express-validator": "^7.2.0",
     "mongoose": "^8.6.2",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0"
   },
   "devDependencies": {
     "dotenv": "^16.4.5",
