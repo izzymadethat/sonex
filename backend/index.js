@@ -12,6 +12,9 @@ const passportSession = require("./config/passport.config");
 const passport = require("passport");
 const session = require("express-session");
 const config = require("./config");
+const { checkAuth, checkNotAuth, requireAuth } = require("./utils/auth");
+const MongoStore = require("connect-mongo");
+const methodOverride = require("method-override");
 
 const isProduction = environment === "production";
 
@@ -38,11 +41,13 @@ db.once("open", () => {
 app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
     secret: config.session.cookieSecret,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: config.mongodb.dbURI }),
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 5, // 5 days
     },
@@ -52,13 +57,15 @@ app.use(
 // run authentication middleware
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(methodOverride("_method"));
 
 // Security middleware
 
 // Test route
-app.get("/", (req, res) => {
-  console.log(req.session);
-  res.send("Sonex Backend Server Up and Running!");
+app.get("/", checkAuth, (req, res) => {
+  console.log("Session:", req.session);
+  console.log("User:", req.user);
+  res.render("index", { name: req.user.firstName });
 });
 
 app.use(routes);

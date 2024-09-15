@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const bcrypt = require("bcryptjs");
 
 const userSchema = new Schema({
   googleId: { type: String, unique: true },
@@ -41,6 +42,15 @@ const userSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+});
+
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("hashedPassword")) {
+    const salt = await bcrypt.genSalt(10);
+    this.hashedPassword = await bcrypt.hash(this.hashedPassword, salt);
+  }
+
+  next();
 });
 
 const User = mongoose.model("User", userSchema);

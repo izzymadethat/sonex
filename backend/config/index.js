@@ -11,9 +11,7 @@ module.exports = {
   },
   port: process.env.PORT || 8001,
 
-  environment: {
-    NODE_ENV: process.env.NODE_ENV || "development",
-  },
+  environment: process.env.NODE_ENV || "development",
   session: {
     cookieSecret: process.env.COOKIE_SECRET,
   },
