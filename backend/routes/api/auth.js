@@ -15,33 +15,13 @@ router.get("/register", checkNotAuth, (req, res) => {
 });
 
 // Login with email and password
-router.post("/login", (req, res, next) => {
-  passport.authenticate("local", (err, user) => {
-    if (err) {
-      err.timeStamp = Date.now();
-      err.message = "Login failed. Please try again.";
-      err.status = 401;
-      return next(err);
-    }
-
-    if (!user) {
-      return res.status(401).json({
-        timestamp: Date.now(),
-        message: "Unauthorized user.",
-      });
-    }
-
-    req.login(user, (err) => {
-      if (err) {
-        return next(err);
-      }
-
-      return res.redirect("/");
-    });
-
-    // res.status(200).json({ user });
-  })(req, res, next);
-});
+router.post(
+  "/login",
+  passport.authenticate("local", {
+    successRedirect: "/",
+    failureRedirect: "/api/auth/login",
+  })
+);
 
 // Login with Google
 router.get(
@@ -60,7 +40,6 @@ router.get("/google/redirect", passport.authenticate("google"), (req, res) => {
 // Register with email and password
 router.post("/register", async (req, res, next) => {
   const { firstName, lastName, email, username, password } = req.body;
-  const salt = await bcrypt.genSalt(10);
 
   if (!firstName || !lastName || !email || !username || !password) {
     return res.status(400).json({
@@ -77,7 +56,7 @@ router.post("/register", async (req, res, next) => {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hashSync(password, 10);
     const user = await new User({
       firstName,
       lastName,

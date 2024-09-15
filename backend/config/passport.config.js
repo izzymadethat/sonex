@@ -48,29 +48,27 @@ passport.use(
 );
 
 passport.use(
-  new LocalStrategy(
-    { passReqToCallback: true, usernameField: "email" },
-    async (req, email, password, done) => {
-      try {
-        let user = await User.findOne({ email });
-
-        if (!user) {
-          return done(null, false);
-        }
-
-        const isMatch = await bcrypt.compare(password, user.hashedPassword);
-
-        if (isMatch) {
-          return done(null, user);
-        } else {
-          return done("Incorrect username or password", null);
-        }
-      } catch (error) {
-        console.error(`Error during Local authentication: ${error}`);
-        return done(error, null);
+  new LocalStrategy(async (username, password, done) => {
+    try {
+      const user = await User.findOne({ username: username });
+      if (!user) {
+        return done(null, false);
       }
+
+      const passwordMatches = await bcrypt.compare(
+        password,
+        user.hashedPassword
+      );
+
+      if (passwordMatches) {
+        return done(null, user);
+      } else {
+        return done(null, false);
+      }
+    } catch (error) {
+      done(error);
     }
-  )
+  })
 );
 
 passport.serializeUser((user, done) => {

@@ -8,7 +8,6 @@ const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 const routes = require("./routes");
 const { port, mongodb, environment } = require("./config");
-const passportSession = require("./config/passport.config");
 const passport = require("passport");
 const session = require("express-session");
 const config = require("./config");
@@ -18,6 +17,8 @@ const methodOverride = require("method-override");
 
 const isProduction = environment === "production";
 
+// import passport config so server knows about it
+const passportSession = require("./config/passport.config");
 // Initialize app
 const app = express();
 
@@ -47,7 +48,7 @@ app.use(
     secret: config.session.cookieSecret,
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: config.mongodb.dbURI }),
+    store: MongoStore.create({ mongoUrl: mongodb.dbURI }),
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 5, // 5 days
     },
