@@ -5,11 +5,18 @@
 
 // check if user is logged in
 exports.requireAuth = (req, res, next) => {
-  if (!req.user) {
-    res.redirect("/api/auth/login");
-  } else {
+  if (req.isAuthenticated()) {
     return next();
   }
+
+  const err = new Error("Unauthorized User");
+  err.status = 401;
+  err.errors = {
+    unauthorized: "Unauthorized User. Please log in to continue.",
+  };
+  err.title = "Unathorized User";
+
+  next(err);
 };
 
 // check if user authenticated
