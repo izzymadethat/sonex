@@ -73,7 +73,6 @@ app.use(routes);
 
 // Error handling
 app.use((err, _req, res, next) => {
-  console.log(err);
   err.status = err.status || 500;
   err.title = err.title || "Server Error";
   err.message = err.message || "Something went wrong. Internal server error.";
@@ -84,14 +83,17 @@ app.use((err, _req, res, next) => {
     errors: err.errors,
     status: err.status,
     message: err.message,
+    timestamp: new Date().toLocaleString(),
   };
+
+  console.error(error);
 
   if (isProduction) {
     res.status(err.status).json(error);
   } else {
     // Add the stack trace in development and debug mode
     error.stack = err.stack;
-    res.json(error);
+    res.status(err.status).json(error);
   }
 });
 

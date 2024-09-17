@@ -1,32 +1,27 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const userClientSchema = new Schema({
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
+const userClientProjectSchema = new Schema(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    client: {
+      type: Schema.Types.ObjectId,
+      ref: "Client",
+      required: true,
+    },
+    project: {
+      type: Schema.Types.ObjectId,
+      ref: "Project",
+      required: true,
+    },
   },
-  client: {
-    type: Schema.Types.ObjectId,
-    ref: "Client",
-    required: true,
-  },
-  project: {
-    type: Schema.Types.ObjectId,
-    ref: "Project",
-    required: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  { timestamps: true }
+);
 
-const UserClient = mongoose.model("UserClient", userClientSchema);
+const UserClientProject = mongoose.model("UserClient", userClientProjectSchema);
 
-module.exports = UserClient;
+module.exports = UserClientProject;

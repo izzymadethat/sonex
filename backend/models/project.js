@@ -1,46 +1,53 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const projectSchema = new Schema({
-  title: {
-    type: String,
-    required: true,
+const projectSchema = new Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    description: {
+      type: String,
+    },
+    status: {
+      type: String,
+      enum: ["active", "completed", "archived"],
+      required: true,
+      default: "active",
+    },
+    paymentStatus: {
+      type: String,
+      enum: [
+        "unpaid",
+        "no-charge",
+        "paid",
+        "partially-paid",
+        "failed",
+        "overpaid",
+      ],
+      required: true,
+      default: "unpaid",
+    },
+    projectAmount: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    amountPaid: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
   },
-  description: {
-    type: String,
-    required: true,
-  },
-  status: {
-    type: String,
-    enum: ["active", "completed", "archived"],
-    required: true,
-    default: "active",
-  },
-  paymentStatus: {
-    type: String,
-    enum: ["unpaid", "no-charge", "paid", "partially-paid", "failed"],
-    required: true,
-    default: "free",
-  },
-  totalAmount: {
-    type: Number,
-    default: 0,
-    required: true,
-  },
-  amountPaid: {
-    type: Number,
-    default: 0,
-    required: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  { timestamps: true }
+);
 
 const Project = mongoose.model("Project", projectSchema);
 
