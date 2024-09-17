@@ -35,6 +35,18 @@ const userSchema = new Schema(
     avatar: {
       type: String,
     },
+    projects: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Project",
+      },
+    ],
+    clients: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Client",
+      },
+    ],
   },
   {
     timestamps: true,

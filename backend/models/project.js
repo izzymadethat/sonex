@@ -45,6 +45,12 @@ const projectSchema = new Schema(
       default: 0,
       required: true,
     },
+    clients: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Client",
+      },
+    ],
   },
   { timestamps: true }
 );
