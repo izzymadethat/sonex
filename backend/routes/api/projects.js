@@ -4,6 +4,7 @@ const Project = require("../../models/project");
 const User = require("../../models/user");
 const { requireAuth } = require("../../utils/auth");
 const commentRoutes = require("./comments");
+const fileRoutes = require("./files");
 
 // // Get projects for user logged in
 // // GET /api/projects
@@ -18,9 +19,10 @@ const commentRoutes = require("./comments");
 router.use(requireAuth);
 // CRUD routes for handling client comments
 router.use("/:projectId/comments", commentRoutes);
+router.use("/:projectId/uploads", fileRoutes);
 
 // test project form page
-// GET /api/projects/test
+// GET /api/projects
 router.get("/", async (req, res, next) => {
   const userId = req.user._id;
   const projects = await Project.find({ userId }).populate("userId");
