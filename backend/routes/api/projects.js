@@ -2,6 +2,7 @@ const router = require("express").Router();
 const Project = require("../../models/project");
 const User = require("../../models/user");
 const { requireAuth } = require("../../utils/auth");
+const commentRoutes = require("./comments");
 
 // // Get projects for user logged in
 // // GET /api/projects
@@ -12,6 +13,9 @@ const { requireAuth } = require("../../utils/auth");
 
 //   res.json(projects);
 // });
+
+// CRUD routes for handling client comments
+router.use("/:projectId/comments", commentRoutes);
 
 // test project form page
 // GET /api/projects/test
