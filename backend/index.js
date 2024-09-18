@@ -14,9 +14,8 @@ const config = require("./config");
 const { checkAuth, checkNotAuth, requireAuth } = require("./utils/auth");
 const MongoStore = require("connect-mongo");
 const methodOverride = require("method-override");
-
 const isProduction = environment === "production";
-
+const multer = require("multer");
 // import passport config so server knows about it
 const passportSession = require("./config/passport.config");
 // Initialize app
@@ -60,7 +59,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(methodOverride("_method"));
 
-// Security middleware
+// TODO: Security middleware
 
 // Test route
 app.get("/", checkAuth, (req, res) => {
@@ -72,11 +71,24 @@ app.get("/", checkAuth, (req, res) => {
 app.use(routes);
 
 // Error handling
-app.use((err, _req, res, next) => {
+
+// Check for multer errors
+app.use((err, _req, _res, next) => {
+  if (err instanceof multer.MulterError) {
+    err.status = 400;
+    err.message = err.code;
+    next(err);
+  } else {
+    next();
+  }
+});
+
+// Error formatting
+app.use((err, _req, res, _next) => {
   err.status = err.status || 500;
   err.title = err.title || "Server Error";
   err.message = err.message || "Something went wrong. Internal server error.";
-  err.errors = err.errors || { server: [err.message] };
+  err.errors = err.errors || { server: err.message };
 
   const error = {
     title: err.title,

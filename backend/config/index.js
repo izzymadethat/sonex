@@ -15,4 +15,10 @@ module.exports = {
   session: {
     cookieSecret: process.env.COOKIE_SECRET,
   },
+  awsS3: {
+    accessKey: process.env.AWS_ACCESS_KEY_ID,
+    secretKey: process.env.AWS_SECRET_ACCESS_KEY,
+    bucketName: process.env.AWS_BUCKET_NAME,
+    region: process.env.AWS_REGION,
+  },
 };
