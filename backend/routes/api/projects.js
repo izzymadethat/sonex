@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const Client = require("../../models/client");
 const Project = require("../../models/project");
 const User = require("../../models/user");
 const { requireAuth } = require("../../utils/auth");
@@ -14,12 +15,13 @@ const commentRoutes = require("./comments");
 //   res.json(projects);
 // });
 
+router.use(requireAuth);
 // CRUD routes for handling client comments
 router.use("/:projectId/comments", commentRoutes);
 
 // test project form page
 // GET /api/projects/test
-router.get("/", requireAuth, async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   const userId = req.user._id;
   const projects = await Project.find({ userId }).populate("userId");
   console.log(projects);
@@ -29,7 +31,7 @@ router.get("/", requireAuth, async (req, res, next) => {
 // Create a project
 // POST /api/projects
 // user must be logged in
-router.post("/", requireAuth, async (req, res, next) => {
+router.post("/", async (req, res, next) => {
   const userId = req.user._id;
   const { title, description, projectAmount } = req.body;
 
@@ -58,7 +60,7 @@ router.post("/", requireAuth, async (req, res, next) => {
 // Get a single project
 // GET /api/projects/:projectId
 // user must be logged in
-router.get("/:projectId", requireAuth, async (req, res, next) => {
+router.get("/:projectId", async (req, res, next) => {
   const projectId = req.params.projectId;
   const userId = req.user._id.toString();
 
@@ -84,9 +86,34 @@ router.get("/:projectId", requireAuth, async (req, res, next) => {
   }
 });
 
+// Get all clients from a project
+// GET /api/projects/:projectId/clients
+router.get("/:projectId/clients", async (req, res, next) => {
+  const projectId = req.params.projectId;
+  const userId = req.user._id.toString();
+
+  try {
+    const project = await Project.findById(projectId);
+    if (!project) {
+      return res.status(404).json({
+        message: "Project not found",
+      });
+    }
+    if (project.userId.toString() !== userId) {
+      return res.status(403).json({
+        message: "You do not have permission to view this project",
+      });
+    }
+    const clients = await Client.find({ projectId });
+    res.status(200).json(clients);
+  } catch (error) {
+    next(error);
+  }
+});
+
 //Test project update form page
 // GET /api/projects/:projectId/new
-router.get("/:projectId/update", requireAuth, async (req, res, next) => {
+router.get("/:projectId/update", async (req, res, next) => {
   const projectId = req.params.projectId;
   const userId = req.user._id.toString();
   const project = await Project.findById(projectId);
@@ -97,7 +124,7 @@ router.get("/:projectId/update", requireAuth, async (req, res, next) => {
 // PUT /api/projects/:projectId
 // user must be logged in
 // project must be owned by user
-router.put("/:projectId", requireAuth, async (req, res, next) => {
+router.put("/:projectId", async (req, res, next) => {
   const projectId = req.params.projectId;
   const userId = req.user._id.toString();
 
@@ -168,11 +195,46 @@ router.put("/:projectId", requireAuth, async (req, res, next) => {
   }
 });
 
+// Add a client to a project
+// PUT /api/projects/:projectId/clients
+// project must be owned by user
+router.put("/:projectId/clients", async (req, res, next) => {
+  const projectId = req.params.projectId;
+  const userId = req.user._id.toString();
+  const { clientId } = req.body;
+
+  try {
+    const existingProject = await Project.findById(projectId);
+    if (!existingProject) {
+      return res.status(404).json({
+        message: "Project not found ",
+      });
+    }
+    if (existingProject.userId.toString() !== userId) {
+      return res.status(403).json({
+        message: "You do not have permission to add clients to this project",
+      });
+    }
+    const existingClient = await Client.findById(clientId);
+    if (!existingClient) {
+      return res.status(404).json({
+        message: "Client not found ",
+      });
+    }
+
+    existingProject.clients.push(clientId);
+    await existingProject.save();
+    res.status(200).json(existingProject);
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Delete a project
 // DELETE /api/projects/:projectId
 // user must be logged in
 // project must be owned by user
-router.delete("/:projectId", requireAuth, async (req, res, next) => {
+router.delete("/:projectId", async (req, res, next) => {
   const projectId = req.params.projectId;
   const userId = req.user._id.toString();
 
