@@ -16,6 +16,7 @@ const MongoStore = require("connect-mongo");
 const methodOverride = require("method-override");
 const isProduction = environment === "production";
 const multer = require("multer");
+const jwt = require("jsonwebtoken");
 // import passport config so server knows about it
 const passportSession = require("./config/passport.config");
 // Initialize app

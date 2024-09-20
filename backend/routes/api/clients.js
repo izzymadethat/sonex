@@ -3,12 +3,13 @@
 // All routes are using requireAuth from the parent router
 const router = require("express").Router({ mergeParams: true });
 const Client = require("../../models/client");
+const { generateAccessToken } = require("../../utils/clientAuth");
 
 // Create a client
 // POST /api/users/:userId/clients
 router.post("/", async (req, res, next) => {
   const userId = req.params.userId;
-  const { firstName, email } = req.body;
+  const { name, email } = req.body;
 
   if (!email) {
     return res.status(400).json({
@@ -18,15 +19,24 @@ router.post("/", async (req, res, next) => {
 
   try {
     const client = new Client({
-      firstName: firstName || null,
+      name: name || null,
       email,
     });
 
     client.users.push(userId);
-
     await client.save();
 
-    res.status(201).json(client);
+    // Generate a 30min access token for the client
+    const accessToken = generateAccessToken(client);
+    console.log(accessToken);
+
+    // TODO: Send the client an email to verify their email
+
+    res.status(201).json({
+      message:
+        "Client created successfully. Make sure to notify client to verify their email",
+      client,
+    });
   } catch (error) {
     next(error);
   }

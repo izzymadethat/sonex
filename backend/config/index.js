@@ -21,4 +21,8 @@ module.exports = {
     bucketName: process.env.AWS_BUCKET_NAME,
     region: process.env.AWS_REGION,
   },
+  clientAuth: {
+    accessSecret: process.env.CLIENT_ACCESS_TOKEN_SECRET,
+    refreshSecret: process.env.CLIENT_REFRESH_TOKEN_SECRET,
+  },
 };
