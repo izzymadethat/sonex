@@ -44,7 +44,7 @@ router.get(
 
 // Callback route for Google
 router.get("/google/redirect", passport.authenticate("google"), (req, res) => {
-  res.redirect("/");
+  return res.json(req.user);
 });
 
 // Register with email and password
@@ -79,7 +79,7 @@ router.post("/register", async (req, res, next) => {
       if (error) return next(error);
       console.log("User created and logged in: ", user);
 
-      return res.redirect("/");
+      return res.json(user);
     });
   } catch (error) {
     next(error);
@@ -90,7 +90,7 @@ router.post("/register", async (req, res, next) => {
 router.delete("/logout", (req, res, next) => {
   req.logOut((error) => {
     if (error) return next(error);
-    res.redirect("/api/auth/login");
+    res.status(200).json({ message: "User logged out successfully" });
   });
 });
 
@@ -154,7 +154,7 @@ router.post("/clients/verify", async (req, res, next) => {
 
 // Reverify clients created but not verified
 router.post("/clients/reverify", async (req, res, next) => {
-  const {email, name} = req.body
+  const { email, name } = req.body;
 
   if (!email) {
     return res.status(400).json({
@@ -163,7 +163,7 @@ router.post("/clients/reverify", async (req, res, next) => {
   }
 
   try {
-    const client = await Client.findOne({email, name});
+    const client = await Client.findOne({ email, name });
     if (!client) {
       return res.status(404).json({ message: "Client not found" });
     }
@@ -176,9 +176,9 @@ router.post("/clients/reverify", async (req, res, next) => {
 
     res.status(200).json({ message: "Verification email resent." });
   } catch (error) {
-    next(error)
+    next(error);
   }
-})
+});
 
 router.post("/clients/refresh", async (req, res, next) => {
   const refreshToken = req.cookies.clientRefreshToken;
@@ -204,7 +204,7 @@ router.post("/clients/refresh", async (req, res, next) => {
       secure: true,
       maxAge: maxAge,
     });
-    
+
     res.status(200).json({ message: "Refreshed token" });
   } catch (error) {
     res.status(401).json({ message: "Invalid or expired token" });

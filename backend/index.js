@@ -35,7 +35,7 @@ db.on("error", (error) => {
 });
 
 db.once("open", () => {
-  console.log("Connected to database");
+  console.log("Connected to Mongodb successfully");
 });
 
 // Middlewares
@@ -63,10 +63,10 @@ app.use(methodOverride("_method"));
 // TODO: Security middleware
 
 // Test route
-app.get("/", checkAuth, (req, res) => {
+app.get("/", (req, res) => {
   console.log("Session:", req.session);
   console.log("User:", req.user);
-  res.render("index", { name: req.user.firstName });
+  res.send({ user: req.user, session: req.session });
 });
 
 app.use(routes);

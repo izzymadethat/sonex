@@ -1,0 +1,12 @@
+{
+  "name": "sonex",
+  "version": "1.0.0",
+  "description": "### Tech Stack:",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm start --prefix backend"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
