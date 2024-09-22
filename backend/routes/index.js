@@ -6,6 +6,7 @@ const {
   checkIfAuthenticated,
 } = require("../utils/auth");
 const apiRouter = require("./api");
+
 // Test payloads
 const userPayload = {
   _id: 123456,
@@ -19,8 +20,10 @@ const clientPayload = {
   email: "myemail@email.com",
 };
 
+router.use(restoreSessionUser); // All routes to retrieve user/client from jwt
 router.use("/api", apiRouter);
 
+// Test routes
 router.get("/generateToken", (req, res) => {
   console.log("Generating token...");
   try {
