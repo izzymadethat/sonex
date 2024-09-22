@@ -125,3 +125,23 @@ async function _verifyToken(token) {
     return null;
   }
 }
+
+function checkIfAuthenticated(req, res, next) {
+  if (!req.user && !req.client) {
+    const error = new Error("Authentication required");
+    error.status = 401;
+    error.errors = {
+      message: "You must be logged in to access this route",
+    };
+
+    return next(error);
+  }
+
+  return next();
+}
+
+module.exports = {
+  generateAccessToken,
+  restoreSessionUser,
+  checkIfAuthenticated,
+};
