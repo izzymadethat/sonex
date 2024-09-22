@@ -15,12 +15,6 @@ const clientSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    refreshTokens: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "RefreshToken",
-      },
-    ],
     users: [
       {
         type: Schema.Types.ObjectId,

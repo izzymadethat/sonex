@@ -1,8 +1,8 @@
 const router = require("express").Router();
-const passport = require("passport");
+// const passport = require("passport");
 const bcrypt = require("bcryptjs");
 const User = require("../../models/user");
-const { checkAuth, checkNotAuth, requireAuth } = require("../../utils/auth");
+// const { checkAuth, checkNotAuth, requireAuth } = require("../../utils/auth");
 const Client = require("../../models/client");
 const {
   generateAccessToken,

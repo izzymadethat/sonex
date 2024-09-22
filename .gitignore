@@ -1,3 +1,9 @@
 *node_modules/
 *.env*
+**/build/
+DS_Store
+*.log
+
+# Test HTML files
+./backend/views/*.ejs 
 
