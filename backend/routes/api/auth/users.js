@@ -4,95 +4,89 @@ const bcrypt = require("bcryptjs");
 const User = require("../../../models/user");
 // const { checkAuth, checkNotAuth, requireAuth } = require("../../utils/auth");
 const Client = require("../../../models/client");
-const {
-  generateAccessToken,
-  saveRefreshToken,
-  generateAndSaveRefreshToken,
-} = require("../../../utils/clientAuth");
 const jwt = require("jsonwebtoken");
-const { clientAuth } = require("../../../config");
 
 let maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 // test login page ("/api/auth/login")
-router.get("/login", checkNotAuth, (req, res) => {
+router.get("/login", (req, res) => {
   res.render("login");
 });
 
 // test register page ("/api/auth/register")
-router.get("/register", checkNotAuth, (req, res) => {
+router.get("/register", (req, res) => {
   res.render("register");
 });
 
 // Login with email and password
-router.post(
-  "/login",
-  passport.authenticate("local", {
-    successRedirect: "/",
-    failureRedirect: "/api/auth/login",
-  })
-);
+// router.post(
+//   "/login",
+//   passport.authenticate("local", {
+//     successRedirect: "/",
+//     failureRedirect: "/api/auth/login",
+//   })
+// );
 
 // Login with Google
-router.get(
-  "/login/google",
-  checkNotAuth,
-  passport.authenticate("google", {
-    scope: ["profile"],
-  })
-);
+// router.get(
+//   "/login/google",
+
+//   passport.authenticate("google", {
+//     scope: ["profile"],
+//   })
+// );
 
 // Callback route for Google
-router.get("/google/redirect", passport.authenticate("google"), (req, res) => {
-  return res.json(req.user);
-});
+// router.get("/google/redirect", passport.authenticate("google"), (req, res) => {
+//   return res.json(req.user);
+// });
 
 // Register with email and password
-router.post("/register", async (req, res, next) => {
-  const { firstName, lastName, email, username, password } = req.body;
+// router.post("/register", async (req, res, next) => {
+//   const { firstName, lastName, email, username, password } = req.body;
 
-  if (!firstName || !lastName || !email || !username || !password) {
-    return res.status(400).json({
-      errorMessage: "Please enter all fields",
-    });
-  }
+//   if (!firstName || !lastName || !email || !username || !password) {
+//     return res.status(400).json({
+//       errorMessage: "Please enter all fields",
+//     });
+//   }
 
-  try {
-    const existingUser = await User.findOne({ email });
+//   try {
+//     const existingUser = await User.findOne({ email });
 
-    if (existingUser) {
-      return res.status(400).json({
-        errorMessage: "Email already exists",
-      });
-    }
+//     if (existingUser) {
+//       return res.status(400).json({
+//         errorMessage: "Email already exists",
+//       });
+//     }
 
-    const hashedPassword = await bcrypt.hashSync(password, 10);
-    const user = await new User({
-      firstName,
-      lastName,
-      email: email.toLowerCase(),
-      username: username.replace(/\s+/g, "").toLowerCase(),
-      hashedPassword,
-    }).save();
+//     const hashedPassword = await bcrypt.hashSync(password, 10);
+//     const user = await new User({
+//       firstName,
+//       lastName,
+//       email: email.toLowerCase(),
+//       username: username.replace(/\s+/g, "").toLowerCase(),
+//       hashedPassword,
+//     }).save();
 
-    req.login(user, (error) => {
-      if (error) return next(error);
-      console.log("User created and logged in: ", user);
+//     req.login(user, (error) => {
+//       if (error) return next(error);
+//       console.log("User created and logged in: ", user);
 
-      return res.json(user);
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+//       return res.json(user);
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// });
 
-// Logout
-router.delete("/logout", (req, res, next) => {
-  req.logOut((error) => {
-    if (error) return next(error);
-    res.status(200).json({ message: "User logged out successfully" });
-  });
-});
+// // Logout
+// router.delete("/logout", (req, res, next) => {
+//   req.logOut((error) => {
+//     if (error) return next(error);
+//     res.status(200).json({ message: "User logged out successfully" });
+//   });
+// });
 
 /**
  * =====================================

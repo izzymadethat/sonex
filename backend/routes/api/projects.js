@@ -16,7 +16,7 @@ const fileRoutes = require("./files");
 //   res.json(projects);
 // });
 
-router.use(requireAuth);
+// router.use(requireAuth);
 // CRUD routes for handling client comments
 router.use("/:projectId/comments", commentRoutes);
 router.use("/:projectId/uploads", fileRoutes);

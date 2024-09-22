@@ -21,7 +21,7 @@ module.exports = {
   sessionAuth: {
     accessSecret: process.env.JWT_ACCESS_TOKEN_SECRET,
     refreshSecret: process.env.JWT_REFRESH_TOKEN_SECRET,
-    accessExpiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRES_IN,
-    refreshExpiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRES_IN,
+    accessExpiresIn: process.env.JWT_VERIFY_EXPIRATION,
+    refreshExpiresIn: process.env.JWT_VERIFIED_EXPIRATION,
   },
 };

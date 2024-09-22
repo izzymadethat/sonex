@@ -29,7 +29,7 @@ router.post("/", async (req, res, next) => {
 
 // Get all comments from a project
 // Only the project owner can see all comments
-router.get("/", requireAuth, async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   const { projectId } = req.params;
   try {
     // Show comments and the clients that made them

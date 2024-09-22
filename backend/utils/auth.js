@@ -60,7 +60,9 @@ function generateAccessToken(res, user, sessionType) {
 
   // Set the expiresIn based on the session type and add the session type to the payload
   expiresIn =
-    sessionType === "verification" ? accessExpiresIn : refreshExpiresIn;
+    sessionType === "verification"
+      ? parseInt(accessExpiresIn)
+      : parseInt(refreshExpiresIn);
   payload.sessionType = sessionType;
 
   const token = jwt.sign({ data: payload }, sessionSecret, { expiresIn });
@@ -90,14 +92,17 @@ async function restoreSessionUser(req, res, next) {
   const verifiedUser = await _verifyToken(token);
 
   if (!verifiedUser) {
+    console.error("Invalid token");
     res.clearCookie("sessionToken");
     return next();
   }
 
   if (verifiedUser.role === "user") {
     req.user = verifiedUser;
+    console.log("User restored");
   } else if (verifiedUser.role === "client") {
     req.client = verifiedUser;
+    console.log("Client restored");
   }
 
   next();
@@ -106,22 +111,26 @@ async function restoreSessionUser(req, res, next) {
 async function _verifyToken(token) {
   try {
     const payloadData = jwt.decode(token);
+
     const { data } = payloadData;
     const { sessionType } = data;
 
     let sessionSecret =
-      sessionType === "verification" ? accessSecret : refreshSecret;
+      sessionType === "verification"
+        ? sessionAuth.accessSecret
+        : sessionAuth.refreshSecret;
 
     const userPayload = jwt.verify(token, sessionSecret);
 
-    if (userPayload.role === "user") {
-      return await User.findById(userPayload.data.id);
-    } else if (userPayload.role === "client") {
-      return await Client.findById(userPayload.data.id);
+    if (userPayload.data.role === "user") {
+      return userPayload.data;
+    } else if (userPayload.data.role === "client") {
+      return userPayload.data;
     } else {
       return null;
     }
   } catch (error) {
+    console.error(error);
     return null;
   }
 }

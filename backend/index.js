@@ -6,67 +6,26 @@ const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
-const routes = require("./routes");
 const { port, mongodb, environment } = require("./config");
-const passport = require("passport");
-const session = require("express-session");
-const config = require("./config");
-const { checkAuth, checkNotAuth, requireAuth } = require("./utils/auth");
-const MongoStore = require("connect-mongo");
 const methodOverride = require("method-override");
 const isProduction = environment === "production";
 const multer = require("multer");
-const jwt = require("jsonwebtoken");
-// import passport config so server knows about it
-const passportSession = require("./config/passport.config");
+const routes = require("./routes");
+
 // Initialize app
 const app = express();
-
-// set up test view engine
-app.set("view engine", "ejs");
-
-// Connect to MongoDB
-// TODO: add to config folder
-mongoose.connect(mongodb.dbURI);
-const db = mongoose.connection;
-
-db.on("error", (error) => {
-  console.log(error);
-});
-
-db.once("open", () => {
-  console.log("Connected to Mongodb successfully");
-});
 
 // Middlewares
 app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  session({
-    secret: config.session.cookieSecret,
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: mongodb.dbURI }),
-    cookie: {
-      maxAge: 1000 * 60 * 60 * 24 * 5, // 5 days
-    },
-  })
-);
-
-// run authentication middleware
-app.use(passport.initialize());
-app.use(passport.session());
 app.use(methodOverride("_method"));
 
 // TODO: Security middleware
-
-// Test route
-app.get("/", (req, res) => {
-  console.log("Session:", req.session);
-  console.log("User:", req.user);
-  res.send({ user: req.user, session: req.session });
+app.use((req, res, next) => {
+  console.log("Request Received: ", req.method, req.url);
+  next();
 });
 
 app.use(routes);
@@ -80,7 +39,7 @@ app.use((err, _req, _res, next) => {
     err.message = err.code;
     next(err);
   } else {
-    next();
+    next(err);
   }
 });
 
@@ -110,7 +69,15 @@ app.use((err, _req, res, _next) => {
   }
 });
 
-// Start server
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
-});
+// Start server after database connection
+mongoose
+  .connect(mongodb.dbURI)
+  .then(() => {
+    console.log("Successfully connected to MongoDB");
+    app.listen(port, () => {
+      console.log(`Server is now running on port ${port}`);
+    });
+  })
+  .catch((err) => {
+    console.error(err);
+  });
