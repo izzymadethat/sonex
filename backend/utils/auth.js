@@ -38,7 +38,6 @@ const { accessExpiresIn, refreshExpiresIn } = sessionAuth;
 const isProduction = environment === "production";
 
 function generateAccessToken(res, user, sessionType) {
-  console.log("Generating token...", user);
   // Set payload
   const payload = {
     id: user._id.toString(),
@@ -98,10 +97,8 @@ async function restoreSessionUser(req, res, next) {
 
   if (verifiedUser.role === "user") {
     req.user = verifiedUser;
-    console.log("User restored");
   } else if (verifiedUser.role === "client") {
     req.client = verifiedUser;
-    console.log("Client restored");
   }
 
   next();
