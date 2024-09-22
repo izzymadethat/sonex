@@ -4,6 +4,13 @@ const { generateAccessToken } = require("../../../utils/auth");
 const User = require("../../../models/user");
 const router = express.Router();
 
+// Get current user
+// GET /api/auth/session
+router.get("/", (req, res) => {
+  const user = req.user;
+  res.json({ user });
+});
+
 // Login a user
 // POST /api/auth/session
 router.post("/", async (req, res, next) => {
@@ -46,10 +53,8 @@ router.post("/register", async (req, res, next) => {
   const user = req.body;
 
   try {
-    console.log("User:", user.password);
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(user.password, salt);
-    console.log(hashedPassword);
 
     const newUser = new User({
       firstName: user.firstName,
