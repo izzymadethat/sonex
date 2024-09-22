@@ -7,7 +7,7 @@
  * users and clients. This will be helpful in authorizing clients and users
  * when there are protected routes.
  *
- * generateAccessToken(user: User | Client, sessionType: stringm expiresIn: string): void
+ * generateAccessToken(res: Response, user: User | Client, sessionType: string): Token: string
  * - Generate and sends an overall access token for the user or client based on the sessionType
  * - Serves as a function to be called in the login and signup route
  * - The expiresIn can be set to "15m", "1h", "1d", etc. as it's passed to the jwt.sign() method
@@ -15,14 +15,14 @@
  * - The access token is stored in the browser as a cookie
  *
  *
- * restoreUser(req: Request, res: Response, next: NextFunction): Promise<User | Client | null>
+ * restoreSessionUser(req: Request, res: Response, next: NextFunction): Promise<User | Client | null>
  * - Restores the user or client from the jwt and
  *   attaches it to the request object as req.user or req.client
  * - This is passed to all routers as a middleware to access the user or client at any point
  * - If the jwt is invalid or the user/client not found, it will return null
  *
- * - verifyToken(token: string): Promise<User | Client | null>
- * - Verifies the token and returns the user or client
+ * _verifyToken(token: string): Promise<User | Client | null>
+ * - Helper function verifies the token and returns the user or client
  * - This is used in the restoreUser function to verify the token
  * - If the token is invalid or the user/client not found, it will return null
  *
@@ -30,6 +30,8 @@
 
 const jwt = require("jsonwebtoken");
 const { sessionAuth, environment } = require("../config");
+const User = require("../models/user");
+const Client = require("../models/client");
 
 const { accessExpiresIn, refreshExpiresIn } = sessionAuth;
 
@@ -56,9 +58,10 @@ function generateAccessToken(res, user, sessionType) {
     throw new Error("Invalid session type");
   }
 
-  // Set the expiresIn based on the session type
+  // Set the expiresIn based on the session type and add the session type to the payload
   expiresIn =
     sessionType === "verification" ? accessExpiresIn : refreshExpiresIn;
+  payload.sessionType = sessionType;
 
   const token = jwt.sign({ data: payload }, sessionSecret, { expiresIn });
 
@@ -69,5 +72,56 @@ function generateAccessToken(res, user, sessionType) {
     sameSite: isProduction && "Lax",
   });
 
+  res.setHeader("Authorization", `Bearer ${token}`);
+
   return token;
+}
+
+async function restoreSessionUser(req, res, next) {
+  const { sessionToken } = req.cookies;
+  const token = sessionToken || req.headers.authorization?.split(" ")[1];
+  req.user = null;
+  req.client = null;
+
+  if (!token) {
+    return next();
+  }
+
+  const verifiedUser = await _verifyToken(token);
+
+  if (!verifiedUser) {
+    res.clearCookie("sessionToken");
+    return next();
+  }
+
+  if (verifiedUser.role === "user") {
+    req.user = verifiedUser;
+  } else if (verifiedUser.role === "client") {
+    req.client = verifiedUser;
+  }
+
+  next();
+}
+
+async function _verifyToken(token) {
+  try {
+    const payloadData = jwt.decode(token);
+    const { data } = payloadData;
+    const { sessionType } = data;
+
+    let sessionSecret =
+      sessionType === "verification" ? accessSecret : refreshSecret;
+
+    const userPayload = jwt.verify(token, sessionSecret);
+
+    if (userPayload.role === "user") {
+      return await User.findById(userPayload.data.id);
+    } else if (userPayload.role === "client") {
+      return await Client.findById(userPayload.data.id);
+    } else {
+      return null;
+    }
+  } catch (error) {
+    return null;
+  }
 }
