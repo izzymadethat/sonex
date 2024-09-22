@@ -1,5 +1,7 @@
 const express = require("express");
+const bcrypt = require("bcryptjs");
 const { generateAccessToken } = require("../../../utils/auth");
+const User = require("../../../models/user");
 const router = express.Router();
 
 const userDB = [
@@ -23,13 +25,52 @@ router.post("/", async (req, res, next) => {
     res.status(401).json({ message: "User does not exist" });
   }
 
-  if (userFound.password !== user.password) {
+  if (!(await bcrypt.compare(user.password, userFound.password))) {
     res.status(401).json({ message: "Incorrect credentials" });
   }
 
   //   const token = generateAccessToken(res, user, "refresh");
 
-  res.send({ user });
+  res.send({ userFound });
+});
+
+// Signup a user
+// POST /api/auth/session/register
+router.post("/register", async (req, res, next) => {
+  const user = req.body;
+
+  try {
+    console.log("User:", user.password);
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(user.password, salt);
+    console.log(hashedPassword);
+
+    const newUser = new User({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      username: user.username,
+      email: user.email,
+      bio: user.bio,
+      hashedPassword,
+    });
+
+    console.log("New user created:", newUser);
+
+    const newUserPayload = {
+      ...newUser._doc,
+      role: "user",
+    };
+
+    await newUser.save();
+
+    console.log("New user created:", newUserPayload);
+
+    generateAccessToken(res, newUser, "verification");
+
+    res.send({ user: newUserPayload });
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = router;
