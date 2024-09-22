@@ -4,34 +4,40 @@ const { generateAccessToken } = require("../../../utils/auth");
 const User = require("../../../models/user");
 const router = express.Router();
 
-const userDB = [
-  {
-    _id: 12345,
-    firstName: "Izzy",
-    lastName: "Vickers",
-    bio: "This is my bio",
-    username: "izzy@me.com",
-    password: "password1",
-  },
-];
-
 // Login a user
 // POST /api/auth/session
 router.post("/", async (req, res, next) => {
-  const user = req.body;
-  const userFound = userDB.find((usr) => usr.username === user.username);
+  const { credentials, password } = req.body;
 
-  if (!userFound) {
-    res.status(401).json({ message: "User does not exist" });
+  try {
+    const user = await User.findOne({
+      $or: [{ username: credentials }, { email: credentials }],
+    });
+
+    if (
+      !user ||
+      !bcrypt.compareSync(password, user.hashedPassword.toString())
+    ) {
+      const error = new Error("Invalid credentials");
+      error.title = "Login failed";
+      err.errors = { login: "Invalid credentials" };
+      error.status = 401;
+      return next(error);
+    }
+
+    const userPayload = {
+      ...user._doc,
+      role: "user",
+    };
+
+    delete userPayload.hashedPassword;
+
+    generateAccessToken(res, userPayload, "refresh");
+
+    res.json({ user: userPayload });
+  } catch (error) {
+    next(error);
   }
-
-  if (!(await bcrypt.compare(user.password, userFound.password))) {
-    res.status(401).json({ message: "Incorrect credentials" });
-  }
-
-  //   const token = generateAccessToken(res, user, "refresh");
-
-  res.send({ userFound });
 });
 
 // Signup a user
@@ -54,18 +60,16 @@ router.post("/register", async (req, res, next) => {
       hashedPassword,
     });
 
-    console.log("New user created:", newUser);
+    await newUser.save();
 
     const newUserPayload = {
       ...newUser._doc,
       role: "user",
     };
 
-    await newUser.save();
+    delete newUserPayload.hashedPassword;
 
-    console.log("New user created:", newUserPayload);
-
-    generateAccessToken(res, newUser, "verification");
+    generateAccessToken(res, newUserPayload, "verification");
 
     res.send({ user: newUserPayload });
   } catch (error) {

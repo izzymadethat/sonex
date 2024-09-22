@@ -38,6 +38,7 @@ const { accessExpiresIn, refreshExpiresIn } = sessionAuth;
 const isProduction = environment === "production";
 
 function generateAccessToken(res, user, sessionType) {
+  console.log("Generating token...", user);
   // Set payload
   const payload = {
     id: user._id.toString(),
@@ -73,8 +74,6 @@ function generateAccessToken(res, user, sessionType) {
     secure: isProduction,
     sameSite: isProduction && "Lax",
   });
-
-  res.setHeader("Authorization", `Bearer ${token}`);
 
   return token;
 }
