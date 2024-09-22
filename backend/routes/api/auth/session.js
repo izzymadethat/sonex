@@ -77,4 +77,11 @@ router.post("/register", async (req, res, next) => {
   }
 });
 
+// Logout a user
+// DELETE /api/auth/session
+router.delete("/", (_req, res) => {
+  res.clearCookie("sessionToken");
+  res.json({ message: "Logout successful" });
+});
+
 module.exports = router;
