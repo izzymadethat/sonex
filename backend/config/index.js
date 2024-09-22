@@ -12,17 +12,16 @@ module.exports = {
   port: process.env.PORT || 8001,
 
   environment: process.env.NODE_ENV || "development",
-  session: {
-    cookieSecret: process.env.COOKIE_SECRET,
-  },
   awsS3: {
     accessKey: process.env.AWS_ACCESS_KEY_ID,
     secretKey: process.env.AWS_SECRET_ACCESS_KEY,
     bucketName: process.env.AWS_BUCKET_NAME,
     region: process.env.AWS_REGION,
   },
-  clientAuth: {
-    accessSecret: process.env.CLIENT_ACCESS_TOKEN_SECRET,
-    refreshSecret: process.env.CLIENT_REFRESH_TOKEN_SECRET,
+  sessionAuth: {
+    accessSecret: process.env.JWT_ACCESS_TOKEN_SECRET,
+    refreshSecret: process.env.JWT_REFRESH_TOKEN_SECRET,
+    accessExpiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRES_IN,
+    refreshExpiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRES_IN,
   },
 };

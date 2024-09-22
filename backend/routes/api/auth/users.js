@@ -1,16 +1,16 @@
 const router = require("express").Router();
 // const passport = require("passport");
 const bcrypt = require("bcryptjs");
-const User = require("../../models/user");
+const User = require("../../../models/user");
 // const { checkAuth, checkNotAuth, requireAuth } = require("../../utils/auth");
-const Client = require("../../models/client");
+const Client = require("../../../models/client");
 const {
   generateAccessToken,
   saveRefreshToken,
   generateAndSaveRefreshToken,
-} = require("../../utils/clientAuth");
+} = require("../../../utils/clientAuth");
 const jwt = require("jsonwebtoken");
-const { clientAuth } = require("../../config");
+const { clientAuth } = require("../../../config");
 
 let maxAge = 30 * 24 * 60 * 60 * 1000; // 30 days
 
