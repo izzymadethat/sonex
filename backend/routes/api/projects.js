@@ -11,8 +11,9 @@ const authenticatedUsersOnly = [checkIfAuthenticated, checkIfUserNotClient];
 // Get projects for user
 // GET /api/projects
 router.get("/", authenticatedUsersOnly, async (req, res, next) => {
-  const projects = await Project.find().populate("clients");
-  res.json({ Projects: projects, user: req.user });
+  const userId = req.user.id;
+  const projects = await Project.find({ userId }).populate("clients");
+  res.json({ Projects: projects, User: req.user });
 });
 
 // Create a project
