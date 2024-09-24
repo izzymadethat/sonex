@@ -156,7 +156,19 @@ function checkIfUserNotClient(req, _res, next) {
   next();
 }
 
+function checkIfClientNotUser(req, _res, next) {
+  if (req.user || !req.client) {
+    const error = new Error("Unauthorized");
+    error.status = 403;
+    error.message = "Only authenticated clients can access this route";
+    return next(error);
+  }
+
+  next();
+}
+
 const authenticatedUsersOnly = [checkIfAuthenticated, checkIfUserNotClient];
+const authenticatedClientsOnly = [checkIfAuthenticated, checkIfClientNotUser];
 
 module.exports = {
   generateAccessToken,
@@ -164,4 +176,5 @@ module.exports = {
   checkIfAuthenticated,
   checkIfUserNotClient,
   authenticatedUsersOnly,
+  authenticatedClientsOnly,
 };
