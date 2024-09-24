@@ -1,13 +1,10 @@
 const router = require("express").Router();
-const userAuthRouter = require("./users");
 const clientAuthRouter = require("./clients");
 const sessionRouter = require("./session");
-const { generateAccessToken } = require("../../../utils/auth");
 
-// API Route: /api/auth/<users | clients>
-
+// API Route: /api/auth/<session | clients>
+// Session refers to users
 router.use("/session", sessionRouter);
-router.use("/users", userAuthRouter);
 router.use("/clients", clientAuthRouter);
 
 module.exports = router;

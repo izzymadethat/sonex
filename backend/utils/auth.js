@@ -145,8 +145,23 @@ function checkIfAuthenticated(req, res, next) {
   return next();
 }
 
+function checkIfUserNotClient(req, _res, next) {
+  if (req.client || !req.user) {
+    const error = new Error("Unauthorized");
+    error.status = 403;
+    error.message = "Only authenticated users can access this route";
+    return next(error);
+  }
+
+  next();
+}
+
+const authenticatedUsersOnly = [checkIfAuthenticated, checkIfUserNotClient];
+
 module.exports = {
   generateAccessToken,
   restoreSessionUser,
   checkIfAuthenticated,
+  checkIfUserNotClient,
+  authenticatedUsersOnly,
 };
