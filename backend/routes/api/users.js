@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { check } = require("express-validator");
+const { check, query } = require("express-validator");
 const mongoose = require("mongoose");
 const handleValidationErrors = require("../../utils/validation");
 const { authenticatedUsersOnly } = require("../../utils/auth");
@@ -65,24 +65,42 @@ router.post(
 
 // Get all clients for user
 // GET /api/users/:userId/clients
-router.get("/:userId/clients", async (req, res, next) => {
+
+const validateQuery = [
+  query("page")
+    .exists({ checkFalsy: true })
+    .isInt({ min: 1 })
+    .withMessage("Page must be a positive integer")
+    .toInt(),
+  query("size")
+    .exists({ checkFalsy: true })
+    .isInt({ min: 10, max: 75 })
+    .withMessage("Size must be a positive integer")
+    .toInt(),
+  handleValidationErrors,
+];
+router.get("/:userId/clients", validateQuery, async (req, res, next) => {
   const userId = req.params.userId;
-  // TODO: Add query params for email and/or name
+  const { page, size } = req.query;
+
   try {
     // Find all clients where the users array contains the userId
     // remove users from the response
-    const clients = await Client.find({ users: userId });
-    const results = clients.map((client) => {
-      return {
-        _id: client._id,
-        name: client.name,
-        email: client.email,
-        projects: client.projects,
-        createdAt: client.createdAt,
-        updatedAt: client.updatedAt,
-      };
+    const clients = await Client.find({ users: userId })
+      .skip((page - 1) * size)
+      .limit(size)
+      .select("-users")
+      .lean();
+
+    const totalClients = await Client.countDocuments({ users: userId });
+
+    res.json({
+      Clients: clients,
+      total: totalClients,
+      page,
+      size,
+      totalPages: Math.ceil(totalClients / size),
     });
-    res.json({ Clients: results });
   } catch (error) {
     next(error);
   }
