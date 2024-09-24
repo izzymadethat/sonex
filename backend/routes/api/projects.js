@@ -7,6 +7,10 @@ const Client = require("../../models/client");
 const Project = require("../../models/project");
 const { authenticatedUsersOnly } = require("../../utils/auth");
 const handleValidationErrors = require("../../utils/validation");
+const commentRoutes = require("./comments");
+
+// Comment routes
+router.use("/:projectId/comments", commentRoutes);
 
 // Validation middleware
 const validateProjectInput = [
