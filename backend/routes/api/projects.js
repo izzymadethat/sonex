@@ -29,14 +29,53 @@ const validateProjectInput = [
     .withMessage("Please enter a valid amount"),
   handleValidationErrors,
 ];
-
+const validateProjectQuery = [
+  check("status")
+    .optional()
+    .isIn(["active", "completed", "archived"])
+    .withMessage("Status must be 'active', 'completed', or 'complete'"),
+  check("paymentStatus")
+    .optional()
+    .isIn(["unpaid", "no-charge", "paid", "partially-paid", "overpaid"])
+    .withMessage(
+      "Payment status must be 'unpaid', 'no-charge', 'paid', 'partially-paid', or 'overpaid'"
+    ),
+  check("projectAmount")
+    .optional()
+    .isFloat({ min: 0 })
+    .withMessage("Please enter a valid amount"),
+  check("title")
+    .optional()
+    .isLength({ max: 50 })
+    .withMessage("Title must be less than 50 characters"),
+  check("description")
+    .optional()
+    .isLength({ min: 3, max: 250 })
+    .withMessage("Description must be between 3 and 250 characters"),
+  check("amountPaid")
+    .optional()
+    .isFloat({ min: 0 })
+    .withMessage("Please enter a valid amount"),
+  check("paymentStatus")
+    .optional()
+    .isIn(["unpaid", "no-charge", "paid", "partially-paid", "overpaid"])
+    .withMessage(
+      "Payment status must be 'unpaid', 'no-charge', 'paid', 'partially-paid', or 'overpaid'"
+    ),
+  handleValidationErrors,
+];
 // Get projects for user
 // GET /api/projects
-router.get("/", authenticatedUsersOnly, async (req, res, next) => {
-  const userId = req.user.id;
-  const projects = await Project.find({ userId }).populate("clients");
-  res.json({ Projects: projects, User: req.user });
-});
+router.get(
+  "/",
+  authenticatedUsersOnly,
+  validateProjectQuery,
+  async (req, res, next) => {
+    const userId = req.user.id;
+    const projects = await Project.find({ userId }).populate("clients");
+    res.json({ Projects: projects, User: req.user });
+  }
+);
 
 // Create a project
 // POST /api/projects
