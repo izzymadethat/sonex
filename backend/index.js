@@ -6,67 +6,74 @@ const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
+const { port, mongodb, environment } = require("./config");
+const methodOverride = require("method-override");
+const isProduction = environment === "production";
+const multer = require("multer");
 const routes = require("./routes");
-
-const PORT = process.env.PORT || 8001;
-const DB = process.env.MONGODB_URI;
-const isProduction = process.env.NODE_ENV === "production";
 
 // Initialize app
 const app = express();
-
-// Connect to MongoDB
-// TODO: add to config folder
-mongoose.connect(DB);
-const db = mongoose.connection;
-
-db.on("error", (error) => {
-  console.log(error);
-});
-
-db.once("open", () => {
-  console.log("Connected to database");
-});
 
 // Middlewares
 app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride("_method"));
 
-// Security middleware
-
-// Test route
-app.get("/", (req, res) => {
-  res.send("Sonex Backend Server Up and Running!");
-});
+// TODO: Security middleware
 
 app.use(routes);
 
 // Error handling
-app.use((err, _req, res) => {
-  console.log(err);
+
+// Check for multer errors
+app.use((err, _req, _res, next) => {
+  if (err instanceof multer.MulterError) {
+    err.status = 400;
+    err.message = err.code;
+    next(err);
+  } else {
+    next(err);
+  }
+});
+
+// Error formatting
+app.use((err, _req, res, _next) => {
   err.status = err.status || 500;
   err.title = err.title || "Server Error";
   err.message = err.message || "Something went wrong. Internal server error.";
-  err.errors = err.errors || { server: [err.message] };
+  err.errors = err.errors || { server: err.message };
 
   const error = {
     title: err.title,
     errors: err.errors,
     status: err.status,
     message: err.message,
+    timestamp: new Date().toLocaleString(),
   };
+
+  console.error(error);
 
   if (isProduction) {
     res.status(err.status).json(error);
   } else {
     // Add the stack trace in development and debug mode
     error.stack = err.stack;
-    res.json(error);
+    res.status(err.status).json(error);
   }
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`);
-});
+// Start server after database connection
+mongoose
+  .connect(mongodb.dbURI)
+  .then(() => {
+    console.log("Successfully connected to MongoDB");
+    app.listen(port, () => {
+      console.log(`Server is now running on port ${port}`);
+    });
+  })
+  .catch((err) => {
+    console.error(err);
+  });
