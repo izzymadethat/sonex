@@ -55,7 +55,10 @@ router.post(
 
       res.json(client);
     } catch (error) {
+      await session.abortTransaction();
       next(error);
+    } finally {
+      session.endSession();
     }
   }
 );
