@@ -30,7 +30,7 @@ const Login = () => {
 
       const data = await response.json();
       if (!data.user) {
-        setFormError(data.errors);
+        setFormError(data.errors.login);
       } else {
         setIsSubmitted(true);
         setFormError(null);
@@ -39,8 +39,7 @@ const Login = () => {
     } catch (error) {
       // Handle errors
       console.log(error);
-      window.alert("Login failed. Please try again.");
-      setFormError("Submission failed. Please try again.");
+      setFormError("Login failed. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -52,7 +51,13 @@ const Login = () => {
         <h1 className="text-3xl">MySonex</h1>
         <span>Login</span>
       </div>
+
       <div className="w-[380px] h-[380px] rounded-md p-4 ">
+        {formError && (
+          <div className="bg-red-500 text-white p-2 rounded-md mb-4">
+            {formError}
+          </div>
+        )}
         <form
           onSubmit={handleSubmitLogin}
           className="flex flex-col gap-4 items-center"
