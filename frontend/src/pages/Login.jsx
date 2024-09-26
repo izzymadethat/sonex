@@ -1,6 +1,6 @@
 import { Button, Input } from "@nextui-org/react";
 import { Link } from "react-router-dom";
-import { Lock, Mail, RectangleEllipsis } from "lucide-react";
+import { Mail, RectangleEllipsis } from "lucide-react";
 
 const Login = () => {
   return (
