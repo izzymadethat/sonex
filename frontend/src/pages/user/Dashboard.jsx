@@ -146,6 +146,11 @@ const Dashboard = () => {
             Code on my Github
           </p>
         </div>
+        <footer>
+          <p className="text-center text-sm text-neutral-400">
+            Sonex v1.0.0-Beta
+          </p>
+        </footer>
       </aside>
 
       {/* Main content */}
