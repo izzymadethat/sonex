@@ -5,9 +5,24 @@ const Logout = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setTimeout(() => {
-      navigate("/login", { replace: true });
-    }, 3000);
+    async function handleLogout() {
+      try {
+        const response = await fetch("http://localhost:8000/api/auth/session", {
+          credentials: "include",
+          method: "DELETE",
+        });
+
+        if (response.ok) {
+          setTimeout(() => {
+            navigate("/login");
+          }, 3000);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    handleLogout();
   }, []);
 
   return (
@@ -18,6 +33,7 @@ const Logout = () => {
       </div>
       <div className="w-[380px] h-[380px] rounded-md  ">
         <p>You have successfully logged out!</p>
+        <p>Redirecting to login page...</p>
       </div>
     </main>
   );
