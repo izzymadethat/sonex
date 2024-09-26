@@ -63,6 +63,7 @@ const Login = () => {
           className="flex flex-col gap-4 items-center"
         >
           <Input
+            required
             type="text"
             name="credential"
             variant="underlined"
@@ -72,6 +73,7 @@ const Login = () => {
             startContent={<Mail />}
           />
           <Input
+            required
             type="password"
             variant="underlined"
             label="Password"
