@@ -14,11 +14,11 @@ router.get("/", (req, res) => {
 // Login a user
 // POST /api/auth/session
 router.post("/", async (req, res, next) => {
-  const { credentials, password } = req.body;
+  const { credential, password } = req.body;
 
   try {
     const user = await User.findOne({
-      $or: [{ username: credentials }, { email: credentials }],
+      $or: [{ username: credential }, { email: credential }],
     });
 
     if (
