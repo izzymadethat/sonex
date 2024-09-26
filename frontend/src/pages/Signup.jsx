@@ -55,13 +55,25 @@ const Signup = () => {
         return;
       }
 
-      // Simulate the server request (success or failure)
-      await new Promise((resolve, reject) =>
-        setTimeout(() => {
-          const success = Math.random() > 0.5; // Randomly simulate success/failure
-          success ? resolve() : reject(new Error("Signup Failed"));
-        }, 2000)
+      const response = await fetch(
+        "http://localhost:8000/api/auth/session/register",
+        {
+          credentials: "include",
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
       );
+
+      const data = await response.json();
+
+      if (!data.user) {
+        console.log(data);
+        setFormError(data.title + ": " + data.message);
+        return;
+      }
 
       // On successful signup
       setIsSubmitted(true);
@@ -77,11 +89,14 @@ const Signup = () => {
       console.log(error);
       setFormError("Signup failed. Please try again.");
       setIsSubmitted(false);
+      navigate(`/register?success=false`, {
+        state: { message: "Signup Failed. Please try again." },
+      });
     } finally {
       setIsSubmitting(false);
     }
   }
-
+  // ...
   return (
     <div className="w-full mx-auto translate-y-1/2 flex flex-col justify-center items-center">
       <div className="flex gap-2">
@@ -97,9 +112,16 @@ const Signup = () => {
       )}
 
       <div className="w-[380px] h-[380px] rounded-md">
-        {formError && (
+        {formError && typeof formError === "string" && (
           <div className="bg-red-500 text-white p-2 rounded-md mb-4">
             {formError}
+          </div>
+        )}
+        {formError && Array.isArray(formError) && formError.length > 0 && (
+          <div className="bg-red-500 text-white p-2 rounded-md mb-4">
+            {formError.map((error, index) => (
+              <p key={index}>{error}</p>
+            ))}
           </div>
         )}
         <form
