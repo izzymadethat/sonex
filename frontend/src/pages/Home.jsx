@@ -1,36 +1,15 @@
 import { Card, CardBody, CardHeader, Tooltip } from "@nextui-org/react";
 import FancyButton from "../components/FancyButton";
+import Header from "../sections/Header";
+import PricingPlan from "../components/PricingPlan";
 
 const Home = () => {
   return (
     <div>
-      <header className="flex justify-between">
-        <div>Logo</div>
-        <nav>
-          <ul className="flex gap-4">
-            <li>
-              <a href="#">Product</a>
-            </li>
-            <li>
-              <a href="#">Pricing</a>
-            </li>
-            <li>
-              <a href="#">Features</a>
-            </li>
-            <li>
-              <a href="#">Resources</a>
-            </li>
-          </ul>
-        </nav>
+      <Header />
+      <section>
         <div>
-          <button>Login</button>
-          <button>Signup</button>
-        </div>
-      </header>
-
-      <section className="grid grid-cols-5">
-        <div className="col-span-2">
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-2xl font-bold">
             Safe and Secure audio collaboration and communication for you and
             your clients
           </h1>
@@ -44,7 +23,7 @@ const Home = () => {
 
       {/* Features */}
       <h2>Why Sonex?</h2>
-      <section className="grid grid-cols-3 gap-4">
+      <section className="flex">
         <Card>
           <CardHeader>
             <h3>All in one Platform</h3>
@@ -94,7 +73,7 @@ const Home = () => {
             code, tweak it, and make it your own.
             <ul>
               <li>
-                For developers, Sonex is more than just a tool—it's a platform
+                For developers, Sonex is more than just a tool — it's a platform
                 you can build on.
               </li>
 
@@ -122,6 +101,12 @@ const Home = () => {
             </ul>
           </CardBody>
         </Card>
+      </section>
+      <section>
+        <h3>Pricing</h3>
+        <div className="max-w-4xl mx-auto">
+          <PricingPlan />
+        </div>
       </section>
     </div>
   );
