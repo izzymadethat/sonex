@@ -1,0 +1,90 @@
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
+
+:root {
+  --clr-primary: #ffff00;
+}
+
+.icon::before {
+  display: inline-block;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+}
+
+.pricing-plans {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  width: 100%;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.pricing-plans .plan {
+  background-color: #202020;
+  border-radius: 1rem;
+  padding: 3rem 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.pricing-plans .plan .content {
+  margin-bottom: 1rem;
+}
+
+.pricing-plans .plan .content h3 {
+  text-transform: capitalize;
+  font-size: 1.3rem;
+  color: var(--clr-primary);
+}
+
+.pricing-plans .plan .content .price {
+  font-size: 3rem;
+  font-weight: 600;
+}
+
+.pricing-plans .plan .list {
+  margin-bottom: 3rem;
+}
+
+.pricing-plans .plan .list p {
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+.pricing-plans .plan .list li {
+  position: relative;
+  color: #918c8c;
+  padding-left: 1.5rem;
+}
+
+.pricing-plans .plan .list li::before {
+  content: "\f00c";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--clr-primary);
+}
+
+.pricing-plans .plan .list li:not(:last-child) {
+  margin-bottom: 0.7rem;
+}
+
+.btn {
+  display: inline-block;
+  text-decoration: none;
+  width: 100%;
+  background-color: var(--clr-primary);
+  color: #212121;
+  padding: 0.7rem 1.8rem;
+  font-size: 1rem;
+  border-radius: 0.6rem;
+  text-align: center;
+  font-weight: 700;
+}
+
+.active-1 {
+  border: 1px solid var(--clr-primary);
+}
