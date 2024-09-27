@@ -4,11 +4,11 @@ const Loader = () => {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="loader">
       <g
-        stroke-linejoin="round"
-        stroke-linecap="round"
-        fill-rule="evenodd"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        fillRule="evenodd"
         fill="none"
-        stroke-width="1"
+        strokeWidth="1"
         stroke="none"
       >
         <line y2="6" x2="24" y1="2" x1="24"></line>
