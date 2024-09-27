@@ -30,13 +30,7 @@ const PricingPlan = () => {
               <li key={index}>{feature}</li>
             ))}
           </ul>
-          <Button
-            as={Link}
-            href={plan.link}
-            disabled
-            fullWidth
-            className="mt-2 bg-[#ffff00]"
-          >
+          <Button disabled fullWidth className="mt-2 bg-[#ffff00]">
             Coming Soon
           </Button>
         </div>
