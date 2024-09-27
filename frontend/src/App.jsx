@@ -4,13 +4,14 @@ import Logout from "./pages/Logout";
 import Signup from "./pages/Signup";
 import NotFoundError from "./pages/errors/404NotFound";
 import Dashboard from "./pages/user/Dashboard";
+import Home from "./pages/Home";
 
 function App() {
   return (
     <>
       <Router>
         <Routes>
-          <Route path="/" element={<h1 className="text-4xl">Home Page</h1>} />
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Signup />} />
           <Route path="/logout" element={<Logout />} />
