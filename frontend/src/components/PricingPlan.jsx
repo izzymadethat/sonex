@@ -10,7 +10,7 @@ const PricingPlan = () => {
           <div className="content">
             <h3>{plan.name}</h3>
             {plan.id === 1 ? (
-              <p className="italic">Pay for the storage you use!**</p>
+              <p className="italic">Pay for the storage you use!*</p>
             ) : (
               <p className="italic">Build from our current source code!</p>
             )}
@@ -18,7 +18,7 @@ const PricingPlan = () => {
               <span className="price">${plan.price}/mo </span>
               {plan.id === 1 && (
                 <span className="text-sm">
-                  + 3.5% payment processing per transaction*
+                  + 3.5% payment processing per transaction **
                 </span>
               )}
             </div>
@@ -45,12 +45,12 @@ const PricingPlan = () => {
           ))}
         </ul>
         <p className="text-sm italic">
-          * 3.5% payment fee = Stripe's processing fee of (2.9% + $0.30) + plus
-          ~1.5% service fee from Sonex. Stripe terms and conditions apply.
+          * 256Gb storage included for $15/mo. Extra storage currently available
+          in increments of 256GB. Adds $7/mo per 256Gb to subscription.
         </p>
         <p className="text-sm italic">
-          ** Subscription only covers storage. No additional fees for any extra
-          services Sonex provides except payment processing fee.
+          ** 3.5% payment fee = Stripe's processing fee of (2.9% + $0.30) + plus
+          ~1.5% service fee from Sonex. Stripe terms and conditions apply.
         </p>
       </div>
     </div>
