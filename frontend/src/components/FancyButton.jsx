@@ -2,7 +2,7 @@ import "../styles/fancy-button.css";
 
 const FancyButton = () => {
   return (
-    <button className="styled-button">
+    <button disabled className="styled-button">
       Start now!
       <div className="inner-button">
         <svg
