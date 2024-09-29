@@ -10,15 +10,13 @@ const Features = () => {
   const scrollSpeed = 10;
 
   function handleMouseMove(e) {
-    console.log("Mouse is moving", e.clientX);
     setMousePosition({
-      x: e.clientX
+      x: e.clientX,
     });
   }
 
   useEffect(() => {
     const container = containerRef.current;
-    console.log(container);
 
     if (!container) return;
 

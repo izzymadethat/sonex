@@ -22,13 +22,13 @@ export const pricingPlans = [
     features: [
       "Unlimited projects and clients",
       "Unlimited files and uploads",
-      "Projects and payments management*",
+      "Projects and payments management",
       "Lossless audio streaming",
       "Free service updates and access to email support",
       "Up to 256GB Storage Included",
     ],
     extras: [
-      "$7/mo for every additional 256GB of storage added to your monthly plan",
+      "$7/mo for every additional 256GB of storage added to your monthly plan*",
       "No hidden fees! Upgrade storage as needed while keeping all other services unlimited",
     ],
     link: "#",

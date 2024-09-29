@@ -13,7 +13,14 @@ import { navLinks } from "../constants";
 
 const Header = () => {
   return (
-    <Navbar shouldHideOnScroll>
+    <Navbar
+      shouldHideOnScroll
+      isBlurred
+      isBordered
+      classNames={{
+        base: ["bg-[#212121]", "border-b", "border-b-[#e8e8e8]"],
+      }}
+    >
       <NavbarBrand>
         <p className="font-bold text-inherit">Sonex</p>
       </NavbarBrand>
