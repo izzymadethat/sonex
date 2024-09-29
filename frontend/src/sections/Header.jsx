@@ -7,8 +7,9 @@ import {
   NavbarMenu,
   NavbarMenuItem,
   Link,
-  Button
+  Button,
 } from "@nextui-org/react";
+import { navLinks } from "../constants";
 
 const Header = () => {
   return (
@@ -18,9 +19,9 @@ const Header = () => {
       </NavbarBrand>
       <NavbarContent justify="center">
         <NavbarItem className="flex gap-2">
-          <Link href="#">Product</Link>
-          <Link href="#">Pricing</Link>
-          <Link href="#">Blog</Link>
+          {navLinks.map((link) => (
+            <Link href={link.route}>{link.title}</Link>
+          ))}
         </NavbarItem>
       </NavbarContent>
       <NavbarContent justify="end">
