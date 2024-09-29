@@ -19,6 +19,7 @@ import {
 import GoPremiumButton from "../../components/GoPremiumButton";
 import FancyButton from "../../components/FancyButton";
 import FancyCheckbox from "../../components/FancyCheckbox";
+import Sidebar from "../../components/Sidebar";
 
 const userExample = {
   id: 1,
@@ -28,8 +29,8 @@ const userExample = {
   username: "izzyvickers",
   bio: "I am a software engineer turned musician",
   isVerified: true,
-  avatar:
-    "https://img.freepik.com/free-psd/3d-render-avatar-character_23-2150611704.jpg?w=740&t=st=1727365641~exp=1727366241~hmac=9e4ba6e22ae261c2d643eb541ecd70240381ffe90ed5e0a529e008cef6e997c4",
+  // avatar:
+  //   "https://img.freepik.com/free-psd/3d-render-avatar-character_23-2150611704.jpg?w=740&t=st=1727365641~exp=1727366241~hmac=9e4ba6e22ae261c2d643eb541ecd70240381ffe90ed5e0a529e008cef6e997c4",
 
   projects: [
     {
@@ -93,66 +94,8 @@ const Dashboard = () => {
   const [user, setUser] = useState(userExample);
 
   return (
-    <div className="flex w-full">
-      {/* Sidebar navigation */}
-      <aside className="border-r-2 border-gray-200 max-w-[250px] min-h-screen overflow-y-auto p-6 flex flex-col gap-8">
-        <h2 className="text-3xl font-bold">
-          Sonex <span className="text-xs">Beta</span>
-        </h2>
-        <Divider className="bg-gray-200" />
-        <nav className="flex flex-col gap-2 flex-grow">
-          <NavLink to="/user/@me/clients" className="flex items-center gap-2">
-            <CircleUserRound /> Clients
-          </NavLink>
-
-          <NavLink to="/user/@me/projects" className="flex items-center gap-2">
-            <SquareLibrary /> Projects
-          </NavLink>
-
-          <NavLink to="/user/@me/payments" className="flex items-center gap-2">
-            <CreditCard />
-            Your Payments
-          </NavLink>
-
-          <NavLink to="#" className="flex items-center gap-2">
-            <Bug />
-            Feedback/Report Bug
-          </NavLink>
-        </nav>
-        <div className="flex flex-col gap-4 items-start">
-          <Dropdown className="bg-[#212121]">
-            <DropdownTrigger>
-              <User
-                name={user.firstName}
-                description={user.email}
-                avatarProps={{
-                  src: user.avatar,
-                }}
-                className="cursor-pointer"
-              />
-            </DropdownTrigger>
-            <DropdownMenu aria-label="Profile Actions">
-              <DropdownItem key="settings">Settings</DropdownItem>
-              <DropdownItem key="billing">Account Billing</DropdownItem>
-              <DropdownItem key="support">Support</DropdownItem>
-              <DropdownItem key="logout" color="danger">
-                Logout
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-          <GoPremiumButton />
-          <p className="text-xs text-gray-500">
-            Copyright &copy; 2024 by 8iVisions. View and Contribute to Source
-            Code on my Github
-          </p>
-        </div>
-        <footer>
-          <p className="text-center text-sm text-neutral-400">
-            Sonex v1.0.0-Beta
-          </p>
-        </footer>
-      </aside>
-
+    <div className="flex w-full h-screen">
+      <Sidebar user={user} />
       {/* Main content */}
       <main className="py-3 w-full">
         {/* Top grid (1fr 1fr) */}
@@ -176,6 +119,35 @@ const Dashboard = () => {
               <p>Start a new one?</p>
             </div>
             <FancyButton />
+          </div>
+        </section>
+
+        {/* Quick access section */}
+        <section className="w-full">
+          <h2>Quick Access</h2>
+          <div className="flex overflow-x-auto gap-2">
+            <Card>
+              <CardHeader>
+                <h3>Project 1</h3>
+              </CardHeader>
+              <CardBody>
+                <p>Hello</p>
+              </CardBody>
+              <CardFooter>
+                <Button fullWidth>Get to it</Button>
+              </CardFooter>
+            </Card>
+            <Card>
+              <CardHeader>
+                <h3>Project 1</h3>
+              </CardHeader>
+              <CardBody>
+                <p>Hello</p>
+              </CardBody>
+              <CardFooter>
+                <Button fullWidth>Get to it</Button>
+              </CardFooter>
+            </Card>
           </div>
         </section>
 
