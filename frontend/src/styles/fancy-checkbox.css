@@ -1,6 +1,6 @@
 .advanced-checkbox {
   display: inline-block;
-  perspective: 1000px; /* برای ایجاد افکت سه‌بعدی */
+  perspective: 1000px;
 }
 
 .advanced-checkbox input {
@@ -25,7 +25,7 @@
 }
 
 .advanced-checkbox input:checked + label .box {
-  transform: rotateX(360deg) rotateY(360deg); /* چرخش ۳۶۰ درجه به صورت ترکیبی */
+  transform: rotateX(360deg) rotateY(360deg);
 }
 
 .box > div {
@@ -73,5 +73,5 @@
   width: 24px;
   height: 48px;
   opacity: 1;
-  transition-delay: 1s; /* تاخیر برای نمایش تیک */
+  transition-delay: 1s;
 }

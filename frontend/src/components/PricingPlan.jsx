@@ -1,4 +1,4 @@
-import { Button, Divider, Link } from "@nextui-org/react";
+import { Button, Divider, Link, Spacer } from "@nextui-org/react";
 import { pricingPlans } from "../constants";
 import "../styles/pricing-plan.css";
 
@@ -30,28 +30,40 @@ const PricingPlan = () => {
               <li key={index}>{feature}</li>
             ))}
           </ul>
-          <Button disabled fullWidth className="mt-2 bg-[#ffff00]">
+          <Button
+            disabled
+            fullWidth
+            className="mt-2 bg-primary text-background"
+          >
             Coming Soon
           </Button>
         </div>
       ))}
 
-      <div className="plan col-span-2 ">
-        <Divider className="bg-[#ffff00]" />
-        <h4 className="text-[#ffff00] font-bold mt-2">Need more storage?</h4>
+      <div className="plan col-span-2 space-y-8">
+        <Divider className="bg-primary" />
+
+        <h4 className="text-primary text-lg font-bold my-2">
+          Need more storage?
+        </h4>
         <ul className="list">
           {pricingPlans[0].extras.map((extra, index) => (
             <li key={index}>{extra}</li>
           ))}
         </ul>
-        <p className="text-sm italic">
-          * 256Gb storage included for $15/mo. Extra storage currently available
-          in increments of 256GB. Adds $7/mo per 256Gb to subscription.
-        </p>
-        <p className="text-sm italic">
-          ** 3.5% payment fee = Stripe's processing fee of (2.9% + $0.30) + plus
-          ~1.5% service fee from Sonex. Stripe terms and conditions apply.
-        </p>
+        <div>
+          <p className="text-sm italic">
+            * 256Gb storage included for $15/mo. Extra storage currently
+            available in increments of 256GB. Adds $7/mo per 256Gb to
+            subscription.
+          </p>
+          <p className="text-sm italic">
+            ** 3.5% payment fee = Stripe's processing fee of (2.9% + $0.30) +
+            plus ~1.5% service fee from Sonex. Stripe terms and conditions
+            apply.
+          </p>
+        </div>
+        <Divider className="bg-primary" />
       </div>
     </div>
   );

@@ -12,11 +12,11 @@ const MarketedUsers = () => {
           <div className="ml-10">
             <h2 className="text-3xl font-extrabold">
               Built for{" "}
-              <span className="text-[#ffff00] underline">{usr.header}</span>
+              <span className="text-primary underline">{usr.header}</span>
             </h2>
             <div className="grid grid-cols-5 gap-4 place-items-center">
-              <div className="col-span-2 space-y-4">
-                <h4 className="text-xl">{usr.contentTitle}</h4>
+              <div className="col-span-2 space-y-4 max-w-lg">
+                <h4 className="text-3xl">{usr.contentTitle}</h4>
                 <p>{usr.content}</p>
                 <Button disabled fullWidth>
                   Sign up to use Sonex

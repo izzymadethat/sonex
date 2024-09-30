@@ -7,7 +7,7 @@ import {
   NavbarMenu,
   NavbarMenuItem,
   Link,
-  Button,
+  Button
 } from "@nextui-org/react";
 import { navLinks } from "../constants";
 
@@ -18,7 +18,7 @@ const Header = () => {
       isBlurred
       isBordered
       classNames={{
-        base: ["bg-[#212121]"],
+        base: ["bg-[#212121]"]
       }}
     >
       <NavbarBrand>
@@ -26,8 +26,10 @@ const Header = () => {
       </NavbarBrand>
       <NavbarContent justify="center">
         <NavbarItem className="flex gap-2">
-          {navLinks.map((link) => (
-            <Link href={link.route}>{link.title}</Link>
+          {navLinks.map((link, index) => (
+            <Link key={index} href={link.route} underline="hover">
+              {link.title}
+            </Link>
           ))}
         </NavbarItem>
       </NavbarContent>
