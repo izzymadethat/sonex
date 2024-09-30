@@ -8,9 +8,7 @@ const FeatureCard = ({ feature }) => {
       </h3>
       <ul className="space-y-4">
         {feature.points.map((point, index) => (
-          <li key={index} className="text-[#e8e8e8] ">
-            {point}
-          </li>
+          <li key={index}>{point}</li>
         ))}
       </ul>
     </div>

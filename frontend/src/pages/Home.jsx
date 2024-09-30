@@ -8,7 +8,7 @@ import {
   Spacer,
   Tab,
   Tabs,
-  Tooltip,
+  Tooltip
 } from "@nextui-org/react";
 import FancyButton from "../components/FancyButton";
 import Header from "../sections/Header";
@@ -24,11 +24,16 @@ const Home = () => {
       <Header />
 
       {/* Hero */}
-      <section className="h-screen flex flex-col items-center justify-center">
-        <h1 className="text-2xl font-bold">
-          Audio collaboration and communication for you and your clients.
+      <section className="h-screen  flex flex-col items-center justify-center">
+        <h1 className="text-7xl text-center font-bold max-w-5xl">
+          Audio{" "}
+          <span className="bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent underline">
+            collaboration and communication
+          </span>{" "}
+          for you and your clients.
         </h1>
-        <p>
+        <Spacer y={8} />
+        <p className="text-lg">
           Sonex is a seamless audio collaboration platform where you can store,
           share, and manage audio projects with clients, while handling payments
           and revisions all in one place.
@@ -38,14 +43,14 @@ const Home = () => {
       </section>
 
       {/* Features */}
-      <section className="my-8">
+      <section className="my-20">
         <h2 className="text-5xl text-center font-bold">Why Sonex?</h2>
         <Features />
       </section>
 
       {/* Ways to use sonex */}
       <section className="h-screen px-4 py-10">
-        <h2 className="text-5xl font-bold">Ways you can use Sonex</h2>
+        <h2 className="text-7xl font-bold">Ways you can use Sonex</h2>
         <div className="my-8">
           <p className="italic">Use Sonex as:</p>
           <MarketedUsers />
@@ -53,22 +58,19 @@ const Home = () => {
       </section>
 
       {/* Pricing */}
-      <section className="space-y-4">
-        <h3 className="text-4xl text-center">Choose your Sonex</h3>
-        <div className="max-w-4xl mx-auto">
+      <section className="space-y-4 px-4">
+        <h2 className="text-7xl font-bold">Pricing</h2>
+        <div className="max-w-4xl mx-auto space-y-8">
+          <h3 className="text-4xl text-center">Choose your Sonex</h3>
           <PricingPlan />
         </div>
       </section>
 
       {/* FAQs */}
       <section className="px-4">
-        <h2 className="text-5xl font-bold">FAQ</h2>
+        <h2 className="text-7xl font-bold">FAQs</h2>
         <div className="max-w-3xl mx-auto">
           <Accordion
-            itemClasses={{
-              base: "bg-black",
-              title: "text-lg text-[#e8e8e8]",
-            }}
             variant="splitted"
             className="p-2 flex flex-col gap-1 w-full"
           >
