@@ -123,3 +123,41 @@ export const users = [
     images: ["https://placehold.co/1200x900"],
   },
 ];
+
+export const faqs = [
+  {
+    question: "Why should I use Sonex?",
+    answer:
+      "Sonex simplifies project management for audio professionals, eliminating the need to juggle multiple services for storage, collaboration, and payments. It’s the all-in-one solution for managing your clients and their projects!",
+  },
+  {
+    question: "How do I collaborate with clients on Sonex?",
+    answer:
+      "Create a project, add your client(s), and start collaborating. Clients can upload files, request revisions, and pay—all without needing to create an account or log in.",
+  },
+  {
+    question: "What can my clients expect?",
+    answer:
+      "Clients get a straightforward experience: they can upload, review, and download files without losing quality. They’ll never have to log in—just verify via email.",
+  },
+  {
+    question: "How does the payment process work?",
+    answer:
+      "Set your own price for your projects (or don't). Once project is completed, files are locked behind a paywall until the client submits their payment. After successful payment, they’ll get immediate access to download the files. ",
+  },
+  {
+    question: "Are there any hidden fees?",
+    answer:
+      "Nope! We only charge for the storage you use, Stripe's payment processing fee, and our small roughly 1.5% service charge. This means you keep all money you earn for your projects.",
+  },
+  {
+    question: "Can I expand my storage?",
+    answer:
+      "Absolutely! You can add more storage for just $7 per additional 256 GB while keeping all other services unlimited.",
+  },
+  {
+    question: "What if I want to host my own version of Sonex?",
+    answer:
+      "You can host your own version of Sonex for free! Simply access the source code, and manage your hosting, security, and scaling however you like.",
+  },
+];

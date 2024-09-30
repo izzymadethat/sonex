@@ -1,4 +1,6 @@
 import {
+  Accordion,
+  AccordionItem,
   Card,
   CardBody,
   CardHeader,
@@ -13,6 +15,8 @@ import Header from "../sections/Header";
 import PricingPlan from "../components/PricingPlan";
 import Features from "../sections/Features";
 import MarketedUsers from "../components/MarketedUsers";
+import { faqs } from "../constants";
+import Footer from "../sections/Footer";
 
 const Home = () => {
   return (
@@ -25,21 +29,22 @@ const Home = () => {
           Audio collaboration and communication for you and your clients.
         </h1>
         <p>
-          Sonex is a web-based platform built for audio collaborators to serve
-          as an all-in-one project management platform.
+          Sonex is a seamless audio collaboration platform where you can store,
+          share, and manage audio projects with clients, while handling payments
+          and revisions all in one place.
         </p>
         <Spacer y={8} />
         <FancyButton />
       </section>
 
       {/* Features */}
-      <section className="my-4">
+      <section className="my-8">
         <h2 className="text-5xl text-center font-bold">Why Sonex?</h2>
         <Features />
       </section>
 
       {/* Ways to use sonex */}
-      <section className="h-screen px-4">
+      <section className="h-screen px-4 py-10">
         <h2 className="text-5xl font-bold">Ways you can use Sonex</h2>
         <div className="my-8">
           <p className="italic">Use Sonex as:</p>
@@ -54,6 +59,30 @@ const Home = () => {
           <PricingPlan />
         </div>
       </section>
+
+      {/* FAQs */}
+      <section className="px-4">
+        <h2 className="text-5xl font-bold">FAQ</h2>
+        <div className="max-w-3xl mx-auto">
+          <Accordion
+            itemClasses={{
+              base: "bg-black",
+              title: "text-lg text-[#e8e8e8]",
+            }}
+            variant="splitted"
+            className="p-2 flex flex-col gap-1 w-full"
+          >
+            {faqs.map((faq, index) => (
+              <AccordionItem key={index} title={faq.question}>
+                <p>{faq.answer}</p>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
