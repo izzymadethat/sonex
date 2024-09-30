@@ -18,7 +18,7 @@ const Header = () => {
       isBlurred
       isBordered
       classNames={{
-        base: ["bg-[#212121]", "border-b", "border-b-[#e8e8e8]"],
+        base: ["bg-[#212121]"],
       }}
     >
       <NavbarBrand>
