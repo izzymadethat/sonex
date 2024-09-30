@@ -17,6 +17,8 @@ import Features from "../sections/Features";
 import MarketedUsers from "../components/MarketedUsers";
 import { faqs } from "../constants";
 import Footer from "../sections/Footer";
+import WhatsIncluded from "../sections/WhatsIncluded";
+import HeaderChip from "../components/HeaderChip";
 
 const Home = () => {
   return (
@@ -42,15 +44,18 @@ const Home = () => {
         <FancyButton />
       </section>
 
+      {/* What's Included */}
+      <WhatsIncluded />
+
       {/* Features */}
-      <section className="my-20">
-        <h2 className="text-5xl text-center font-bold">Why Sonex?</h2>
+      <section className="mb-32">
+        <HeaderChip text="Why Use Sonex?" />
         <Features />
       </section>
 
       {/* Ways to use sonex */}
-      <section className="h-screen px-4 py-10">
-        <h2 className="text-7xl font-bold">Ways you can use Sonex</h2>
+      <section className="h-screen px-6 py-10 my-20">
+        <HeaderChip text="How can I use Sonex?" />
         <div className="my-8">
           <p className="italic">Use Sonex as:</p>
           <MarketedUsers />
@@ -58,8 +63,8 @@ const Home = () => {
       </section>
 
       {/* Pricing */}
-      <section className="space-y-4 px-4">
-        <h2 className="text-7xl font-bold">Pricing</h2>
+      <section className="space-y-4 px-6 py-12 my-20">
+        <HeaderChip text="Pricing" />
         <div className="max-w-4xl mx-auto space-y-8">
           <h3 className="text-4xl text-center">Choose your Sonex</h3>
           <PricingPlan />
@@ -67,8 +72,8 @@ const Home = () => {
       </section>
 
       {/* FAQs */}
-      <section className="px-4">
-        <h2 className="text-7xl font-bold">FAQs</h2>
+      <section className="px-6 py-12">
+        <HeaderChip text="Frequently Asked Questions" />
         <div className="max-w-3xl mx-auto">
           <Accordion
             variant="splitted"
