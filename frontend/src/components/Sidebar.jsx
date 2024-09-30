@@ -1,36 +1,52 @@
 import {
   Avatar,
+  Badge,
+  Chip,
   Divider,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
-  User,
+  User
 } from "@nextui-org/react";
-import { Bug, CircleUserRound, CreditCard, SquareLibrary } from "lucide-react";
+import {
+  Bug,
+  CircleUserRound,
+  CreditCard,
+  MailIcon,
+  SquareLibrary
+} from "lucide-react";
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import GoPremiumButton from "./GoPremiumButton";
 
 const sidebarOpened = {
   opacity: 0.8,
-  transition: "width 0.3s ease, opacity 0.3s ease",
+  transition: "width 0.3s ease, opacity 0.3s ease"
 };
 
 const sidebarClosed = {
   opacity: 1,
-  transition: "width 0.3s ease, opacity 0.3s ease",
+  transition: "width 0.3s ease, opacity 0.3s ease"
 };
 
 // closedSidebar
 const ClosedSidebar = ({ user }) => {
   return (
     <aside
-      className={`border-r-2 border-gray-200 max-w-[180px] min-h-screen overflow-y-auto p-4 flex flex-col gap-8 ${sidebarClosed}`}
+      className={`border-r-2 border-gray-200 w-16 h-full overflow-hidden p-4 flex flex-col items-center gap-8 ${sidebarClosed}`}
     >
-      <h2 className="text-2xl font-extrabold border rounded-full p-2">S</h2>
-      <Divider className="bg-gray-200" />
-      <nav className="flex flex-col gap-2 justify-center h-1/3">
+      <div className="h-8 w-8 border rounded-full flex items-center justify-center">
+        <h2 className="text-2xl font-extrabold">S</h2>
+      </div>
+      <Divider />
+
+      <nav className="flex flex-col gap-8 flex-grow">
+        <NavLink to="/user/@me/notifications" className={"flex gap-2"}>
+          <Badge size="sm" color="danger" content={5}>
+            <MailIcon />
+          </Badge>
+        </NavLink>
         <NavLink to="/user/@me/clients">
           <CircleUserRound />
         </NavLink>
@@ -44,15 +60,14 @@ const ClosedSidebar = ({ user }) => {
           <Bug />
         </NavLink>
       </nav>
-      {user.avatar ? (
-        <Avatar src={user.avatar} />
-      ) : (
-        <Avatar
-          name={
-            user.firstName[0].toUpperCase() + user.lastName[0].toUpperCase()
-          }
-        />
-      )}
+      <Divider />
+
+      <Avatar
+        src={user.avatar}
+        fallback={
+          user.firstName[0].toUpperCase() + user.lastName[0].toUpperCase()
+        }
+      />
     </aside>
   );
 };
@@ -93,7 +108,7 @@ const OpenedSidebar = ({ user }) => {
               name={user.firstName}
               description={user.email}
               avatarProps={{
-                src: user.avatar,
+                src: user.avatar
               }}
               className="cursor-pointer"
             />
