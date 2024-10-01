@@ -35,7 +35,7 @@ const Home = () => {
           for you and your clients.
         </h1>
         <Spacer y={8} />
-        <p className="text-lg">
+        <p className="text-lg max-w-2xl text-center">
           Sonex is a seamless audio collaboration platform where you can store,
           share, and manage audio projects with clients, while handling payments
           and revisions all in one place.
