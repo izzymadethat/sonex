@@ -7,6 +7,7 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
+  Link,
   User
 } from "@nextui-org/react";
 import {
@@ -33,9 +34,7 @@ const sidebarClosed = {
 // closedSidebar
 const ClosedSidebar = ({ user }) => {
   return (
-    <aside
-      className={`border-r-2 border-gray-200 w-16 h-full overflow-hidden p-4 flex flex-col items-center gap-8 ${sidebarClosed}`}
-    >
+    <aside className="border-r-2 border-gray-200 w-16 h-full overflow-hidden p-4 flex flex-col items-center gap-8 transition-all duration-300 ease-in-out">
       <div className="h-8 w-8 border rounded-full flex items-center justify-center">
         <h2 className="text-2xl font-extrabold">S</h2>
       </div>
@@ -60,6 +59,7 @@ const ClosedSidebar = ({ user }) => {
           <Bug />
         </NavLink>
       </nav>
+
       <Divider />
 
       <Avatar
@@ -76,13 +76,19 @@ const ClosedSidebar = ({ user }) => {
 const OpenedSidebar = ({ user }) => {
   return (
     <aside
-      className={`border-r-2 border-gray-200 max-w-[250px] min-h-screen overflow-y-auto p-6 flex flex-col gap-8 ${sidebarOpened}`}
+      className={`border-r-1 border-foreground w-full max-w-64 min-h-screen overflow-y-auto p-6 flex flex-col gap-8 transition-all duration-300 ease-in-out`}
     >
       <h2 className="text-3xl font-bold">
         Sonex <span className="text-xs">Beta</span>
       </h2>
-      <Divider className="bg-gray-200" />
-      <nav className="flex flex-col gap-2 flex-grow">
+      <Divider />
+      <nav className="flex flex-col gap-8 flex-grow">
+        <NavLink to="/user/@me/notifications" className="flex gap-2">
+          <Badge size="sm" color="danger" content={5}>
+            <MailIcon /> Notifications
+          </Badge>
+        </NavLink>
+
         <NavLink to="/user/@me/clients" className="flex items-center gap-2">
           <CircleUserRound /> Clients
         </NavLink>
@@ -101,16 +107,19 @@ const OpenedSidebar = ({ user }) => {
           Feedback/Report Bug
         </NavLink>
       </nav>
-      <div className="flex flex-col gap-4 items-start">
+      <div className="flex flex-col gap-4 w-full">
         <Dropdown className="bg-[#212121]">
           <DropdownTrigger>
             <User
               name={user.firstName}
               description={user.email}
               avatarProps={{
-                src: user.avatar
+                src: user.avatar,
+                fallback:
+                  user.firstName[0].toUpperCase() +
+                  user.lastName[0].toUpperCase()
               }}
-              className="cursor-pointer"
+              className="cursor-pointer w-full"
             />
           </DropdownTrigger>
           <DropdownMenu aria-label="Profile Actions">
@@ -123,15 +132,15 @@ const OpenedSidebar = ({ user }) => {
           </DropdownMenu>
         </Dropdown>
         <GoPremiumButton />
-        <p className="text-xs text-gray-500">
-          Copyright &copy; 2024 by 8iVisions. View and Contribute to Source Code
-          on my Github
+        <p className="text-[9px] text-gray-500 text-center">
+          Copyright &copy; 2024 by 8iVisions. All rights reserved.{" "}
+          <Link color="foreground" className="text-[9px]" to="#">
+            View & Contribute to Source Code
+          </Link>
         </p>
       </div>
       <footer>
-        <p className="text-center text-sm text-neutral-400">
-          Sonex v1.0.0-Beta
-        </p>
+        <p className="text-center text-xs ">Sonex v1.0.0-Beta</p>
       </footer>
     </aside>
   );
@@ -142,10 +151,10 @@ const Sidebar = ({ user }) => {
 
   return (
     <div
-      onMouseEnter={() => setCloseSidebar(false)}
-      onMouseLeave={() => setCloseSidebar(true)}
+      // onMouseEnter={() => setCloseSidebar(false)}
+      // onMouseLeave={() => setCloseSidebar(true)}
       style={{ transition: "width 0.3s ease, opacity 0.3s ease" }}
-      className="relative transition-all duration-300"
+      className="relative transition-all duration-300 ease-in-out"
     >
       {closeSidebar ? (
         <ClosedSidebar user={user} />
