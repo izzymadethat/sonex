@@ -1,13 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from "./pages/Login";
-import Logout from "./pages/Logout";
-import Signup from "./pages/Signup";
-import NotFoundError from "./pages/errors/404NotFound";
-import Dashboard from "./pages/user/Dashboard";
-import Home from "./pages/Home";
-import Sidebar from "./components/Sidebar";
+import { ViewProjectsPage, ViewSingleProjectPage } from "./pages/user/projects";
+import { ViewClientsPage, ViewSingleClientPage } from "./pages/user/clients";
+
+import { Dashboard, Profile } from "./pages/user";
+import { Home } from "./pages/landing-page";
+import { Login, Logout, Signup } from "./pages/auth";
+import { NotFoundError } from "./pages/errors";
+import { Sidebar } from "./components/customs/sections";
 import { userExample } from "./constants/user";
-import Profile from "./pages/user/Profile";
 
 function App() {
   return (
@@ -22,6 +22,14 @@ function App() {
             <Route index element={<NotFoundError />} />
             <Route path="@me" element={<Sidebar user={userExample} />}>
               <Route index element={<Dashboard user={userExample} />} />
+              <Route path="projects">
+                <Route index element={<ViewProjectsPage />} />
+                <Route path=":projectId" element={<ViewSingleProjectPage />} />
+              </Route>
+              <Route path="clients">
+                <Route index element={<ViewClientsPage />} />
+                <Route path=":clientId" element={<ViewSingleClientPage />} />
+              </Route>
               <Route path="profile" element={<Profile />} />
             </Route>
           </Route>

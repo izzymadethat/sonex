@@ -10,15 +10,16 @@ import {
   Tabs,
   Tooltip
 } from "@nextui-org/react";
-import FancyButton from "../components/FancyButton";
-import Header from "../sections/Header";
-import PricingPlan from "../components/PricingPlan";
-import Features from "../sections/Features";
-import MarketedUsers from "../components/MarketedUsers";
-import { faqs } from "../constants";
-import Footer from "../sections/Footer";
-import WhatsIncluded from "../sections/WhatsIncluded";
-import HeaderChip from "../components/HeaderChip";
+import { FancyButton } from "../../components/buttons";
+import {
+  Header,
+  Features,
+  WhatsIncluded,
+  Footer
+} from "../landing-page/sections";
+import { PricingPlan, MarketedUsers } from "../../components/customs/sections";
+import { HeaderChip } from "../../components/misc";
+import { faqs } from "../../constants";
 
 const Home = () => {
   return (

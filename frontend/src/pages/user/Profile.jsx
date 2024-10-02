@@ -7,11 +7,10 @@ import {
   Input,
   Textarea
 } from "@nextui-org/react";
-import React from "react";
 
 const Profile = () => {
   return (
-    <main className="w-full overflow-y-scroll my-4 max-w-5xl mx-auto space-y-4">
+    <div className="w-full overflow-y-scroll my-4 max-w-5xl mx-auto space-y-4">
       <h1 className="text-3xl font-bold uppercase">Profile</h1>
       <Card className="px-4 py-2">
         <CardHeader>
@@ -98,7 +97,7 @@ const Profile = () => {
           </p>
         </CardFooter>
       </Card>
-    </main>
+    </div>
   );
 };
 

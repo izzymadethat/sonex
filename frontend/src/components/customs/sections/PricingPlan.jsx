@@ -1,6 +1,6 @@
 import { Button, Divider, Link, Spacer } from "@nextui-org/react";
-import { pricingPlans } from "../constants";
-import "../styles/pricing-plan.css";
+import { pricingPlans } from "../../../constants";
+import "../../../styles/pricing-plan.css";
 
 const PricingPlan = () => {
   return (

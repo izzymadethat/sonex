@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import FancyFeature from "../components/FancyFeature";
-import FeatureCard from "../components/FeatureCard";
-import { features } from "../constants";
-import "../styles/feature-animate.css";
+import { FancyFeature, FeatureCard } from "../../../components/customs";
+import { features } from "../../../constants";
+import "../../../styles/feature-animate.css";
 
 const Features = () => {
   useEffect(() => {

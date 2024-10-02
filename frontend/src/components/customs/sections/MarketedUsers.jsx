@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { users } from "../constants";
+import { users } from "../../../constants";
 import { Button, Tab, Tabs, Image } from "@nextui-org/react";
 
 const MarketedUsers = () => {
