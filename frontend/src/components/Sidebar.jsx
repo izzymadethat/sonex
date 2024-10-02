@@ -1,11 +1,13 @@
 import {
   Avatar,
   Badge,
+  Button,
   Chip,
   Divider,
   Dropdown,
   DropdownItem,
   DropdownMenu,
+  DropdownSection,
   DropdownTrigger,
   Link,
   User
@@ -14,11 +16,13 @@ import {
   Bug,
   CircleUserRound,
   CreditCard,
+  Home,
+  LogOutIcon,
   MailIcon,
   SquareLibrary
 } from "lucide-react";
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import GoPremiumButton from "./GoPremiumButton";
 
 const sidebarOpened = {
@@ -76,37 +80,45 @@ const ClosedSidebar = ({ user }) => {
 const OpenedSidebar = ({ user }) => {
   return (
     <aside
-      className={`border-r-1 border-foreground w-full max-w-64 min-h-screen overflow-y-auto p-6 flex flex-col gap-8 transition-all duration-300 ease-in-out`}
+      className={`border-r-1 border-foreground w-full max-w-64 h-screen overflow-y-auto py-2 px-6 flex flex-col gap-8 transition-all duration-300 ease-in-out`}
     >
       <h2 className="text-3xl font-bold">
         Sonex <span className="text-xs">Beta</span>
       </h2>
+
       <Divider />
-      <nav className="flex flex-col gap-8 flex-grow">
-        <NavLink to="/user/@me/notifications" className="flex gap-2">
-          <Badge size="sm" color="danger" content={5}>
-            <MailIcon /> Notifications
+      <nav className="flex flex-col gap-8 flex-grow text-sm">
+        <NavLink to="/user/@me" className="flex items-center gap-2">
+          <Home size={18} /> Home
+        </NavLink>
+
+        <NavLink to="notifications" className="flex gap-2">
+          <Badge size="sm" color="warning" variant="shadow" content={5}>
+            <MailIcon size={18} />
           </Badge>
+          Notifications
         </NavLink>
 
-        <NavLink to="/user/@me/clients" className="flex items-center gap-2">
-          <CircleUserRound /> Clients
+        <NavLink to="clients" className="flex items-center gap-2">
+          <CircleUserRound size={18} /> Clients
         </NavLink>
 
-        <NavLink to="/user/@me/projects" className="flex items-center gap-2">
-          <SquareLibrary /> Projects
+        <NavLink to="projects" className="flex items-center gap-2">
+          <SquareLibrary size={18} /> Projects
         </NavLink>
 
-        <NavLink to="/user/@me/payments" className="flex items-center gap-2">
-          <CreditCard />
+        <NavLink to="payments" className="flex items-center gap-2">
+          <CreditCard size={18} />
           Your Payments
         </NavLink>
 
         <NavLink to="#" className="flex items-center gap-2">
-          <Bug />
-          Feedback/Report Bug
+          <Bug size={18} />
+          Report an Issue
         </NavLink>
       </nav>
+      <Divider />
+      {/* Footer */}
       <div className="flex flex-col gap-4 w-full">
         <Dropdown className="bg-[#212121]">
           <DropdownTrigger>
@@ -123,10 +135,22 @@ const OpenedSidebar = ({ user }) => {
             />
           </DropdownTrigger>
           <DropdownMenu aria-label="Profile Actions">
-            <DropdownItem key="settings">Settings</DropdownItem>
-            <DropdownItem key="billing">Account Billing</DropdownItem>
-            <DropdownItem key="support">Support</DropdownItem>
-            <DropdownItem key="logout" color="danger">
+            <DropdownSection title="Profile Settings">
+              <DropdownItem key="settings">
+                <NavLink to="profile">Settings</NavLink>
+              </DropdownItem>
+              <DropdownItem key="billing">
+                <NavLink to="billing">Account Billing</NavLink>
+              </DropdownItem>
+              <DropdownItem key="support">
+                <NavLink to="contact-support">Support</NavLink>
+              </DropdownItem>
+            </DropdownSection>
+            <DropdownItem
+              key="logout"
+              color="danger"
+              startContent={<LogOutIcon size={16} />}
+            >
               Logout
             </DropdownItem>
           </DropdownMenu>
@@ -147,21 +171,26 @@ const OpenedSidebar = ({ user }) => {
 };
 
 const Sidebar = ({ user }) => {
-  const [closeSidebar, setCloseSidebar] = useState(true);
+  const [closeSidebar, setCloseSidebar] = useState(false);
 
   return (
-    <div
-      // onMouseEnter={() => setCloseSidebar(false)}
-      // onMouseLeave={() => setCloseSidebar(true)}
-      style={{ transition: "width 0.3s ease, opacity 0.3s ease" }}
-      className="relative transition-all duration-300 ease-in-out"
-    >
-      {closeSidebar ? (
-        <ClosedSidebar user={user} />
-      ) : (
-        <OpenedSidebar user={user} />
-      )}
-    </div>
+    <>
+      <div className="flex h-screen w-full max-w-7xl gap-12">
+        <div
+          // onMouseEnter={() => setCloseSidebar(false)}
+          // onMouseLeave={() => setCloseSidebar(true)}
+          style={{ transition: "width 0.3s ease, opacity 0.3s ease" }}
+          className="relative transition-all duration-300 ease-in-out"
+        >
+          {closeSidebar ? (
+            <ClosedSidebar user={user} />
+          ) : (
+            <OpenedSidebar user={user} />
+          )}
+        </div>
+        <Outlet />
+      </div>
+    </>
   );
 };
 
