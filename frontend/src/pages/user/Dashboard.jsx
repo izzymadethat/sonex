@@ -77,86 +77,78 @@ const userExample = {
   ]
 };
 
-const Dashboard = () => {
-  const [user, setUser] = useState(userExample);
-
+const Dashboard = ({ user }) => {
   return (
-    <div className="flex w-full h-screen">
-      <Sidebar user={user} />
-      {/* Main content */}
-      <main className="w-full mx-8 my-4 space-y-4 p-8 bg-neutral-900 shadow-lg rounded-lg overflow-scroll">
-        {/* Top grid (1fr 1fr) */}
-        <section className="grid grid-cols-2 gap-4 py-2 py-4">
-          {/* Left section -Get Started */}
-          <div className="flex flex-col w-full justify-center items-center rounded-md bg-neutral-900 border border-primary space-y-2">
-            <p className="text-xs">
-              Welcome back, <span className="font-bold">{user.firstName}</span>!
-            </p>
-            <div>
-              <h2 className="text-lg font-bold">Get Started</h2>
-              <Divider />
-            </div>
-            <div className="flex flex-col text-center">
-              <Link to="projects/new" className="text-sm hover:text-primary">
-                Start a new project
-              </Link>
-              <Link to="clients/new" className="text-sm hover:text-primary">
-                Add a new client
-              </Link>
-            </div>
+    <main className="w-full my-4 space-y-4 p-12 bg-neutral-900 shadow-lg rounded-lg overflow-scroll">
+      {/* Top grid (1fr 1fr) */}
+      <section className="grid grid-cols-2 gap-4 py-2">
+        {/* Left section -Get Started */}
+        <div className="flex flex-col w-full justify-center items-center rounded-md bg-neutral-900 border border-primary space-y-2">
+          <p className="text-xs">
+            Welcome back, <span className="font-bold">{user.firstName}</span>!
+          </p>
+          <div>
+            <h2 className="text-lg font-bold">Get Started</h2>
+            <Divider />
           </div>
+          <div className="flex flex-col text-center">
+            <Link to="projects/new" className="text-sm hover:text-primary">
+              Start a new project
+            </Link>
+            <Link to="clients/new" className="text-sm hover:text-primary">
+              Add a new client
+            </Link>
+          </div>
+        </div>
 
-          {/* Right section - Recent Projects */}
-          <div className="flex flex-col w-full items-center p-4 justify-center  rounded-md bg-neutral-900 border border-primary space-y-4">
-            <div className="text-center">
-              <h2 className="text-xl font-bold">Projects all done!</h2>
-              <p>Start a new one?</p>
-            </div>
-            <Button>Build a new project</Button>
+        {/* Right section - Recent Projects */}
+        <div className="flex flex-col w-full items-center p-4 justify-center  rounded-md bg-neutral-900 border border-primary space-y-4">
+          <div className="text-center">
+            <h2 className="text-xl font-bold">Projects all done!</h2>
+            <p>Start a new one?</p>
           </div>
-        </section>
+          <Button>Build a new project</Button>
+        </div>
+      </section>
 
-        {/* Quick access section */}
-        <section className="w-full space-y-2 overflow-x-auto">
-          <h4 className="text-xs uppercase font-bold">Quick Access</h4>
-          <div className="flex">
-            <div className="flex flex-grow flex-nowrap">
-              <BtnSecondary
-                text="Create project"
-                icon={<FolderOpenDot size={20} />}
-              />
-              <BtnSecondary text="Create client" icon={<User2 size={20} />} />
-              <BtnSecondary
-                text="View Payments"
-                icon={<CreditCard size={20} />}
-              />
-            </div>
+      {/* Quick access section */}
+      <section className="w-full space-y-2 overflow-x-auto">
+        <h4 className="text-xs uppercase font-bold">Quick Access</h4>
+        <div className="flex">
+          <div className="flex flex-grow flex-nowrap">
+            <BtnSecondary
+              text="Create project"
+              icon={<FolderOpenDot size={20} />}
+            />
+            <BtnSecondary text="Create client" icon={<User2 size={20} />} />
+            <BtnSecondary
+              text="View Payments"
+              icon={<CreditCard size={20} />}
+            />
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Bottom grid (1fr 3fr) */}
-        <section className="grid grid-cols-5 border-3 h-full border-primary rounded-md">
-          {/* Left section - Revisions/Feedback to Review */}
-          <div className="col-span-2 px-4 py-2 border-r-2 border-primary overflow-y-scroll space-y-4">
-            <h4 className="font-semibold uppercase text-xs">
-              Review Comments:
-            </h4>
-            <div className="flex flex-col gap-2"></div>
-            <Button fullWidth>See all</Button>
-          </div>
+      {/* Bottom grid (1fr 3fr) */}
+      <section className="grid grid-cols-5 border-3 h-full border-primary rounded-md">
+        {/* Left section - Revisions/Feedback to Review */}
+        <div className="col-span-2 px-4 py-2 border-r-2 border-primary overflow-y-scroll space-y-4">
+          <h4 className="font-semibold uppercase text-xs">Review Comments:</h4>
+          <div className="flex flex-col gap-2"></div>
+          <Button fullWidth>See all</Button>
+        </div>
 
-          {/* Right section - Systemwide Notifications */}
-          <div className="col-span-3 px-4 py-2 space-y-4">
-            <h3 className="font-semibold text-xs uppercase">Notifications</h3>
-            <div className="flex flex-col gap-4 my-4">
-              {notifications.map((notification) => (
-                <NotificationCard notification={notification} />
-              ))}
-            </div>
+        {/* Right section - Systemwide Notifications */}
+        <div className="col-span-3 px-4 py-2 space-y-4">
+          <h3 className="font-semibold text-xs uppercase">Notifications</h3>
+          <div className="flex flex-col gap-4 my-4">
+            {notifications.map((notification) => (
+              <NotificationCard notification={notification} />
+            ))}
           </div>
-        </section>
-      </main>
-    </div>
+        </div>
+      </section>
+    </main>
   );
 };
 
