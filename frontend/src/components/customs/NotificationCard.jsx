@@ -1,4 +1,4 @@
-import "../styles/notification-card.css";
+import "../../styles/notification-card.css";
 
 const NotificationCard = ({ notification }) => {
   return (

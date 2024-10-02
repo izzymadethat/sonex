@@ -1,4 +1,4 @@
-import "../styles/feature-card.css";
+import "../../styles/feature-card.css";
 
 const FeatureCard = ({ feature }) => {
   return (

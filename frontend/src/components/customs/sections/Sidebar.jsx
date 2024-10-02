@@ -23,17 +23,44 @@ import {
 } from "lucide-react";
 import React, { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
-import GoPremiumButton from "./GoPremiumButton";
+import { GoPremiumButton } from "../../buttons";
 
-const sidebarOpened = {
-  opacity: 0.8,
-  transition: "width 0.3s ease, opacity 0.3s ease"
-};
-
-const sidebarClosed = {
-  opacity: 1,
-  transition: "width 0.3s ease, opacity 0.3s ease"
-};
+const navLinks = [
+  {
+    name: "Home",
+    route: "/user/@me",
+    icon: <Home size={18} />
+  },
+  {
+    name: "Notifications",
+    route: "notifications",
+    icon: (
+      <Badge size="sm" color="warning" variant="shadow" content={5}>
+        <MailIcon size={18} />
+      </Badge>
+    )
+  },
+  {
+    name: "Clients",
+    route: "clients",
+    icon: <CircleUserRound size={18} />
+  },
+  {
+    name: "Projects",
+    route: "projects",
+    icon: <SquareLibrary size={18} />
+  },
+  {
+    name: "Payments",
+    route: "payments",
+    icon: <CreditCard size={18} />
+  },
+  {
+    name: "Support",
+    route: "support",
+    icon: <Bug size={18} />
+  }
+];
 
 // closedSidebar
 const ClosedSidebar = ({ user }) => {
@@ -45,23 +72,9 @@ const ClosedSidebar = ({ user }) => {
       <Divider />
 
       <nav className="flex flex-col gap-8 flex-grow">
-        <NavLink to="/user/@me/notifications" className={"flex gap-2"}>
-          <Badge size="sm" color="danger" content={5}>
-            <MailIcon />
-          </Badge>
-        </NavLink>
-        <NavLink to="/user/@me/clients">
-          <CircleUserRound />
-        </NavLink>
-        <NavLink to="/user/@me/projects">
-          <SquareLibrary />
-        </NavLink>
-        <NavLink to="/user/@me/payments">
-          <CreditCard />
-        </NavLink>
-        <NavLink to="#">
-          <Bug />
-        </NavLink>
+        {navLinks.map((link, index) => (
+          <div key={index}>{link.icon}</div>
+        ))}
       </nav>
 
       <Divider />
@@ -88,34 +101,11 @@ const OpenedSidebar = ({ user }) => {
 
       <Divider />
       <nav className="flex flex-col gap-8 flex-grow text-sm">
-        <NavLink to="/user/@me" className="flex items-center gap-2">
-          <Home size={18} /> Home
-        </NavLink>
-
-        <NavLink to="notifications" className="flex gap-2">
-          <Badge size="sm" color="warning" variant="shadow" content={5}>
-            <MailIcon size={18} />
-          </Badge>
-          Notifications
-        </NavLink>
-
-        <NavLink to="clients" className="flex items-center gap-2">
-          <CircleUserRound size={18} /> Clients
-        </NavLink>
-
-        <NavLink to="projects" className="flex items-center gap-2">
-          <SquareLibrary size={18} /> Projects
-        </NavLink>
-
-        <NavLink to="payments" className="flex items-center gap-2">
-          <CreditCard size={18} />
-          Your Payments
-        </NavLink>
-
-        <NavLink to="#" className="flex items-center gap-2">
-          <Bug size={18} />
-          Report an Issue
-        </NavLink>
+        {navLinks.map((link) => (
+          <NavLink to={link.route} className="flex items-center gap-2">
+            {link.icon} <span>{link.name}</span>
+          </NavLink>
+        ))}
       </nav>
       <Divider />
       {/* Footer */}
@@ -171,14 +161,14 @@ const OpenedSidebar = ({ user }) => {
 };
 
 const Sidebar = ({ user }) => {
-  const [closeSidebar, setCloseSidebar] = useState(false);
+  const [closeSidebar, setCloseSidebar] = useState(true);
 
   return (
     <>
       <div className="flex h-screen w-full max-w-7xl gap-12">
         <div
-          // onMouseEnter={() => setCloseSidebar(false)}
-          // onMouseLeave={() => setCloseSidebar(true)}
+          onMouseEnter={() => setCloseSidebar(false)}
+          onMouseLeave={() => setCloseSidebar(true)}
           style={{ transition: "width 0.3s ease, opacity 0.3s ease" }}
           className="relative transition-all duration-300 ease-in-out"
         >
@@ -188,7 +178,9 @@ const Sidebar = ({ user }) => {
             <OpenedSidebar user={user} />
           )}
         </div>
-        <Outlet />
+        <main className="w-full my-4 space-y-4 px-8 py-4 bg-neutral-900 shadow-lg rounded-lg overflow-y-scroll max-w-5xl mx-auto">
+          <Outlet />
+        </main>
       </div>
     </>
   );

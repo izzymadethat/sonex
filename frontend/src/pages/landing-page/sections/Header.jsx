@@ -9,7 +9,7 @@ import {
   Link,
   Button
 } from "@nextui-org/react";
-import { navLinks } from "../constants";
+import { navLinks } from "../../../constants";
 
 const Header = () => {
   return (

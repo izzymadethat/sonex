@@ -2,7 +2,7 @@ import { Button, Input } from "@nextui-org/react";
 import { Link } from "react-router-dom";
 import { Mail, RectangleEllipsis } from "lucide-react";
 import { useState } from "react";
-import Loader from "../components/Loader";
+import Loader from "../../components/misc/Loader";
 
 const Login = () => {
   const [formData, setFormData] = useState({ credential: "", password: "" });
@@ -24,9 +24,9 @@ const Login = () => {
         credentials: "include",
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData)
       });
 
       const data = await response.json();

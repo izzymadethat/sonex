@@ -2,7 +2,7 @@ import { Button, Checkbox, Input, user } from "@nextui-org/react";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import Loader from "../components/Loader";
+import Loader from "../../components/misc/Loader";
 
 const Signup = () => {
   // State for form data
@@ -11,7 +11,7 @@ const Signup = () => {
     lastName: "",
     username: "",
     email: "",
-    password: "",
+    password: ""
   });
 
   const [agreesToTerms, setAgreesToTerms] = useState(false);
@@ -61,9 +61,9 @@ const Signup = () => {
           credentials: "include",
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(formData)
         }
       );
 
@@ -78,7 +78,7 @@ const Signup = () => {
       // On successful signup
       setIsSubmitted(true);
       navigate(`/register?success=true`, {
-        state: { message: "Signup Successful! Welcome to MySonex!" },
+        state: { message: "Signup Successful! Welcome to MySonex!" }
       });
 
       // Wait for 2 seconds before redirecting to home
@@ -90,7 +90,7 @@ const Signup = () => {
       setFormError("Signup failed. Please try again.");
       setIsSubmitted(false);
       navigate(`/register?success=false`, {
-        state: { message: "Signup Failed. Please try again." },
+        state: { message: "Signup Failed. Please try again." }
       });
     } finally {
       setIsSubmitting(false);
