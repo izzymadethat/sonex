@@ -1,25 +1,12 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Bug, CircleUserRound, CreditCard, SquareLibrary } from "lucide-react";
-import {
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownSection,
-  DropdownItem,
-  User,
-  Divider,
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Checkbox,
-  Button,
-} from "@nextui-org/react";
-import GoPremiumButton from "../../components/GoPremiumButton";
-import FancyButton from "../../components/FancyButton";
-import FancyCheckbox from "../../components/FancyCheckbox";
+import { CreditCard, FolderOpenDot, User2 } from "lucide-react";
+import { Divider, Button } from "@nextui-org/react";
+
 import Sidebar from "../../components/Sidebar";
+import BtnSecondary from "../../components/BtnSecondary";
+import { notifications } from "../../constants/notifications";
+import NotificationCard from "../../components/NotificationCard";
 
 const userExample = {
   id: 1,
@@ -45,8 +32,8 @@ const userExample = {
         {
           name: "The best client",
           email: "client@gmail.com",
-          isVerified: true,
-        },
+          isVerified: true
+        }
       ],
       comments: [
         {
@@ -55,13 +42,13 @@ const userExample = {
             {
               name: "The best client",
               email: "client@gmail.com",
-              isVerified: true,
-            },
+              isVerified: true
+            }
           ],
           projectId: 1,
           timestamp: "01:34",
           isCompleted: false,
-          type: "revision",
+          type: "revision"
         },
         {
           text: "This is just a comment about the song",
@@ -69,25 +56,25 @@ const userExample = {
             {
               name: "The best client",
               email: "client@gmail.com",
-              isVerified: true,
-            },
+              isVerified: true
+            }
           ],
           projectId: 1,
           timestamp: null,
           isCompleted: true,
-          type: "general feedback",
-        },
-      ],
-    },
+          type: "general feedback"
+        }
+      ]
+    }
   ],
 
   clients: [
     {
       name: "The best client",
       email: "client@gmail.com",
-      isVerified: true,
-    },
-  ],
+      isVerified: true
+    }
+  ]
 };
 
 const Dashboard = () => {
@@ -97,171 +84,74 @@ const Dashboard = () => {
     <div className="flex w-full h-screen">
       <Sidebar user={user} />
       {/* Main content */}
-      <main className="py-3 w-full">
+      <main className="w-full mx-8 my-4 space-y-4 p-8 bg-neutral-900 shadow-lg rounded-lg overflow-scroll">
         {/* Top grid (1fr 1fr) */}
-        <section className="grid grid-cols-2">
+        <section className="grid grid-cols-2 gap-4 py-2 py-4">
           {/* Left section -Get Started */}
-          <div className="flex flex-col w-full items-center p-4  border-r-2 border-gray-200">
-            <p>
+          <div className="flex flex-col w-full justify-center items-center rounded-md bg-neutral-900 border border-primary space-y-2">
+            <p className="text-xs">
               Welcome back, <span className="font-bold">{user.firstName}</span>!
             </p>
-            <h1 className="text-3xl font-bold mb-4 underline">Get Started</h1>
-            <div className="flex flex-col gap-2">
-              <Link to="user/@me/projects/new">Start a new project</Link>
-              <Link to="user/@me/clients/new">Add a new client</Link>
+            <div>
+              <h2 className="text-lg font-bold">Get Started</h2>
+              <Divider />
+            </div>
+            <div className="flex flex-col text-center">
+              <Link to="projects/new" className="text-sm hover:text-primary">
+                Start a new project
+              </Link>
+              <Link to="clients/new" className="text-sm hover:text-primary">
+                Add a new client
+              </Link>
             </div>
           </div>
 
           {/* Right section - Recent Projects */}
-          <div className="flex flex-col w-full items-center p-4">
-            <div className="flex flex-col gap-2 items-center mb-4">
-              <h2 className="text-2xl font-bold">Projects all done!</h2>
+          <div className="flex flex-col w-full items-center p-4 justify-center  rounded-md bg-neutral-900 border border-primary space-y-4">
+            <div className="text-center">
+              <h2 className="text-xl font-bold">Projects all done!</h2>
               <p>Start a new one?</p>
             </div>
-            <FancyButton />
+            <Button>Build a new project</Button>
           </div>
         </section>
 
         {/* Quick access section */}
-        <section className="w-full">
-          <h2>Quick Access</h2>
-          <div className="flex overflow-x-auto gap-2">
-            <Card>
-              <CardHeader>
-                <h3>Project 1</h3>
-              </CardHeader>
-              <CardBody>
-                <p>Hello</p>
-              </CardBody>
-              <CardFooter>
-                <Button fullWidth>Get to it</Button>
-              </CardFooter>
-            </Card>
-            <Card>
-              <CardHeader>
-                <h3>Project 1</h3>
-              </CardHeader>
-              <CardBody>
-                <p>Hello</p>
-              </CardBody>
-              <CardFooter>
-                <Button fullWidth>Get to it</Button>
-              </CardFooter>
-            </Card>
+        <section className="w-full space-y-2 overflow-x-auto">
+          <h4 className="text-xs uppercase font-bold">Quick Access</h4>
+          <div className="flex">
+            <div className="flex flex-grow flex-nowrap">
+              <BtnSecondary
+                text="Create project"
+                icon={<FolderOpenDot size={20} />}
+              />
+              <BtnSecondary text="Create client" icon={<User2 size={20} />} />
+              <BtnSecondary
+                text="View Payments"
+                icon={<CreditCard size={20} />}
+              />
+            </div>
           </div>
         </section>
 
         {/* Bottom grid (1fr 3fr) */}
-        <section className="grid grid-cols-5 min-h-full border-t-2 border-gray-200">
+        <section className="grid grid-cols-5 border-3 h-full border-primary rounded-md">
           {/* Left section - Revisions/Feedback to Review */}
-          <div className="col-span-2 p-4 border-r-2 border-gray-200 overflow-y-scroll">
-            <h3 className="text-center font-semibold text-lg mb-4 ">
-              For your review:
-            </h3>
-            <div className="flex flex-col gap-2">
-              <Card className="bg-neutral-800 text-neutral-400">
-                <CardHeader>
-                  <div className="flex justify-between w-full">
-                    <h3 className="uppercase font-bold text-sm text-yellow-300">
-                      {user.projects[0].title}
-                    </h3>
-
-                    <Checkbox lineThrough className="text-neutral-300">
-                      Mark as done
-                    </Checkbox>
-                  </div>
-                </CardHeader>
-                <CardBody>
-                  <p className="text-lg font-bold">
-                    {user.projects[0].clients[0].name}
-                  </p>
-                  <p>{user.projects[0].comments[0].text}</p>
-                </CardBody>
-                <CardFooter className="flex justify-between gap-2">
-                  <span className="text-sm text-neutral-400">
-                    @{user.projects[0].comments[0].timestamp} in song
-                  </span>
-                  <Button size="sm">View/Listen</Button>
-                </CardFooter>
-              </Card>
-              <Card className="bg-neutral-800 text-neutral-400">
-                <CardHeader>
-                  <div className="flex justify-between w-full">
-                    <h3 className="uppercase font-bold text-sm text-yellow-300">
-                      {user.projects[0].title}
-                    </h3>
-
-                    <Checkbox lineThrough className="text-neutral-300">
-                      Mark as done
-                    </Checkbox>
-                  </div>
-                </CardHeader>
-                <CardBody>
-                  <p className="text-lg font-bold">
-                    {user.projects[0].clients[0].name}
-                  </p>
-                  <p>{user.projects[0].comments[1].text}</p>
-                </CardBody>
-                <CardFooter className="flex justify-end gap-2">
-                  <Button size="sm" className="">
-                    View/Listen
-                  </Button>
-                </CardFooter>
-              </Card>
-            </div>
-            <Button fullWidth className="mt-4">
-              See all
-            </Button>
+          <div className="col-span-2 px-4 py-2 border-r-2 border-primary overflow-y-scroll space-y-4">
+            <h4 className="font-semibold uppercase text-xs">
+              Review Comments:
+            </h4>
+            <div className="flex flex-col gap-2"></div>
+            <Button fullWidth>See all</Button>
           </div>
 
           {/* Right section - Systemwide Notifications */}
-          <div className="col-span-3 flex flex-col gap-2 p-4">
-            <h3 className="font-semibold text-3xl mb-4">Notifications</h3>
-            <div className="p-4 flex flex-col gap-4">
-              <Card className="bg-neutral-800 text-neutral-400">
-                <CardHeader>
-                  <h4 className="text-yellow-400 font-bold text-sm">
-                    Sonex Team | {new Date().toLocaleDateString()}
-                  </h4>
-                </CardHeader>
-                <CardBody>
-                  <h3 className="text-lg font-bold">
-                    Welcome to version 1.0.0 Beta!
-                  </h3>
-                  <p>
-                    As the first release of Sonex, we're excited to introduce
-                    you to the barebones of our platform. We're constantly
-                    working to improve and expand Sonex, and we're excited to
-                    hear your feedback. Please use the feedback/bug report form
-                    to let us know what you think.
-                  </p>
-                </CardBody>
-                <CardFooter className="flex justify-end gap-2">
-                  <Button size="sm">View details and projected updates</Button>
-                </CardFooter>
-              </Card>
-              <Card className="bg-neutral-800 text-neutral-400">
-                <CardHeader>
-                  <h4 className="text-yellow-400 font-bold text-sm">
-                    Sonex Team | {new Date().toLocaleDateString()}
-                  </h4>
-                </CardHeader>
-                <CardBody>
-                  <h3 className="text-lg font-bold">
-                    Your contributions are appreciated!
-                  </h3>
-                  <p>
-                    We're looking to provide an all in one solution for audio
-                    professionals of all kinds. We believe that audio
-                    freelancing should be seamless. If you're interested in our
-                    mission, please consider making a contribution. Thank you!
-                  </p>
-                </CardBody>
-                <CardFooter className="flex justify-end gap-2">
-                  <Button size="sm">Make a contribution</Button>
-                  <Button size="sm">View/Contribute to source code</Button>
-                </CardFooter>
-              </Card>
+          <div className="col-span-3 px-4 py-2 space-y-4">
+            <h3 className="font-semibold text-xs uppercase">Notifications</h3>
+            <div className="flex flex-col gap-4 my-4">
+              {notifications.map((notification) => (
+                <NotificationCard notification={notification} />
+              ))}
             </div>
           </div>
         </section>
