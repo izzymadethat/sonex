@@ -5,6 +5,9 @@ import Signup from "./pages/Signup";
 import NotFoundError from "./pages/errors/404NotFound";
 import Dashboard from "./pages/user/Dashboard";
 import Home from "./pages/Home";
+import Sidebar from "./components/Sidebar";
+import { userExample } from "./constants/user";
+import Profile from "./pages/user/Profile";
 
 function App() {
   return (
@@ -17,7 +20,10 @@ function App() {
           <Route path="/logout" element={<Logout />} />
           <Route path="/user">
             <Route index element={<NotFoundError />} />
-            <Route path="@me" element={<Dashboard />} />
+            <Route path="@me" element={<Sidebar user={userExample} />}>
+              <Route index element={<Dashboard user={userExample} />} />
+              <Route path="profile" element={<Profile />} />
+            </Route>
           </Route>
           <Route path="*" element={<NotFoundError />} />
         </Routes>
