@@ -1,13 +1,13 @@
 import { Outlet } from "react-router-dom";
 import SideBar from "./Sidebar";
-import Topbar from "./Topbar";
+// import Topbar from "./Topbar";
 
 const UserLayout = ({ user }) => {
   return (
     <div className="app">
-      <SideBar user={user} />
+      <SideBar />
       <div className="px-4 content">
-        <Topbar />
+        {/* <Topbar /> */}
         <Outlet />
       </div>
     </div>

@@ -1,19 +1,4 @@
 import {
-  Avatar,
-  Badge,
-  Button,
-  Chip,
-  Divider,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownSection,
-  DropdownTrigger,
-  Link,
-  select,
-  User
-} from "@nextui-org/react";
-import {
   Bug,
   CircleUserRound,
   CreditCard,
@@ -21,20 +6,19 @@ import {
   LogOutIcon,
   MailIcon,
   MenuSquare,
-  SquareLibrary
+  SquareLibrary,
 } from "lucide-react";
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { GoPremiumButton } from "../buttons";
-import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
+
 import "../../styles/sidebar.css";
-import { userExample as user } from "../../constants/user";
 
 const navLinks = [
   {
     name: "Home",
-    route: "/user/@me",
-    icon: <Home size={18} />
+    route: "/user/me",
+    icon: <Home size={18} />,
   },
   // {
   //   name: "Notifications",
@@ -48,13 +32,13 @@ const navLinks = [
   {
     name: "Clients",
     route: "clients",
-    icon: <CircleUserRound size={18} />
+    icon: <CircleUserRound size={18} />,
   },
   {
     name: "Projects",
     route: "projects",
-    icon: <SquareLibrary size={18} />
-  }
+    icon: <SquareLibrary size={18} />,
+  },
   // {
   //   name: "Payments",
   //   route: "payments",
@@ -68,77 +52,9 @@ const navLinks = [
 ];
 
 function SideBar() {
-  const location = useLocation();
-  const currentPath = location.pathname;
-  const [selected, setSelected] = useState(currentPath);
   return (
     <div className="menu">
-      <div className="logo">
-        <h2 className="text-3xl font-bold">
-          Sonex <span className="text-xs">Beta</span>
-        </h2>
-      </div>
-      <Divider className="w-4/5 mx-auto" />
-      <div className="flex-grow menu--list">
-        {navLinks.map((link, key) => (
-          <NavLink
-            key={key}
-            to={link.route}
-            className={({ isActive }) => `item ${isActive ? "active" : ""}`}
-            onClick={() => setSelected(link.name)}
-          >
-            {link.icon}
-            {link.name}
-          </NavLink>
-        ))}
-      </div>
-      <div className="flex flex-col items-center w-full gap-4">
-        <Dropdown className="bg-[#212121]">
-          <DropdownTrigger>
-            <User
-              name={user.firstName}
-              description={user.email}
-              avatarProps={{
-                src: user.avatar,
-                fallback:
-                  user.firstName[0].toUpperCase() +
-                  user.lastName[0].toUpperCase()
-              }}
-              className="w-full cursor-pointer"
-            />
-          </DropdownTrigger>
-          <DropdownMenu aria-label="Profile Actions">
-            <DropdownSection title="Profile Settings">
-              <DropdownItem key="settings">
-                <NavLink to="profile">Settings</NavLink>
-              </DropdownItem>
-              <DropdownItem key="billing">
-                <NavLink to="billing">Account Billing</NavLink>
-              </DropdownItem>
-              <DropdownItem key="support">
-                <NavLink to="contact-support">Support</NavLink>
-              </DropdownItem>
-            </DropdownSection>
-            <DropdownItem
-              key="logout"
-              color="danger"
-              startContent={<LogOutIcon size={16} />}
-            >
-              Logout
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
-        <GoPremiumButton />
-        <p className="text-[9px] text-gray-500 text-center">
-          Copyright &copy; 2024 by 8iVisions. All rights reserved.{" "}
-          <Link color="foreground" className="text-[9px]" to="#">
-            View & Contribute to Source Code
-          </Link>
-        </p>
-      </div>
-      <footer>
-        <p className="text-xs text-center ">Sonex v1.0.0-Beta</p>
-      </footer>
+      <h1>Sidebar</h1>
     </div>
   );
 }

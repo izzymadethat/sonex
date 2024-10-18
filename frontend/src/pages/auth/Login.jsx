@@ -1,4 +1,3 @@
-import { Button, Input } from "@nextui-org/react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, RectangleEllipsis } from "lucide-react";
 import { useState } from "react";
@@ -41,66 +40,68 @@ const Login = () => {
       .finally(() => setIsSubmitting(false));
   }
 
-  return (
-    <main className="flex flex-col items-center justify-center w-full mx-auto translate-y-1/2">
-      <div className="flex gap-2">
-        <h1 className="text-3xl">MySonex</h1>
-        <span>Login</span>
-      </div>
-
-      <div className="w-[380px] h-[380px] rounded-md p-4 ">
-        {formError && (
-          <div className="p-2 mb-4 text-white bg-red-500 rounded-md">
-            {formError}
-          </div>
-        )}
-        <form
-          onSubmit={handleSubmitLogin}
-          className="flex flex-col items-center gap-4"
-        >
-          <Input
-            required
-            type="text"
-            name="credential"
-            variant="underlined"
-            label="Username or Email"
-            value={formData.credential}
-            onChange={handleInputChange}
-            startContent={<Mail />}
-          />
-          <Input
-            required
-            type="password"
-            variant="underlined"
-            label="Password"
-            name="password"
-            value={formData.password}
-            onChange={handleInputChange}
-            startContent={<RectangleEllipsis />}
-          />
-          <Link
-            to="/forgot-password"
-            className="text-xs text-center text-blue-500 underline"
-          >
-            Forgot Password?
-          </Link>
-          <br />
-          <Button type="submit" fullWidth disabled={isSubmitting}>
-            {isSubmitting ? (
-              <>
-                <Loader /> Logging in...
-              </>
-            ) : (
-              "Login"
-            )}
-          </Button>
-          <p className="text-xs text-right transition-all duration-300 hover:underline">
-            <Link to="/register">No account? Sign Up</Link>
-          </p>
-        </form>
-      </div>
-    </main>
-  );
+  return <p>Login</p>;
 };
 
 export default Login;
+
+// (
+//   <main className="flex flex-col items-center justify-center w-full mx-auto translate-y-1/2">
+//   <div className="flex gap-2">
+//     <h1 className="text-3xl">MySonex</h1>
+//     <span>Login</span>
+//   </div>
+
+//   <div className="w-[380px] h-[380px] rounded-md p-4 ">
+//     {formError && (
+//       <div className="p-2 mb-4 text-white bg-red-500 rounded-md">
+//         {formError}
+//       </div>
+//     )}
+//     <form
+//       onSubmit={handleSubmitLogin}
+//       className="flex flex-col items-center gap-4"
+//     >
+//       <Input
+//         required
+//         type="text"
+//         name="credential"
+//         variant="underlined"
+//         label="Username or Email"
+//         value={formData.credential}
+//         onChange={handleInputChange}
+//         startContent={<Mail />}
+//       />
+//       <Input
+//         required
+//         type="password"
+//         variant="underlined"
+//         label="Password"
+//         name="password"
+//         value={formData.password}
+//         onChange={handleInputChange}
+//         startContent={<RectangleEllipsis />}
+//       />
+//       <Link
+//         to="/forgot-password"
+//         className="text-xs text-center text-blue-500 underline"
+//       >
+//         Forgot Password?
+//       </Link>
+//       <br />
+//       <Button type="submit" fullWidth disabled={isSubmitting}>
+//         {isSubmitting ? (
+//           <>
+//             <Loader /> Logging in...
+//           </>
+//         ) : (
+//           "Login"
+//         )}
+//       </Button>
+//       <p className="text-xs text-right transition-all duration-300 hover:underline">
+//         <Link to="/register">No account? Sign Up</Link>
+//       </p>
+//     </form>
+//   </div>
+// </main>
+// )
