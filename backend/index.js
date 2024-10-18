@@ -11,6 +11,7 @@ const methodOverride = require("method-override");
 const isProduction = environment === "production";
 const multer = require("multer");
 const routes = require("./routes");
+const cors = require("cors");
 
 // Initialize app
 const app = express();
@@ -23,6 +24,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 
 // TODO: Security middleware
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true
+  })
+);
 
 app.use(routes);
 
@@ -51,7 +58,7 @@ app.use((err, _req, res, _next) => {
     errors: err.errors,
     status: err.status,
     message: err.message,
-    timestamp: new Date().toLocaleString(),
+    timestamp: new Date().toLocaleString()
   };
 
   console.error(error);

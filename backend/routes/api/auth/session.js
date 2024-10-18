@@ -1,7 +1,8 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
-const { generateAccessToken } = require("../../../utils/auth");
+const jwt = require("jsonwebtoken");
 const User = require("../../../models/user");
+const { sessionAuth } = require("../../../config");
 const router = express.Router();
 
 // Get current user
@@ -14,34 +15,28 @@ router.get("/", (req, res) => {
 // Login a user
 // POST /api/auth/session
 router.post("/", async (req, res, next) => {
-  const { credentials, password } = req.body;
+  const { credential, password } = req.body;
 
   try {
     const user = await User.findOne({
-      $or: [{ username: credentials }, { email: credentials }],
+      $or: [{ username: credential }, { email: credential }]
     });
 
-    if (
-      !user ||
-      !bcrypt.compareSync(password, user.hashedPassword.toString())
-    ) {
-      const error = new Error("Invalid credentials");
-      error.title = "Login failed";
-      error.errors = { login: "Invalid credentials" };
-      error.status = 401;
-      return next(error);
-    }
+    if (!user) return res.status(401).json({ error: "Invalid credentials" });
 
-    const userPayload = {
-      ...user._doc,
-      role: "user",
-    };
+    // check if password is correct
+    // If so, login the user and generate access token
+    bcrypt.compare(password, user.hashedPassword).then(async (isMatch) => {
+      if (!isMatch)
+        return res.json({ error: "Wrong Username and Password Combination" });
 
-    delete userPayload.hashedPassword;
+      const accessToken = jwt.sign(
+        { username: user.username, id: user._id, role: "user" },
+        sessionAuth.refreshSecret
+      );
 
-    generateAccessToken(res, userPayload, "refresh");
-
-    res.json({ user: userPayload });
+      res.json({ accessToken, user });
+    });
   } catch (error) {
     next(error);
   }
@@ -54,29 +49,21 @@ router.post("/register", async (req, res, next) => {
 
   try {
     const salt = bcrypt.genSaltSync(10);
-    const hashedPassword = bcrypt.hashSync(user.password, salt);
 
-    const newUser = new User({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      username: user.username,
-      email: user.email,
-      bio: user.bio,
-      hashedPassword,
+    // Hash password with salt then create new user
+    bcrypt.hash(user.password, salt).then(async (hashedPassword) => {
+      const newUser = await new User({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        email: user.email,
+        hashedPassword
+      }).save();
+
+      res
+        .status(201)
+        .json({ message: "User created successfully", user: newUser });
     });
-
-    await newUser.save();
-
-    const newUserPayload = {
-      ...newUser._doc,
-      role: "user",
-    };
-
-    delete newUserPayload.hashedPassword;
-
-    generateAccessToken(res, newUserPayload, "verification");
-
-    res.send({ user: newUserPayload });
   } catch (error) {
     next(error);
   }
