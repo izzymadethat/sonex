@@ -5,37 +5,37 @@ import UserLayout from "../components/global/UserLayout.jsx";
 import { Dashboard, Profile } from "../pages/user/index.js";
 import {
   ViewProjectsPage,
-  ViewSingleProjectPage,
+  ViewSingleProjectPage
 } from "../pages/user/projects/index.js";
 import {
   ViewClientsPage,
-  ViewSingleClientPage,
+  ViewSingleClientPage
 } from "../pages/user/clients/index.js";
 import { createBrowserRouter } from "react-router-dom";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Home />,
+    element: <Home />
   },
   {
     path: "/login",
-    element: <Login />,
+    element: <Login />
   },
   {
     path: "/register",
-    element: <Signup />,
+    element: <Signup />
   },
   {
     path: "/logout",
-    element: <Logout />,
+    element: <Logout />
   },
   {
     path: "/user",
     children: [
       {
         index: true,
-        element: <NotFoundError />,
+        element: <NotFoundError />
       },
       {
         path: "me",
@@ -43,44 +43,44 @@ export const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <Dashboard />,
+            element: <Dashboard />
           },
           {
             path: "projects",
             children: [
               {
                 index: true,
-                element: <ViewProjectsPage />,
+                element: <ViewProjectsPage />
               },
               {
                 path: ":projectId",
-                element: <ViewSingleProjectPage />,
-              },
-            ],
+                element: <ViewSingleProjectPage />
+              }
+            ]
           },
           {
             path: "clients",
             children: [
               {
                 index: true,
-                element: <ViewClientsPage />,
+                element: <ViewClientsPage />
               },
               {
                 path: ":clientId",
-                element: <ViewSingleClientPage />,
-              },
-            ],
+                element: <ViewSingleClientPage />
+              }
+            ]
           },
           {
             path: "profile",
-            element: <Profile />,
-          },
-        ],
-      },
-    ],
+            element: <Profile />
+          }
+        ]
+      }
+    ]
   },
   {
     path: "*",
-    element: <NotFoundError />,
-  },
+    element: <NotFoundError />
+  }
 ]);

@@ -14,7 +14,7 @@ const Signup = () => {
     username: "",
     email: "",
     password: "",
-    agreesToTerms: false,
+    agreesToTerms: false
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -68,14 +68,14 @@ const Signup = () => {
 
         // On successful signup
         navigate(`/register?success=true`, {
-          state: { message: "Signup Successful! Welcome to MySonex!" },
+          state: { message: "Signup Successful! Welcome to MySonex!" }
         });
 
         setTimeout(() => {
           navigate("/login", {
             state: {
-              message: `Welcome to MySonex ${formData.firstName}! You may now login.`,
-            },
+              message: `Welcome to MySonex ${formData.firstName}! You may now login.`
+            }
           });
         }, 2000);
       })

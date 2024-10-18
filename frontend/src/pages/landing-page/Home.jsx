@@ -3,7 +3,7 @@ import {
   Header,
   Features,
   WhatsIncluded,
-  Footer,
+  Footer
 } from "../landing-page/sections";
 import { PricingPlan, MarketedUsers } from "../../components/customs/sections";
 import { HeaderChip } from "../../components/misc";
