@@ -1,13 +1,13 @@
 import { Outlet } from "react-router-dom";
 import SideBar from "./Sidebar";
-// import Topbar from "./Topbar";
+import Topbar from "./Topbar";
 
-const UserLayout = ({ user }) => {
+const UserLayout = () => {
   return (
-    <div className="app">
+    <div className="flex w-full">
       <SideBar />
-      <div className="px-4 content">
-        {/* <Topbar /> */}
+      <div className="w-full mx-6 lg:mx-4">
+        <Topbar />
         <Outlet />
       </div>
     </div>

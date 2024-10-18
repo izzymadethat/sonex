@@ -7,18 +7,19 @@ import {
   MailIcon,
   MenuSquare,
   SquareLibrary,
+  User
 } from "lucide-react";
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { GoPremiumButton } from "../buttons";
 
-import "../../styles/sidebar.css";
+// import "../../styles/sidebar.css";
 
 const navLinks = [
   {
     name: "Home",
     route: "/user/me",
-    icon: <Home size={18} />,
+    icon: <Home size={18} />
   },
   // {
   //   name: "Notifications",
@@ -32,13 +33,13 @@ const navLinks = [
   {
     name: "Clients",
     route: "clients",
-    icon: <CircleUserRound size={18} />,
+    icon: <CircleUserRound size={18} />
   },
   {
     name: "Projects",
     route: "projects",
-    icon: <SquareLibrary size={18} />,
-  },
+    icon: <SquareLibrary size={18} />
+  }
   // {
   //   name: "Payments",
   //   route: "payments",
@@ -53,8 +54,28 @@ const navLinks = [
 
 function SideBar() {
   return (
-    <div className="menu">
-      <h1>Sidebar</h1>
+    <div className="hidden w-64 h-full md:block">
+      <h2 className="text-3xl font-bold">Sonex</h2>
+      <hr />
+      <nav>
+        {navLinks.map((link, index) => (
+          <NavLink
+            to={link.route}
+            key={index}
+            className="flex items-center gap-2"
+          >
+            <span>{link.icon}</span>
+            <span>{link.name}</span>
+          </NavLink>
+        ))}
+      </nav>
+      <hr />
+      <div className="flex">
+        <div className="flex items-center border rounded-full border-primary">
+          <User />
+        </div>
+        <span className="ml-2 font-bold">Sonex User</span>
+      </div>
     </div>
   );
 }

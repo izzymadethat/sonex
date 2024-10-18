@@ -1,22 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* 
-html,
-body,
-#root,
-.app,
-.content {
-  background: #212121;
-  color: #e8e8e8;
-  height: 100%;
-  width: 100%;
-} */
-
-/* .app {
-  display: flex;
-  position: relative;
-} */
 
 ::-webkit-scrollbar {
   width: 10px;
@@ -45,7 +29,7 @@ body,
     --primary: 47.9 95.8% 53.1%;
     --primary-foreground: 26 83.3% 14.1%;
     --secondary: 60 4.8% 95.9%;
-    --secondary-foreground: 24 9.8% 10%;
+    --secondary-foreground: 0 0% 12.9%;
     --muted: 60 4.8% 95.9%;
     --muted-foreground: 25 5.3% 44.7%;
     --accent: 60 4.8% 95.9%;

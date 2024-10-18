@@ -1,9 +1,15 @@
 import React from "react";
-import { Bell, Cog, Search } from "lucide-react";
+import { Bell, Cog, Search, User } from "lucide-react";
 
 // Topbar for user dashboard
 const Topbar = () => {
-  return <p>Topbar</p>;
+  return (
+    <header className="flex items-center justify-end bg-black rounded-lg">
+      <div className="border rounded-full cursor-pointer border-primary ">
+        <User />
+      </div>
+    </header>
+  );
 };
 
 export default Topbar;
