@@ -1,14 +1,17 @@
 import { Button, Input } from "@nextui-org/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Mail, RectangleEllipsis } from "lucide-react";
 import { useState } from "react";
 import Loader from "../../components/misc/Loader";
+import axios from "axios";
+
+const API_URL = "http://localhost:4000/api/auth/session";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({ credential: "", password: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState(null);
-  const [isSubmitted, setIsSubmitted] = useState(false);
 
   function handleInputChange(e) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,35 +22,27 @@ const Login = () => {
     setIsSubmitting(true);
     setFormError(null);
 
-    try {
-      const response = await fetch("http://localhost:8000/api/auth/session", {
-        credentials: "include",
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      });
-
-      const data = await response.json();
-      if (!data.user) {
-        setFormError(data.errors.login);
-      } else {
-        setIsSubmitted(true);
-        setFormError(null);
-      }
-      window.alert(`Login successful! Welcome back, ${data.user.firstName}!`);
-    } catch (error) {
-      // Handle errors
-      console.log(error);
-      setFormError("Login failed. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    axios
+      .post(API_URL, formData)
+      .then((response) => {
+        if (response.data.error) {
+          alert(response.data.error);
+        } else {
+          localStorage.setItem("accessToken", response.data.accessToken);
+          window.alert(
+            `Login successful! Welcome back, ${response.data.user.firstName}!`
+          );
+          navigate("/user/@me");
+        }
+      })
+      .catch((error) => {
+        window.alert("Login failed. Please try again.");
+      })
+      .finally(() => setIsSubmitting(false));
   }
 
   return (
-    <main className="w-full mx-auto translate-y-1/2 flex flex-col justify-center items-center">
+    <main className="flex flex-col items-center justify-center w-full mx-auto translate-y-1/2">
       <div className="flex gap-2">
         <h1 className="text-3xl">MySonex</h1>
         <span>Login</span>
@@ -55,13 +50,13 @@ const Login = () => {
 
       <div className="w-[380px] h-[380px] rounded-md p-4 ">
         {formError && (
-          <div className="bg-red-500 text-white p-2 rounded-md mb-4">
+          <div className="p-2 mb-4 text-white bg-red-500 rounded-md">
             {formError}
           </div>
         )}
         <form
           onSubmit={handleSubmitLogin}
-          className="flex flex-col gap-4 items-center"
+          className="flex flex-col items-center gap-4"
         >
           <Input
             required
@@ -99,7 +94,7 @@ const Login = () => {
               "Login"
             )}
           </Button>
-          <p className="text-xs text-right hover:underline transition-all duration-300">
+          <p className="text-xs text-right transition-all duration-300 hover:underline">
             <Link to="/register">No account? Sign Up</Link>
           </p>
         </form>

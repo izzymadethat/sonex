@@ -1,8 +1,11 @@
 import { Button, Checkbox, Input, user } from "@nextui-org/react";
 import { Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Loader from "../../components/misc/Loader";
+import axios from "axios";
+
+const API_URL = "http://localhost:4000/api/auth/session/register";
 
 const Signup = () => {
   // State for form data
@@ -11,13 +14,12 @@ const Signup = () => {
     lastName: "",
     username: "",
     email: "",
-    password: ""
+    password: "",
+    agreesToTerms: false
   });
 
-  const [agreesToTerms, setAgreesToTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formError, setFormError] = useState(null);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
 
   // State for password visibility
   const [isVisible, setIsVisible] = useState(false);
@@ -28,77 +30,65 @@ const Signup = () => {
 
   const navigate = useNavigate();
 
-  const handleTermsChange = () => setAgreesToTerms(!agreesToTerms);
+  // handle form errors in real-time
+  useEffect(() => {
+    const errors = {};
+
+    if (formData.username.length < 6 || formData.username.length > 20) {
+      errors.username = "Username must be between 6 and 20 characters.";
+    }
+
+    if (formData.password.length < 4 || formData.password.length > 20) {
+      errors.password = "Password must be between 4 and 20 characters.";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+    } else {
+      setFormErrors({});
+    }
+  }, [formData.username, formData.password]);
+
   function handleInputChange(e) {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
   }
 
   async function handleSubmitSignup(e) {
     e.preventDefault();
     setIsSubmitting(true);
-    setFormError(null);
+    setFormErrors({});
 
-    try {
-      if (!agreesToTerms) {
-        setFormError("You must agree to the terms and conditions.");
-        return;
-      }
-
-      if (
-        !formData.firstName ||
-        !formData.lastName ||
-        !formData.username ||
-        !formData.email ||
-        !formData.password
-      ) {
-        setFormError("Please fill in all fields.");
-        return;
-      }
-
-      const response = await fetch(
-        "http://localhost:8000/api/auth/session/register",
-        {
-          credentials: "include",
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(formData)
+    axios
+      .post(API_URL, formData)
+      .then((response) => {
+        if (response.data.error) {
+          window.alert(response.data.error);
+          return;
         }
-      );
 
-      const data = await response.json();
+        // On successful signup
+        navigate(`/register?success=true`, {
+          state: { message: "Signup Successful! Welcome to MySonex!" }
+        });
 
-      if (!data.user) {
-        console.log(data);
-        setFormError(data.title + ": " + data.message);
-        return;
-      }
-
-      // On successful signup
-      setIsSubmitted(true);
-      navigate(`/register?success=true`, {
-        state: { message: "Signup Successful! Welcome to MySonex!" }
-      });
-
-      // Wait for 2 seconds before redirecting to home
-      setTimeout(() => {
-        navigate("/", { state: { message: "User created successfully!" } });
-      }, 2000);
-    } catch (error) {
-      console.log(error);
-      setFormError("Signup failed. Please try again.");
-      setIsSubmitted(false);
-      navigate(`/register?success=false`, {
-        state: { message: "Signup Failed. Please try again." }
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+        setTimeout(() => {
+          navigate("/login", {
+            state: {
+              message: `Welcome to MySonex ${formData.firstName}! You may now login.`
+            }
+          });
+        }, 2000);
+      })
+      .catch((error) => {
+        console.log(error);
+        window.alert("Signup failed. Please try again.");
+      })
+      .finally(() => setIsSubmitting(false));
   }
-  // ...
+
   return (
-    <div className="w-full mx-auto translate-y-1/2 flex flex-col justify-center items-center">
+    <div className="flex flex-col items-center justify-center w-full mx-auto translate-y-1/2">
       <div className="flex gap-2">
         <h1 className="text-3xl">MySonex</h1> <span>Signup</span>
       </div>
@@ -112,21 +102,9 @@ const Signup = () => {
       )}
 
       <div className="w-[380px] h-[380px] rounded-md">
-        {formError && typeof formError === "string" && (
-          <div className="bg-red-500 text-white p-2 rounded-md mb-4">
-            {formError}
-          </div>
-        )}
-        {formError && Array.isArray(formError) && formError.length > 0 && (
-          <div className="bg-red-500 text-white p-2 rounded-md mb-4">
-            {formError.map((error, index) => (
-              <p key={index}>{error}</p>
-            ))}
-          </div>
-        )}
         <form
           onSubmit={handleSubmitSignup}
-          className="flex flex-col gap-4 items-center"
+          className="flex flex-col items-center gap-4"
         >
           <Input
             required
@@ -163,6 +141,9 @@ const Signup = () => {
             value={formData.username}
             onChange={handleInputChange}
           />
+          {formErrors?.username && (
+            <span className="text-sm text-red-500">{formErrors.username}</span>
+          )}
           <Input
             required
             type={isVisible ? "text" : "password"}
@@ -182,15 +163,26 @@ const Signup = () => {
               </button>
             }
           />
+          {formErrors?.password && (
+            <span className="text-sm text-red-500">{formErrors.password}</span>
+          )}
           <Checkbox
-            size="sm"
-            isSelected={agreesToTerms}
-            onChange={handleTermsChange}
+            isSelected={formData.agreesToTerms}
+            value={formData.agreesToTerms}
+            onChange={handleInputChange}
+            name="agreesToTerms"
           >
             By creating an account, you agree to Sonex terms and Stripe's Terms
             and Conditions
           </Checkbox>
-          <Button type="submit" fullWidth>
+          <Button
+            type="submit"
+            fullWidth
+            isDisabled={
+              Object.keys(formErrors).length > 0 ||
+              formData.agreesToTerms === false
+            }
+          >
             {isSubmitting ? (
               <>
                 <Loader /> Signing up...

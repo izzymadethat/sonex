@@ -2,7 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+html,
+body,
+#root,
+.app,
+.content {
   background: #212121;
   color: #e8e8e8;
+  height: 100%;
+  width: 100%;
+}
+
+.app {
+  display: flex;
+  position: relative;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #212121;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ffff00;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ffff007c;
 }

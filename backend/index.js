@@ -27,7 +27,7 @@ app.use(methodOverride("_method"));
 app.use(
   cors({
     origin: "http://localhost:5173",
-    credentials: true,
+    credentials: true
   })
 );
 
@@ -58,7 +58,7 @@ app.use((err, _req, res, _next) => {
     errors: err.errors,
     status: err.status,
     message: err.message,
-    timestamp: new Date().toLocaleString(),
+    timestamp: new Date().toLocaleString()
   };
 
   console.error(error);

@@ -8,6 +8,7 @@ import { Login, Logout, Signup } from "./pages/auth";
 import { NotFoundError } from "./pages/errors";
 import { Sidebar } from "./components/customs/sections";
 import { userExample } from "./constants/user";
+import UserLayout from "./components/global/UserLayout";
 
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
           <Route path="/logout" element={<Logout />} />
           <Route path="/user">
             <Route index element={<NotFoundError />} />
-            <Route path="@me" element={<Sidebar user={userExample} />}>
+            <Route path="@me" element={<UserLayout user={userExample} />}>
               <Route index element={<Dashboard user={userExample} />} />
               <Route path="projects">
                 <Route index element={<ViewProjectsPage />} />

@@ -1,0 +1,19 @@
+.dashboard {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+}
+
+.dashboard--content {
+  background-color: #313131;
+  flex: 1;
+  border-radius: 20px;
+  padding: 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+  justify-content: space-between;
+}
+
+.dashboard--layout {
+  width: 100%;
+}
