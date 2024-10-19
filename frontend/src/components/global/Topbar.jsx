@@ -1,13 +1,12 @@
 import React from "react";
-import { Bell, Cog, Search, User } from "lucide-react";
 import { ModeToggle } from "./mode-toggle";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 // Topbar for user dashboard
 const Topbar = () => {
   return (
-    <header className="flex items-center justify-end bg-black rounded-lg">
-      <div className="flex gap-2 p-1 border rounded-full cursor-pointer border-primary">
-        <User />
+    <header className="flex items-center justify-end rounded-lg">
+      <div className="flex gap-2 rounded-full cursor-pointer ">
         <ModeToggle />
       </div>
     </header>

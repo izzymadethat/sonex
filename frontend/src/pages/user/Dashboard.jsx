@@ -14,6 +14,7 @@ import { notifications } from "../../constants/notifications";
 import NotificationCard from "../../components/customs/NotificationCard";
 import { userExample } from "../../constants/user";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 // import "../../styles/dashboard.css";
 
 const ProjectSampleGrid = () => {
@@ -32,9 +33,7 @@ const ProjectSampleGrid = () => {
             </div>
           </div>
         ))}
-        <button className="px-1 py-2 border rounded-md border-primary text-primary-foreground hover:bg-secondary-foreground hover:text-primary hover:border-transparent">
-          View All Projects
-        </button>
+        <Button>View All Projects</Button>
       </div>
     </>
   );
@@ -68,9 +67,7 @@ const UnfinishedCommentsGrid = () => {
       {Array.from({ length: 5 }).map((_, index) => (
         <SampleTask key={index} projectNum={index + 1} />
       ))}
-      <button className="px-1 py-2 border rounded-md border-primary text-primary-foreground hover:bg-secondary-foreground hover:text-primary hover:border-transparent">
-        Mark all as completed
-      </button>
+      <Button>Mark all as completed</Button>
     </div>
   );
 };
@@ -113,7 +110,7 @@ function Dashboard() {
         <ProjectSampleGrid />
       </div>
 
-      <div className="flex flex-col w-full gap-6 mb-6 border lg:flex-row">
+      <div className="flex flex-col w-full gap-6 mb-6 lg:flex-row">
         {/* Unfinished tasks. TODO: Replace with actual task data, sort by date, and add pagination */}
         <div className="w-full p-6 border rounded-md shadow-md">
           <div className="mb-4">
@@ -156,12 +153,12 @@ function Dashboard() {
               className="w-full p-2 border rounded-md border-primary"
               placeholder="Enter your message"
             ></textarea>
-            <button
-              className="w-full p-2 rounded-lg hover:bg-primary bg-secondary"
+            <Button
+              className="w-full p-2 rounded-lg hover:bg-primary hover:text-background text-secondary-foreground bg-secondary"
               onClick={() => alert("Feature coming soon")}
             >
               Submit your message
-            </button>
+            </Button>
           </div>
         </div>
       </div>
