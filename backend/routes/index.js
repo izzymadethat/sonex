@@ -1,61 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const {
-  generateAccessToken,
-  restoreSessionUser,
-  checkIfAuthenticated,
-} = require("../utils/auth");
 const apiRouter = require("./api");
 
-// Test payloads
-const userPayload = {
-  _id: 123456,
-  email: "myemail@email.com",
-  username: "myusername",
-  role: "user",
-};
-
-const clientPayload = {
-  _id: 123456,
-  email: "myemail@email.com",
-};
-
-router.use(restoreSessionUser); // All routes to retrieve user/client from jwt
 router.use("/api", apiRouter);
 
-// Test routes
-router.get("/generateToken", (req, res) => {
-  console.log("Generating token...");
-  try {
-    const accessToken = generateAccessToken(res, userPayload, "verification");
-    const refreshToken = generateAccessToken(res, userPayload, "refresh");
-    res.json({ message: "Tokens generated", accessToken, refreshToken });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-router.get("/generateClientToken", (req, res) => {
-  console.log("Generating client token...");
-  const accessToken = generateAccessToken(res, clientPayload, "verification");
-  const refreshToken = generateAccessToken(res, clientPayload, "refresh");
-  res.json({ message: "Tokens generated", accessToken, refreshToken });
-});
-
-router.get("/restore", restoreSessionUser, (req, res) => {
-  const client = req.client;
-  const user = req.user;
-  res.json({ user, client });
-});
-
-router.get(
-  "/protected",
-  restoreSessionUser,
-  checkIfAuthenticated,
-  (req, res) => {
-    res.send("You are authenticated");
-  }
-);
+// ==== Error handling ==== //
 
 // Routes not found
 router.use((_req, _res, next) => {
@@ -63,9 +12,46 @@ router.use((_req, _res, next) => {
   err.status = 404;
   err.title = "Resource Not found";
   err.errors = {
-    message: "The requested resource could not be found",
+    message: "The requested resource could not be found"
   };
   next(err);
+});
+
+// Check for multer errors
+app.use((err, _req, _res, next) => {
+  if (err instanceof multer.MulterError) {
+    err.status = 400;
+    err.message = err.code;
+    next(err);
+  } else {
+    next(err);
+  }
+});
+
+// Final error route that formats the error and sends all errors
+app.use((err, _req, res, _next) => {
+  err.status = err.status || 500;
+  err.title = err.title || "Server Error";
+  err.message = err.message || "Something went wrong. Internal server error.";
+  err.errors = err.errors || { server: err.message };
+
+  const error = {
+    title: err.title,
+    errors: err.errors,
+    status: err.status,
+    message: err.message,
+    timestamp: new Date().toLocaleString()
+  };
+
+  console.error(error);
+
+  if (isProduction) {
+    res.status(err.status).json(error);
+  } else {
+    // Add the stack trace in development and debug mode
+    error.stack = err.stack;
+    res.status(err.status).json(error);
+  }
 });
 
 module.exports = router;
