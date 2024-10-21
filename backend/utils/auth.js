@@ -43,7 +43,7 @@ function generateAccessToken(res, user, sessionType) {
     id: user._id.toString(),
     email: user.email,
     username: user.username || user.email,
-    role: user.role || "client",
+    role: user.role || "client"
   };
 
   let sessionSecret;
@@ -71,7 +71,7 @@ function generateAccessToken(res, user, sessionType) {
     maxAge: expiresIn * 1000,
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction && "Lax",
+    sameSite: isProduction && "Lax"
   });
 
   return token;
@@ -136,7 +136,7 @@ function checkIfAuthenticated(req, res, next) {
     const error = new Error("Authentication required");
     error.status = 401;
     error.errors = {
-      message: "You must be logged in to access this route",
+      message: "You must be logged in to access this route"
     };
 
     return next(error);
@@ -176,5 +176,5 @@ module.exports = {
   checkIfAuthenticated,
   checkIfUserNotClient,
   authenticatedUsersOnly,
-  authenticatedClientsOnly,
+  authenticatedClientsOnly
 };

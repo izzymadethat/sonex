@@ -1,8 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const apiRouter = require("./api");
+const multer = require("multer");
+const { environment } = require("../config");
+const isProduction = environment === "production";
 
 router.use("/api", apiRouter);
+
+router.get("/api/csrf/restore", (req, res) => {
+  const csrfToken = req.csrfToken();
+  res.cookie("XSRF-TOKEN", csrfToken);
+  return res.json({ token: csrfToken });
+});
 
 // ==== Error handling ==== //
 
@@ -18,7 +27,7 @@ router.use((_req, _res, next) => {
 });
 
 // Check for multer errors
-app.use((err, _req, _res, next) => {
+router.use((err, _req, _res, next) => {
   if (err instanceof multer.MulterError) {
     err.status = 400;
     err.message = err.code;
@@ -29,7 +38,7 @@ app.use((err, _req, _res, next) => {
 });
 
 // Final error route that formats the error and sends all errors
-app.use((err, _req, res, _next) => {
+router.use((err, _req, res, _next) => {
   err.status = err.status || 500;
   err.title = err.title || "Server Error";
   err.message = err.message || "Something went wrong. Internal server error.";

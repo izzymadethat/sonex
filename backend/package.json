@@ -21,6 +21,7 @@
     "csurf": "^1.10.0",
     "ejs": "^3.1.10",
     "express": "^4.21.0",
+    "express-async-errors": "^3.1.1",
     "express-session": "^1.18.0",
     "express-validator": "^7.2.0",
     "helmet": "^8.0.0",
