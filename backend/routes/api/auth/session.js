@@ -16,6 +16,25 @@ const validateLogin = [
   handleValidationErrors
 ];
 
+const validateSignup = [
+  check("firstName")
+    .exists({ checkFalsy: true })
+    .withMessage("First name is required"),
+  check("lastName")
+    .exists({ checkFalsy: true })
+    .withMessage("Last name is required"),
+  check("username")
+    .exists({ checkFalsy: true })
+    .withMessage("Username is required")
+    .isLength({ min: 6, max: 20 })
+    .withMessage("Username must be between 6 and 20 characters long"),
+  check("email").exists({ checkFalsy: true }).withMessage("Email is required"),
+  check("password")
+    .exists({ checkFalsy: true })
+    .withMessage("Password is required"),
+  handleValidationErrors
+];
+
 // Get current user
 // GET /api/auth/session
 router.get("/", (req, res) => {
@@ -88,33 +107,27 @@ router.post("/", validateLogin, async (req, res, next) => {
 
 // Signup a user
 // POST /api/auth/session/register
-router.post("/register", async (req, res, next) => {
+router.post("/register", validateSignup, async (req, res, next) => {
   const incomingUser = req.body;
 
   try {
     const salt = bcrypt.genSaltSync(10);
-
     // Hash password with salt then create new user
-    bcrypt.hash(incomingUser.password, salt, async (err, hashedPassword) => {
-      if (err) {
-        return next(err);
-      }
+    const hashedPassword = await bcrypt.hash(incomingUser.password, salt);
 
-      const newUserInfo = {
-        firstName: incomingUser.firstName,
-        lastName: incomingUser.lastName,
-        username: incomingUser.username,
-        email: incomingUser.email,
-        hashedPassword
-      };
+    const newUserInfo = {
+      firstName: incomingUser.firstName,
+      lastName: incomingUser.lastName,
+      username: incomingUser.username,
+      email: incomingUser.email,
+      hashedPassword
+    };
 
-      const newUser = new User(newUserInfo);
-      await newUser.save();
-
-      return res
-        .status(201)
-        .json({ message: "User created successfully", user: newUser });
-    });
+    const newUser = new User(newUserInfo);
+    await newUser.save();
+    return res
+      .status(201)
+      .json({ message: "User created successfully", user: newUser });
   } catch (error) {
     next(error);
   }

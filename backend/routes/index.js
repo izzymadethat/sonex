@@ -2,16 +2,17 @@ const express = require("express");
 const router = express.Router();
 const apiRouter = require("./api");
 const multer = require("multer");
+const MongoServerError = require("mongoose");
 const { environment } = require("../config");
 const isProduction = environment === "production";
-
-router.use("/api", apiRouter);
 
 router.get("/api/csrf/restore", (req, res) => {
   const csrfToken = req.csrfToken();
   res.cookie("XSRF-TOKEN", csrfToken);
   return res.json({ token: csrfToken });
 });
+
+router.use("/api", apiRouter);
 
 // ==== Error handling ==== //
 
@@ -23,18 +24,26 @@ router.use((_req, _res, next) => {
   err.errors = {
     message: "The requested resource could not be found"
   };
-  next(err);
+  return next(err);
 });
 
 // Check for multer errors
 router.use((err, _req, _res, next) => {
   if (err instanceof multer.MulterError) {
     err.status = 400;
+    err.errors = { fileUploadError: err.message };
     err.message = err.code;
-    next(err);
-  } else {
-    next(err);
+    return next(err);
   }
+  if (err.code === 11000) {
+    err.status = 422;
+    err.title = "Duplicate key error";
+    err.message = "Username or email already exists.";
+    const fields = Object.keys(err.keyValue);
+    err.errors = { duplicateCredentials: fields };
+    return next(err);
+  }
+  next(err);
 });
 
 // Final error route that formats the error and sends all errors
