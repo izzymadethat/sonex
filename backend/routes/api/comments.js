@@ -1,8 +1,6 @@
 const router = require("express").Router({ mergeParams: true });
-const Client = require("../../models/client");
 const Comment = require("../../models/comment");
 const Project = require("../../models/project");
-const { requireAuth, authenticatedUsersOnly } = require("../../utils/auth");
 const handleValidationErrors = require("../../utils/validation");
 const { check } = require("express-validator");
 
@@ -27,7 +25,7 @@ const validateCommentInput = [
       "Please enter a valid timestamp in the format MM:SS or HH:MM:SS"
     ),
 
-  handleValidationErrors,
+  handleValidationErrors
 ];
 
 // Client creates a comment
@@ -41,7 +39,7 @@ router.post("/", validateCommentInput, async (req, res, next) => {
 
     if (!project) {
       return res.status(404).json({
-        message: "Project not found",
+        message: "Project not found"
       });
     }
 
@@ -50,7 +48,7 @@ router.post("/", validateCommentInput, async (req, res, next) => {
       type,
       timestamp,
       projectId,
-      clientId,
+      clientId
     }).save();
 
     project.comments.push(comment._id); // TODO: also add comment to client
@@ -65,7 +63,7 @@ router.post("/", validateCommentInput, async (req, res, next) => {
 // Get all comments
 // Only the project owner can see all comments
 // Route is /api/comments not /api/projects/:projectId/comments
-router.get("/current", authenticatedUsersOnly, async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   const userId = req.user.id.toString();
 
   try {
@@ -77,7 +75,7 @@ router.get("/current", authenticatedUsersOnly, async (req, res, next) => {
 
     // Fetch comments for these projects and populate client details
     const comments = await Comment.find({
-      projectId: { $in: projectIds },
+      projectId: { $in: projectIds }
     }).populate("clientId");
 
     res.json({ Comments: comments });
@@ -104,7 +102,7 @@ router.get("/", async (req, res, next) => {
     // Verify the project is owned by the current user
     if (project.userId.toString() !== userId) {
       return res.status(403).json({
-        message: "You do not have permission to view comments for this project",
+        message: "You do not have permission to view comments for this project"
       });
     }
 
@@ -132,7 +130,7 @@ router.put("/:commentId", validateCommentInput, async (req, res, next) => {
 
     if (comment.clientId.toString() !== clientId) {
       return res.status(403).json({
-        message: "You do not have permission to update this comment",
+        message: "You do not have permission to update this comment"
       });
     }
 
@@ -162,7 +160,7 @@ router.delete("/:commentId", async (req, res, next) => {
 
     if (comment.clientId.toString() !== clientId) {
       return res.status(403).json({
-        message: "You do not have permission to delete this comment",
+        message: "You do not have permission to delete this comment"
       });
     }
 

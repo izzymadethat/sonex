@@ -27,7 +27,7 @@ const validateProjectInput = [
     .optional()
     .isFloat({ min: 0 })
     .withMessage("Please enter a valid amount"),
-  handleValidationErrors,
+  handleValidationErrors
 ];
 const validateProjectQuery = [
   check("status")
@@ -62,27 +62,22 @@ const validateProjectQuery = [
     .withMessage(
       "Payment status must be 'unpaid', 'no-charge', 'paid', 'partially-paid', or 'overpaid'"
     ),
-  handleValidationErrors,
+  handleValidationErrors
 ];
 // Get projects for user
 // GET /api/projects
-router.get(
-  "/",
-  authenticatedUsersOnly,
-  validateProjectQuery,
-  async (req, res, next) => {
-    const userId = req.user.id;
-    const projects = await Project.find({ userId }).populate("clients");
-    res.json({ Projects: projects, User: req.user });
-  }
-);
+router.get("/", validateProjectQuery, async (req, res, next) => {
+  const userId = req.user.id;
+  const projects = await Project.find({ userId }).populate("clients");
+  res.json({ Projects: projects, User: req.user });
+});
 
 // Create a project
 // POST /api/projects
 // user must be logged in
 router.post(
   "/",
-  authenticatedUsersOnly,
+
   validateProjectInput,
   async (req, res, next) => {
     const userId = req.user.id;
@@ -100,7 +95,7 @@ router.post(
         description: description || null,
         userId,
         projectAmount: projectAmount || 0,
-        paymentStatus: projectAmount ? "unpaid" : "no-charge",
+        paymentStatus: projectAmount ? "unpaid" : "no-charge"
       }).save();
 
       res.status(201).json(newProject);
@@ -113,7 +108,7 @@ router.post(
 // Get a single project
 // GET /api/projects/:projectId
 // user must be logged in
-router.get("/:projectId", authenticatedUsersOnly, async (req, res, next) => {
+router.get("/:projectId", async (req, res, next) => {
   const projectId = req.params.projectId;
   const userId = req.user.id.toString();
 
@@ -122,14 +117,14 @@ router.get("/:projectId", authenticatedUsersOnly, async (req, res, next) => {
 
     if (!project) {
       return res.status(404).json({
-        message: "Project not found",
+        message: "Project not found"
       });
     }
 
     // check if project belongs to user
     if (project.userId.toString() !== userId) {
       return res.status(403).json({
-        message: "You do not have permission to view this project",
+        message: "You do not have permission to view this project"
       });
     }
 
@@ -143,7 +138,7 @@ router.get("/:projectId", authenticatedUsersOnly, async (req, res, next) => {
 // GET /api/projects/:projectId/clients
 router.get(
   "/:projectId/clients",
-  authenticatedUsersOnly,
+
   async (req, res, next) => {
     const projectId = req.params.projectId;
     const userId = req.user.id.toString();
@@ -152,12 +147,12 @@ router.get(
       const project = await Project.findById(projectId);
       if (!project) {
         return res.status(404).json({
-          message: "Project not found",
+          message: "Project not found"
         });
       }
       if (project.userId.toString() !== userId) {
         return res.status(403).json({
-          message: "You do not have permission to view this project",
+          message: "You do not have permission to view this project"
         });
       }
       const clients = await Client.find({ projectId });
@@ -174,7 +169,7 @@ router.get(
 // project must be owned by user
 router.put(
   "/:projectId",
-  authenticatedUsersOnly,
+
   validateProjectInput,
   async (req, res, next) => {
     const projectId = req.params.projectId;
@@ -186,7 +181,7 @@ router.put(
       status,
       projectAmount,
       amountPaid,
-      paymentStatus,
+      paymentStatus
     } = req.body;
 
     try {
@@ -194,14 +189,14 @@ router.put(
 
       if (!existingProject) {
         return res.status(404).json({
-          message: "Project not found ",
+          message: "Project not found "
         });
       }
 
       // check if project belongs to user
       if (existingProject.userId.toString() !== userId) {
         return res.status(403).json({
-          message: "You do not have permission to update this project",
+          message: "You do not have permission to update this project"
         });
       }
 
@@ -266,7 +261,7 @@ router.put(
 
       const results = {
         ...updatedProject._doc,
-        messages,
+        messages
       };
 
       res.status(200).json(results);
@@ -282,7 +277,7 @@ router.put(
 // client must already exist for user
 router.put(
   "/:projectId/clients",
-  authenticatedUsersOnly,
+
   async (req, res, next) => {
     const projectId = req.params.projectId;
     const userId = req.user.id.toString();
@@ -292,25 +287,25 @@ router.put(
       const existingProject = await Project.findById(projectId);
       if (!existingProject) {
         return res.status(404).json({
-          message: "Project not found",
+          message: "Project not found"
         });
       }
       if (existingProject.userId.toString() !== userId) {
         return res.status(403).json({
-          message: "You do not have permission to add clients to this project",
+          message: "You do not have permission to add clients to this project"
         });
       }
       const existingClient = await Client.findById(clientId);
       if (!existingClient) {
         return res.status(404).json({
-          message: "Client not found",
+          message: "Client not found"
         });
       }
 
       // Check if the user is in the client's users array
       if (!existingClient.users.includes(userId)) {
         return res.status(403).json({
-          message: "This client is not associated with your account",
+          message: "This client is not associated with your account"
         });
       }
 
@@ -327,7 +322,7 @@ router.put(
 // DELETE /api/projects/:projectId
 // user must be logged in
 // project must be owned by user
-router.delete("/:projectId", authenticatedUsersOnly, async (req, res, next) => {
+router.delete("/:projectId", async (req, res, next) => {
   const projectId = req.params.projectId;
   const userId = req.user.id.toString();
 
@@ -336,14 +331,14 @@ router.delete("/:projectId", authenticatedUsersOnly, async (req, res, next) => {
 
     if (!existingProject) {
       return res.status(404).json({
-        message: "Project not found",
+        message: "Project not found"
       });
     }
 
     // check if project belongs to user
     if (existingProject.userId.toString() !== userId) {
       return res.status(403).json({
-        message: "You do not have permission to delete this project",
+        message: "You do not have permission to delete this project"
       });
     }
 
@@ -351,7 +346,7 @@ router.delete("/:projectId", authenticatedUsersOnly, async (req, res, next) => {
 
     res.status(200).json({
       message: "Successfully deleted project",
-      Project: deletedProject,
+      Project: deletedProject
     });
   } catch (error) {
     next(error);

@@ -1,13 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const Client = require("../../models/client");
-const {
-  authenticatedUsersOnly,
-  checkIfAuthenticated,
-} = require("../../utils/auth");
+const { checkIfAuthenticated } = require("../../utils/auth");
 const mongoose = require("mongoose");
 
-router.get("/:clientId", authenticatedUsersOnly, async (req, res, next) => {
+router.get("/:clientId", async (req, res, next) => {
   const clientId = req.params.clientId;
   const userId = req.user.id.toString();
   try {
