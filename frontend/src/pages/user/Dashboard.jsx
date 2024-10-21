@@ -80,19 +80,28 @@ function Dashboard() {
       <div className="flex flex-col w-full mb-6">
         <h4 className="text-sm font-bold uppercase">Quick Actions:</h4>
         <div className="grid grid-cols-3 gap-2 my-2">
-          <div className="flex items-center gap-2 p-2 transition-all duration-300 shadow-sm cursor-pointer rounded-2xl bg-secondary hover:bg-primary hover:-translate-y-2 hover:shadow-lg">
+          <div
+            className="flex items-center gap-2 p-2 transition-all duration-300 shadow-sm cursor-pointer rounded-2xl bg-secondary hover:bg-primary hover:-translate-y-2 hover:shadow-lg"
+            onClick={() => alert("Page coming soon")}
+          >
             <span className="p-4 border border-black rounded-full shadow-lg">
               <Mic2 size={16} />
             </span>
             <span className="text-sm font-bold">Start New Session</span>
           </div>
-          <div className="flex items-center gap-2 p-2 transition-all duration-300 shadow-sm cursor-pointer rounded-2xl bg-secondary hover:bg-primary hover:-translate-y-2 hover:shadow-lg">
+          <div
+            className="flex items-center gap-2 p-2 transition-all duration-300 shadow-sm cursor-pointer rounded-2xl bg-secondary hover:bg-primary hover:-translate-y-2 hover:shadow-lg"
+            onClick={() => alert("Page coming soon")}
+          >
             <span className="p-4 border border-black rounded-full shadow-lg">
               <DollarSign size={16} />
             </span>
             <span className="text-sm font-bold">Record Payment</span>
           </div>
-          <div className="flex items-center gap-2 p-2 transition-all duration-300 shadow-sm cursor-pointer rounded-2xl bg-secondary hover:bg-primary hover:-translate-y-2 hover:shadow-lg">
+          <div
+            className="flex items-center gap-2 p-2 transition-all duration-300 shadow-sm cursor-pointer rounded-2xl bg-secondary hover:bg-primary hover:-translate-y-2 hover:shadow-lg"
+            onClick={() => alert("Page coming soon")}
+          >
             <span className="p-4 border border-black rounded-full shadow-lg">
               <HardDrive size={16} />
             </span>

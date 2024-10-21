@@ -27,14 +27,16 @@ router.use((_req, _res, next) => {
   return next(err);
 });
 
-// Check for multer errors
 router.use((err, _req, _res, next) => {
+  // Check for multer errors
   if (err instanceof multer.MulterError) {
     err.status = 400;
     err.errors = { fileUploadError: err.message };
     err.message = err.code;
     return next(err);
   }
+
+  // Check for MongoDB errors
   if (err.code === 11000) {
     err.status = 422;
     err.title = "Duplicate key error";
