@@ -2,9 +2,14 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
 const SupportForm = () => {
+  /* Contact support..for now TODO: set button to be disabled if no message is entered */
+
   const [nameInput, setNameInput] = useState("");
   const [emailInput, setEmailInput] = useState("");
   const [messageInput, setMessageInput] = useState("");
+
+  const allInfoEntered = nameInput && emailInput && messageInput;
+
   return (
     <div className="w-full p-6 border rounded-md shadow-md ">
       <div className="mb-4">
@@ -47,6 +52,7 @@ const SupportForm = () => {
         <Button
           className="w-full p-2 rounded-lg hover:bg-primary hover:text-background text-secondary-foreground bg-secondary"
           onClick={() => alert("Feature coming soon")}
+          disabled={!allInfoEntered}
         >
           Submit your message
         </Button>

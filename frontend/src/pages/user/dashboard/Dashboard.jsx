@@ -114,7 +114,6 @@ function Dashboard() {
         {/* Unfinished tasks. TODO: Replace with actual task data, sort by date, and add pagination */}
         <UnfinishedComments comments={comments} />
 
-        {/* Contact support..for now TODO: set button to be disabled if no message is entered */}
         <SupportForm />
       </div>
     </div>
