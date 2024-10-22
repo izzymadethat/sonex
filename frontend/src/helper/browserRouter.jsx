@@ -2,7 +2,7 @@ import { Home } from "../pages/landing-page/index.js";
 import { Login, Logout, Signup } from "../pages/auth/index.js";
 import { NotFoundError } from "../pages/errors/index.js";
 import UserLayout from "../components/global/UserLayout.jsx";
-import { Dashboard, Profile } from "../pages/user/index.js";
+import { Dashboard, Profile } from "../pages/user/dashboard/index.js";
 import {
   ViewProjectsPage,
   ViewSingleProjectPage

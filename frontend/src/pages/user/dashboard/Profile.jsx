@@ -5,7 +5,7 @@ const Profile = () => {
 export default Profile;
 
 // (
-//   <div className="w-full overflow-y-scroll my-4 max-w-5xl mx-auto space-y-4">
+//   <div className="w-full max-w-5xl mx-auto my-4 space-y-4 overflow-y-scroll">
 //   <h1 className="text-3xl font-bold uppercase">Profile</h1>
 //   <Card className="px-4 py-2">
 //     <CardHeader>

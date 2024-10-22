@@ -14,6 +14,40 @@ router.get("/api/csrf/restore", (req, res) => {
 
 router.use("/api", apiRouter);
 
+// Set backend to serve static assets in production
+if (isProduction) {
+  const path = require("path");
+  // Generate a csrf token api routes
+  router.get("/", (req, res) => {
+    res.cookie("XSRF-TOKEN", req.csrfToken());
+    return res.sendFile(
+      path.resolve(__dirname, "../../frontend", "dist", "index.html")
+    );
+  });
+
+  // Serve static assets
+  router.use(express.static(path.resolve("../frontend/dist")));
+
+  // Generate a csrf token for non-API routes
+  router.get(/^(?!\/?api).*/, (req, res) => {
+    res.cookie("XSRF-TOKEN", req.csrfToken());
+    return res.sendFile(
+      path.resolve(__dirname, "../../frontend", "dist", "index.html")
+    );
+  });
+
+  // If in development mode,
+  // everything works as normal,
+  // just automatically generate for each request
+  // but don't send as a response, only cookie
+  if (!isProduction) {
+    router.get("/api/csrf/restore", (req, res) => {
+      res.cookie("XSRF-TOKEN", req.csrfToken());
+      return res.json({});
+    });
+  }
+}
+
 // ==== Error handling ==== //
 
 // Routes not found

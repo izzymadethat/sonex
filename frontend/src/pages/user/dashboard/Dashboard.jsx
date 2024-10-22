@@ -9,35 +9,16 @@ import {
   Music2,
   User2
 } from "lucide-react";
-import BtnSecondary from "../../components/buttons/BtnSecondary";
-import { notifications } from "../../constants/notifications";
-import NotificationCard from "../../components/customs/NotificationCard";
-import { userExample } from "../../constants/user";
+import BtnSecondary from "../../../components/buttons/BtnSecondary";
+import { notifications } from "../../../constants/notifications";
+import NotificationCard from "../../../components/customs/NotificationCard";
+import { userExample } from "../../../constants/user";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-// import "../../styles/dashboard.css";
-
-const ProjectSampleGrid = () => {
-  return (
-    <>
-      <div className="grid grid-cols-1 gap-2 lg:grid-cols-2 max-h-[225px] lg:max-h-[300px] overflow-scroll px-6 lg:px-0">
-        {Array.from({ length: 4 }).map((_, index) => (
-          <div className="flex items-center justify-center p-4 rounded-md shadow-md cursor-pointer bg-secondary hover:bg-primary hover:text-secondary">
-            <div className="flex items-center gap-2 text-center">
-              <span>
-                <Music2 />
-              </span>
-              <span className="font-bold uppercase">
-                Project #<span>{index + 1}</span>
-              </span>
-            </div>
-          </div>
-        ))}
-        <Button>View All Projects</Button>
-      </div>
-    </>
-  );
-};
+import { useSelector } from "react-redux";
+import { selectUser } from "@/features/user/userSlice";
+import { selectAllProjects } from "@/features/projects/projectsSlice";
+import RecentProjects from "./RecentProjects";
 
 const SampleTask = ({ projectNum }) => {
   const [clicked, setClicked] = useState(false);
@@ -73,9 +54,15 @@ const UnfinishedCommentsGrid = () => {
 };
 
 function Dashboard() {
+  const user = useSelector(selectUser);
+  const projects = useSelector(selectAllProjects);
+  const orderedProjects = projects
+    .slice()
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+
   return (
     <div className="dashboard">
-      <h1 className="my-4 text-3xl font-bold">Hello, User</h1>
+      <h1 className="my-4 text-3xl font-bold">Hello, {user.firstName}</h1>
 
       <div className="flex flex-col w-full mb-6">
         <h4 className="text-sm font-bold uppercase">Quick Actions:</h4>
@@ -111,13 +98,13 @@ function Dashboard() {
       </div>
 
       {/* Projects. TODO: Replace with actual project data, sort recent projects by date, and add pagination */}
-      <div className="w-full p-6 mb-6 border rounded-md shadow-md">
-        <div className="mb-4">
-          <h3 className="text-lg font-bold uppercase">Recent Projects:</h3>
-          <p className="italic">Get back to it...</p>
+      {projects.length > 0 ? (
+        <RecentProjects projects={orderedProjects} />
+      ) : (
+        <div className="flex items-center justify-center p-4 my-8 rounded-md shadow-md cursor-pointer bg-secondary hover:bg-primary hover:text-secondary">
+          No projects found. Click to create a new one.
         </div>
-        <ProjectSampleGrid />
-      </div>
+      )}
 
       <div className="flex flex-col w-full gap-6 mb-6 lg:flex-row">
         {/* Unfinished tasks. TODO: Replace with actual task data, sort by date, and add pagination */}
