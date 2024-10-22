@@ -13,6 +13,7 @@ import {
 } from "../pages/user/clients/index.js";
 import { createBrowserRouter } from "react-router-dom";
 import NewProjectFormPopup from "../components/popups/NewProjectForm.jsx";
+import NewClientFormPopup from "../components/popups/NewClientForm.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -73,6 +74,10 @@ export const router = createBrowserRouter([
               {
                 path: ":clientId",
                 element: <ViewSingleClientPage />
+              },
+              {
+                path: "new",
+                element: <NewClientFormPopup />
               }
             ]
           },

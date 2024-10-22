@@ -29,7 +29,12 @@ export default function ViewProjectsPage() {
 
   return (
     <section className="m-8">
-      <h3 className="mb-4 text-2xl font-bold">Clients</h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-2xl font-bold">Clients</h3>
+        <Button asChild>
+          <Link to="new">Add Client</Link>
+        </Button>
+      </div>
       <Table>
         <TableHeader>
           <TableRow>
