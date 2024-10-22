@@ -19,8 +19,10 @@ import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
 import { selectAllProjects } from "@/features/projects/projectsSlice";
 import { formatDistanceToNow, parseISO } from "date-fns";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function ViewProjectsPage() {
+  const navigate = useNavigate();
   const projects = useSelector(selectAllProjects);
   const formattedProjects = projects.map((project) => {
     const date = parseISO(project.createdAt);
@@ -28,6 +30,7 @@ export default function ViewProjectsPage() {
     const timeAgo = `${timePeriod} ago`;
 
     return {
+      id: project.id,
       title: project.title,
       createdAt: timeAgo,
       status: project.status
@@ -37,7 +40,12 @@ export default function ViewProjectsPage() {
   const [selected, setSelected] = useState([]);
   return (
     <section>
-      <h3 className="mb-4 text-2xl font-bold">Projects</h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="mb-4 text-2xl font-bold">Projects</h3>
+        <Button asChild>
+          <Link to="new">New Project</Link>
+        </Button>
+      </div>
       <Table>
         <TableHeader>
           <TableRow>
@@ -57,7 +65,12 @@ export default function ViewProjectsPage() {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline">
+                      <Button
+                        variant="outline"
+                        onClick={() =>
+                          navigate(`/user/me/projects/${project.id}`)
+                        }
+                      >
                         <Eye />
                       </Button>
                     </TooltipTrigger>
@@ -69,7 +82,7 @@ export default function ViewProjectsPage() {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button className="text-white bg-red-600">
+                      <Button variant="destructive">
                         <Trash2 />
                       </Button>
                     </TooltipTrigger>

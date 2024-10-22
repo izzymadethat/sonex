@@ -12,6 +12,7 @@ import {
   ViewSingleClientPage
 } from "../pages/user/clients/index.js";
 import { createBrowserRouter } from "react-router-dom";
+import NewProjectFormPopup from "../components/popups/NewProjectForm.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -55,6 +56,10 @@ export const router = createBrowserRouter([
               {
                 path: ":projectId",
                 element: <ViewSingleProjectPage />
+              },
+              {
+                path: "new",
+                element: <NewProjectFormPopup />
               }
             ]
           },
