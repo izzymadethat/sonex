@@ -19,6 +19,9 @@ import { useSelector } from "react-redux";
 import { selectUser } from "@/features/user/userSlice";
 import { selectAllProjects } from "@/features/projects/projectsSlice";
 import RecentProjects from "./RecentProjects";
+import { selectAllComments } from "@/features/comments/commentsSlice";
+import UnfinishedComments from "./UnfinishedComments";
+import SupportForm from "./SupportForm";
 
 const SampleTask = ({ projectNum }) => {
   const [clicked, setClicked] = useState(false);
@@ -42,20 +45,21 @@ const SampleTask = ({ projectNum }) => {
   );
 };
 
-const UnfinishedCommentsGrid = () => {
-  return (
-    <div className="grid grid-cols-1 gap-2 max-h-[225px] lg:max-h-[300px] overflow-scroll px-6 lg:px-0">
-      {Array.from({ length: 5 }).map((_, index) => (
-        <SampleTask key={index} projectNum={index + 1} />
-      ))}
-      <Button>Mark all as completed</Button>
-    </div>
-  );
-};
+// const UnfinishedCommentsGrid = () => {
+//   return (
+//     <div className="grid grid-cols-1 gap-2 max-h-[225px] lg:max-h-[300px] overflow-scroll px-6 lg:px-0">
+//       {Array.from({ length: 5 }).map((_, index) => (
+//         <SampleTask key={index} projectNum={index + 1} />
+//       ))}
+//       <Button>Mark all as completed</Button>
+//     </div>
+//   );
+// };
 
 function Dashboard() {
   const user = useSelector(selectUser);
   const projects = useSelector(selectAllProjects);
+  const comments = useSelector(selectAllComments);
   const orderedProjects = projects
     .slice()
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
@@ -108,55 +112,10 @@ function Dashboard() {
 
       <div className="flex flex-col w-full gap-6 mb-6 lg:flex-row">
         {/* Unfinished tasks. TODO: Replace with actual task data, sort by date, and add pagination */}
-        <div className="w-full p-6 border rounded-md shadow-md">
-          <div className="mb-4">
-            <h3 className="text-lg font-bold uppercase">Unfinished Tasks:</h3>
-            <p className="italic">Don&apos;t leave your clients hanging!</p>
-          </div>
-          <UnfinishedCommentsGrid />
-        </div>
+        <UnfinishedComments comments={comments} />
 
         {/* Contact support..for now TODO: set button to be disabled if no message is entered */}
-        <div className="w-full p-6 border rounded-md shadow-md">
-          <div className="mb-4">
-            <h3 className="text-lg font-bold uppercase">Contact Support:</h3>
-            <p className="italic">
-              Questions? Issues? Want to give feedback? Submit here and we'll
-              contact you within 24 hours.
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            <input
-              type="text"
-              name="name"
-              id="name"
-              className="w-full p-2 border rounded-md border-primary"
-              placeholder="Enter your first name"
-            />
-            <input
-              type="email"
-              name="email"
-              id="email"
-              className="w-full p-2 border rounded-md border-primary"
-              placeholder="Enter your best email address  "
-            />
-
-            <textarea
-              name="message"
-              id="message"
-              rows={5}
-              className="w-full p-2 border rounded-md border-primary"
-              placeholder="Enter your message"
-            ></textarea>
-            <Button
-              className="w-full p-2 rounded-lg hover:bg-primary hover:text-background text-secondary-foreground bg-secondary"
-              onClick={() => alert("Feature coming soon")}
-            >
-              Submit your message
-            </Button>
-          </div>
-        </div>
+        <SupportForm />
       </div>
     </div>
   );
