@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { Eye, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -17,35 +16,27 @@ import {
   TooltipTrigger
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
+import { useSelector } from "react-redux";
+import { selectAllProjects } from "@/features/projects/projectsSlice";
+import { formatDistanceToNow, parseISO } from "date-fns";
 
-const projects = [
-  {
-    title: "Project 1",
-    created: new Date().toLocaleDateString(),
-    status: "Active"
-  },
-  {
-    title: "Project 2",
-    created: new Date("2024-03-12").toLocaleDateString(),
-    status: "Active"
-  },
-  {
-    title: "Project 3",
-    created: new Date().toLocaleDateString(),
-    status: "Inactive"
-  },
-  {
-    title: "Project 4",
-    created: new Date().toLocaleDateString(),
-    status: "Inactive"
-  }
-];
+export default function ViewProjectsPage() {
+  const projects = useSelector(selectAllProjects);
+  const formattedProjects = projects.map((project) => {
+    const date = parseISO(project.createdAt);
+    const timePeriod = formatDistanceToNow(date);
+    const timeAgo = `${timePeriod} ago`;
 
-export default function App() {
+    return {
+      title: project.title,
+      createdAt: timeAgo,
+      status: project.status
+    };
+  });
+
   const [selected, setSelected] = useState([]);
-
   return (
-    <div>
+    <section>
       <h3 className="mb-4 text-2xl font-bold">Projects</h3>
       <Table>
         <TableHeader>
@@ -57,10 +48,10 @@ export default function App() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {projects.map((project, index) => (
-            <TableRow key={index}>
+          {formattedProjects.map((project) => (
+            <TableRow key={project.id}>
               <TableCell>{project.title}</TableCell>
-              <TableCell>{project.created}</TableCell>
+              <TableCell>{project.createdAt}</TableCell>
               <TableCell>{project.status}</TableCell>
               <TableCell className="flex justify-center gap-3">
                 <TooltipProvider>
@@ -98,56 +89,6 @@ export default function App() {
           </TableRow>
         </TableFooter>
       </Table>
-    </div>
+    </section>
   );
 }
-
-// (
-//   <div className="flex flex-col gap-3">
-//   <h1 className="text-3xl font-bold uppercase">Projects</h1>
-//   <p className="text-sm italic">View and Manage all of your projects</p>
-//   <Table
-//     color="primary"
-//     selectionMode="multiple"
-//     aria-label="Sonex user's projects table"
-//   >
-//     <TableHeader>
-//       <TableColumn>Title</TableColumn>
-//       <TableColumn>Created</TableColumn>
-//       <TableColumn>Status</TableColumn>
-//       <TableColumn>Actions</TableColumn>
-//     </TableHeader>
-//     <TableBody>
-//       {projects.map((project, key) => (
-//         <TableRow
-//           key={key}
-//           onClick={() =>
-//             setSelected((prevKeys) =>
-//               prevKeys.includes(key)
-//                 ? prevKeys.filter((k) => k !== key)
-//                 : [...prevKeys, key]
-//             )
-//           }
-//         >
-//           <TableCell>{project.title}</TableCell>
-//           <TableCell>{project.created}</TableCell>
-//           <TableCell>{project.status}</TableCell>
-//           <TableCell className="flex gap-3">
-//             <Tooltip content="Edit project" color="primary">
-//               <Button isIconOnly size="sm" className="p-2">
-//                 <Pencil />
-//               </Button>
-//             </Tooltip>
-//             <Tooltip content="View project" color="primary">
-//               <Button isIconOnly size="sm" className="p-2">
-//                 <Eye />
-//               </Button>
-//             </Tooltip>
-//           </TableCell>
-//         </TableRow>
-//       ))}
-//     </TableBody>
-//   </Table>
-//   <Pagination loop showControls total={5} initialPage={1} />
-// </div>
-// )

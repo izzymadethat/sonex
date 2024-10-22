@@ -7,17 +7,16 @@ const RecentProjects = ({ projects }) => {
   const navigate = useNavigate();
   const renderRecentProjects = projects.slice(0, 4).map((project) => {
     return (
-      <div
-        className="flex items-center justify-center p-4 rounded-md shadow-md cursor-pointer bg-secondary hover:bg-primary hover:text-secondary"
+      <article
+        className="flex items-center justify-center gap-1 p-4 rounded-md shadow-md cursor-pointer bg-secondary hover:bg-primary hover:text-secondary"
         key={project.id}
       >
-        <div className="flex items-center gap-2 text-center">
-          <span>
-            <Music2 />
-          </span>
-          <span className="font-bold uppercase">{project.title}</span>
-        </div>
-      </div>
+        <span>
+          <Music2 />
+        </span>
+
+        <span className="font-bold uppercase">{project.title}</span>
+      </article>
     );
   });
 
