@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Input } from "../ui/input";
@@ -29,7 +30,12 @@ const NewClientFormPopup = () => {
                 name="email"
               />
             </div>
-            <Button>Add Client</Button>
+            <div className="flex items-center justify-between">
+              <Button variant="destructive" asChild>
+                <Link to="..">Cancel</Link>
+              </Button>
+              <Button>Add Client</Button>
+            </div>
           </CardContent>
         </form>
       </Card>

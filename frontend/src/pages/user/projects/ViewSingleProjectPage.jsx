@@ -14,20 +14,39 @@ import {
 import { convertStorageInMBtoGB } from "@/helper/equations";
 import FileTable from "./FileTable";
 import { useNavigate, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { CheckCircle2 } from "lucide-react";
 
 const ViewSingleProjectPage = () => {
   const params = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const project = useSelector((state) =>
+    state.projects.find((p) => String(p.id) === params.projectId)
+  );
   return (
     <section className="m-8 space-y-8">
       {/* Project Details */}
       <div className="grid items-center justify-between grid-cols-1 space-y-4 lg:space-y-0 lg:grid-cols-5">
-        <div className="flex items-center justify-center col-span-3 gap-4 lg:justify-start">
-          <h1 className="text-2xl font-bold">Sample Project Name</h1>
-          <Badge className="text-xs">Active</Badge>
+        <div className="flex flex-col items-center justify-center col-span-3 gap-4 lg:items-start">
+          <div className="flex gap-2">
+            <h1 className="text-2xl font-bold">{project.title}</h1>
+            <Badge className="text-xs">
+              {project.status[0].toUpperCase() + project.status.slice(1)}
+            </Badge>
+            <Badge
+              className={`text-xs ${
+                project.paymentStatus === "paid"
+                  ? "bg-green-500 text-green-50 flex items-center hover:bg-green-600"
+                  : ""
+              }`}
+            >
+              {project.paymentStatus === "paid" && <CheckCircle2 />}
+              {project.paymentStatus[0].toUpperCase() +
+                project.paymentStatus.slice(1)}
+            </Badge>
+          </div>
+          <p className="text-sm text-muted-foreground">{project.description}</p>
         </div>
 
         {/* Edit project button. TODO: Convert to modal*/}
@@ -41,7 +60,7 @@ const ViewSingleProjectPage = () => {
       <div className="flex w-full">
         <Input
           readOnly
-          placeholder="project-url-to-copy-here"
+          placeholder={`https://sonex.app/project/${project.id}?client_view=true`}
           className="w-full"
         />
         <Button>Copy Client Link</Button>
@@ -56,7 +75,7 @@ const ViewSingleProjectPage = () => {
                 Project Balance
               </CardTitle>
               <CardDescription className="text-lg font-extrabold text-muted-foreground">
-                ${8000}
+                ${project.projectAmount.toFixed(2)}
               </CardDescription>
             </div>
           </CardHeader>
@@ -66,7 +85,8 @@ const ViewSingleProjectPage = () => {
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg lg:text-xl">Storage Used</CardTitle>
               <CardDescription className="text-lg font-extrabold text-muted-foreground">
-                {convertStorageInMBtoGB(2064).toFixed(2)}Gb / 256Gb
+                {convertStorageInMBtoGB(project.storageUsed).toFixed(2)}Gb /
+                256Gb
               </CardDescription>
             </div>
           </CardHeader>

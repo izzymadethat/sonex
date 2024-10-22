@@ -11,6 +11,7 @@ const initialState = [
     paymentStatus: "unpaid",
     projectAmount: 6000,
     amountPaid: 0,
+    storageUsed: 2064,
     clients: [],
     createdAt: sub(new Date(), { days: 2, minutes: 48 }).toISOString(),
     updatedAt: sub(new Date(), { days: 2, minutes: 48 }).toISOString()
@@ -25,6 +26,7 @@ const initialState = [
     paymentStatus: "paid",
     projectAmount: 8000,
     amountPaid: 8000,
+    storageUsed: 2064,
     createdAt: sub(new Date(), { days: 20 }).toISOString(),
     updatedAt: sub(new Date(), { days: 5 }).toISOString()
   }
@@ -36,6 +38,6 @@ const projectsSlice = createSlice({
   reducers: {}
 });
 
-export const selectAllProjects = (state) => state.projects
+export const selectAllProjects = (state) => state.projects;
 
 export default projectsSlice.reducer;
