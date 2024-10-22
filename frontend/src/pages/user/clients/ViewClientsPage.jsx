@@ -16,16 +16,19 @@ import {
   TooltipTrigger
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { selectAllClients } from "@/features/clients/clientsSlice";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 export default function ViewProjectsPage() {
+  const params = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const clients = useSelector(selectAllClients);
-  console.log(clients);
 
   return (
-    <section>
+    <section className="m-8">
       <h3 className="mb-4 text-2xl font-bold">Clients</h3>
       <Table>
         <TableHeader>
@@ -46,8 +49,10 @@ export default function ViewProjectsPage() {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="outline">
-                        <Eye />
+                      <Button variant="outline" asChild>
+                        <Link to={`${client.id}`}>
+                          <Eye />
+                        </Link>
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>

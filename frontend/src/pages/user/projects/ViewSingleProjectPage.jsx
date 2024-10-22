@@ -22,9 +22,9 @@ const ViewSingleProjectPage = () => {
   const dispatch = useDispatch();
 
   return (
-    <section className="space-y-8">
+    <section className="m-8 space-y-8">
       {/* Project Details */}
-      <div className="grid items-center justify-between grid-cols-1 mt-8 space-y-4 lg:space-y-0 lg:grid-cols-5">
+      <div className="grid items-center justify-between grid-cols-1 space-y-4 lg:space-y-0 lg:grid-cols-5">
         <div className="flex items-center justify-center col-span-3 gap-4 lg:justify-start">
           <h1 className="text-2xl font-bold">Sample Project Name</h1>
           <Badge className="text-xs">Active</Badge>

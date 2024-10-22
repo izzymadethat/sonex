@@ -39,7 +39,7 @@ export default function ViewProjectsPage() {
 
   const [selected, setSelected] = useState([]);
   return (
-    <section>
+    <section className="m-8">
       <div className="flex items-center justify-between mb-4">
         <h3 className="mb-4 text-2xl font-bold">Projects</h3>
         <Button asChild>

@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 // Topbar for user dashboard
 const Topbar = () => {
   return (
-    <header className="flex items-center justify-end rounded-lg">
+    <header className="flex items-center justify-end my-4 rounded-lg">
       <div className="flex gap-2 rounded-full cursor-pointer ">
         <ModeToggle />
       </div>
