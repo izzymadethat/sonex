@@ -10,6 +10,7 @@ const RecentProjects = ({ projects }) => {
       <article
         className="flex items-center justify-center gap-1 p-4 rounded-md shadow-md cursor-pointer bg-secondary hover:bg-primary hover:text-secondary"
         key={project.id}
+        onClick={() => navigate(`/user/me/projects/${project.id}`)}
       >
         <span>
           <Music2 />

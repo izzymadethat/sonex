@@ -113,7 +113,6 @@ function Dashboard() {
       <div className="flex flex-col w-full gap-6 mb-6 lg:flex-row">
         {/* Unfinished tasks. TODO: Replace with actual task data, sort by date, and add pagination */}
         <UnfinishedComments comments={comments} />
-
         <SupportForm />
       </div>
     </div>

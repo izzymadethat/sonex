@@ -1,4 +1,6 @@
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 
 const SupportForm = () => {
@@ -20,35 +22,35 @@ const SupportForm = () => {
         </p>
       </div>
 
-      <div className="space-y-4 text-background">
-        <input
+      <div className="space-y-4">
+        <Input
           type="text"
           name="name"
           id="name"
-          className="w-full p-2 border rounded-md border-primary"
+          className="focus:border-primary"
           placeholder="Enter your first name"
           value={nameInput}
           onChange={(e) => setNameInput(e.target.value)}
         />
-        <input
+        <Input
           type="email"
           name="email"
           id="email"
-          className="w-full p-2 border rounded-md border-primary"
+          className="focus:border-primary"
           placeholder="Enter your best email address"
           value={emailInput}
           onChange={(e) => setEmailInput(e.target.value)}
         />
 
-        <textarea
+        <Textarea
           name="message"
           id="message"
           rows={5}
-          className="w-full p-2 border rounded-md border-primary"
+          className=" focus:border-primary"
           placeholder="Enter your message"
           value={messageInput}
           onChange={(e) => setMessageInput(e.target.value)}
-        ></textarea>
+        ></Textarea>
         <Button
           className="w-full p-2 rounded-lg hover:bg-primary hover:text-background text-secondary-foreground bg-secondary"
           onClick={() => alert("Feature coming soon")}
