@@ -26,7 +26,7 @@ const initialState = [
     paymentStatus: "paid",
     projectAmount: 8000,
     amountPaid: 8000,
-    storageUsed: 2064,
+    storageUsed: 8096,
     createdAt: sub(new Date(), { days: 20 }).toISOString(),
     updatedAt: sub(new Date(), { days: 5 }).toISOString()
   }

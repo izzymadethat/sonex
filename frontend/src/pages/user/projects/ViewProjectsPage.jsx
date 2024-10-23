@@ -20,6 +20,7 @@ import { useSelector } from "react-redux";
 import { selectAllProjects } from "@/features/projects/projectsSlice";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
+import NewProjectFormPopup from "@/components/popups/NewProjectForm";
 
 export default function ViewProjectsPage() {
   const navigate = useNavigate();
@@ -42,9 +43,7 @@ export default function ViewProjectsPage() {
     <section className="m-8">
       <div className="flex items-center justify-between mb-4">
         <h3 className="mb-4 text-2xl font-bold">Projects</h3>
-        <Button asChild>
-          <Link to="new">New Project</Link>
-        </Button>
+        <NewProjectFormPopup />
       </div>
       <Table>
         <TableHeader>

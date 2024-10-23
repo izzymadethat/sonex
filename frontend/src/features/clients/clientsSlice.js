@@ -4,14 +4,14 @@ import { sub } from "date-fns";
 const initialState = [
   {
     id: 1,
-    name: "John Doe",
+    name: "John",
     email: "johndoe@example.com",
     isVerified: true,
     createdAt: sub(new Date(), { days: 39 })
   },
   {
     id: 2,
-    name: "Jane Smith",
+    name: "Jane",
     email: "janesmith@example.com",
     isVerified: true,
     createdAt: sub(new Date(), { days: 18 })

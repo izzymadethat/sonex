@@ -20,8 +20,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { selectAllClients } from "@/features/clients/clientsSlice";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import NewClientFormPopup from "@/components/popups/NewClientForm";
 
-export default function ViewProjectsPage() {
+export default function ViewClientsPage() {
   const params = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -31,9 +32,7 @@ export default function ViewProjectsPage() {
     <section className="m-8">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-2xl font-bold">Clients</h3>
-        <Button asChild>
-          <Link to="new">Add Client</Link>
-        </Button>
+        <NewClientFormPopup />
       </div>
       <Table>
         <TableHeader>

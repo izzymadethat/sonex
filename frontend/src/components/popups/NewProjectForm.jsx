@@ -11,19 +11,34 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
 import { Textarea } from "../ui/textarea";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "../ui/dialog";
 
 const NewProjectFormPopup = () => {
   return (
-    <section className="mt-8">
-      <Card>
-        <form>
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold ">New Project</CardTitle>
-            <CardDescription>
-              Create a new project, then share with your client(s)!
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-y-8">
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button>New Project</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Create a New Project</DialogTitle>
+          <DialogDescription>
+            {" "}
+            Create a new project, then share with your client(s)!
+          </DialogDescription>
+        </DialogHeader>
+
+        <section>
+          <div className="flex flex-col gap-y-8">
             <div className="flex flex-col gap-y-2">
               <Label>Title</Label>
               <Input
@@ -49,18 +64,20 @@ const NewProjectFormPopup = () => {
               <Label>Expected Date</Label>
               <Input name="due-date" type="date" />
             </div>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button asChild variant="destructive" type="button">
-              <Link to="..">Cancel</Link>
+          </div>
+        </section>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="destructive" type="button">
+              Cancel
             </Button>
-            <Button type="submit" disabled>
-              Create Project
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
-    </section>
+          </DialogClose>
+          <Button type="button" disabled>
+            Create Project
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 
