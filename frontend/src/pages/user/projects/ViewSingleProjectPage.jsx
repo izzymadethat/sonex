@@ -16,6 +16,16 @@ import FileTable from "./FileTable";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { CheckCircle2 } from "lucide-react";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogTitle,
+  DialogHeader
+} from "@/components/ui/dialog";
+import { DialogTrigger } from "@/components/ui/dialog";
+import EditProjectForm from "@/components/popups/EditProjectForm";
 
 const ViewSingleProjectPage = () => {
   const params = useParams();
@@ -50,12 +60,7 @@ const ViewSingleProjectPage = () => {
         </div>
 
         {/* Edit project button. TODO: Convert to modal*/}
-        <Link
-          to="#"
-          className="col-span-2 px-4 py-2 mx-auto text-sm border rounded-md border-primary text-muted-foreground hover:text-primary w-fit lg:mx-0 lg:mb-0 justify-self-end "
-        >
-          Edit Project Details
-        </Link>
+        <EditProjectForm project={project} />
       </div>
       <div className="flex w-full">
         <Input
