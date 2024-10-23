@@ -75,12 +75,12 @@ const navLinks = [
     name: "Projects",
     route: "projects",
     icon: <SquareLibrary size={24} />
-  },
-  {
-    name: "Clients",
-    route: "clients",
-    icon: <CircleUserRound size={24} />
   }
+  // {
+  //   name: "Clients",
+  //   route: "clients",
+  //   icon: <CircleUserRound size={24} />
+  // }
   // {
   //   name: "Payments",
   //   route: "payments",
@@ -97,17 +97,17 @@ const menu1 = [
   {
     name: "Notifications",
     route: "notifications",
-    icon: <MessageSquareDot size={32} />
+    icon: <MessageSquareDot size={24} />
   },
   {
     name: "Account Settings",
     route: "profile",
-    icon: <Cog size={32} />
+    icon: <Cog size={24} />
   },
   {
     name: "Billing",
     route: "billing",
-    icon: <CreditCard size={32} />
+    icon: <CreditCard size={24} />
   }
 ];
 
@@ -115,16 +115,43 @@ const SideBar = () => {
   return (
     <Sidebar>
       <SidebarHeader>
-        <h2 className="text-4xl font-bold">Sonex</h2>
+        <h2 className="text-4xl font-bold text-center">Sonex</h2>
+        <SidebarSeparator />
       </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
+      <SidebarContent className="mx-4">
+        <SidebarGroup className="mt-16">
           <SidebarGroupContent>
             <SidebarMenu>
               {navLinks.map((link, index) => (
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <Link to={link.route}>
+                    <Link
+                      to={link.route}
+                      className="text-xl font-bold uppercase"
+                    >
+                      <span>{link.icon}</span>
+                      <span>{link.name}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel className="font-semibold text-md text-primary">
+            MySonex
+          </SidebarGroupLabel>
+          <SidebarSeparator />
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {menu1.map((link, index) => (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <Link
+                      to={link.route}
+                      className="mt-2 text-sm font-bold uppercase"
+                    >
                       <span>{link.icon}</span>
                       <span>{link.name}</span>
                     </Link>
@@ -138,7 +165,7 @@ const SideBar = () => {
       <SidebarFooter>
         <DropdownMenu>
           <DropdownMenuTrigger asChild className="cursor-pointer">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mx-4">
               <Avatar>
                 <AvatarImage
                   src="https://github.com/shadcn.png"
@@ -150,13 +177,9 @@ const SideBar = () => {
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Billing</DropdownMenuItem>
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <Button>
+            <DropdownMenuItem className="mx-2 my-2 cursor-pointer bg-primary text-secondary hover:bg-primary/90">
               Logout <LogOut />
-            </Button>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarFooter>
