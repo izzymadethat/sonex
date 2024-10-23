@@ -113,7 +113,7 @@ const menu1 = [
 
 const SideBar = () => {
   return (
-    <Sidebar>
+    <Sidebar variant="floating" className="px-2 py-8 mx-2">
       <SidebarHeader>
         <h2 className="text-4xl font-bold text-center">Sonex</h2>
         <SidebarSeparator />

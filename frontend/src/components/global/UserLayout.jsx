@@ -10,7 +10,6 @@ const UserLayout = () => {
         <SideBar />
         <div className="w-full mx-6 lg:mx-4">
           <Topbar />
-          <SidebarTrigger />
           <Outlet />
         </div>
       </div>
