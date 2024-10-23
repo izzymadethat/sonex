@@ -1,5 +1,125 @@
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Link } from "react-router-dom";
+
 const Profile = () => {
-  return <p>Profile</p>;
+  const redirectToStripeOnboarding = () =>
+    console.log("Redirecting to stripe onboarding");
+
+  const updateUserProfile = (e) => {
+    e.preventDefault();
+    console.log("Updating user profile");
+  };
+  return (
+    <div className="items-start gap-8 my-4 space-y-8">
+      <div>
+        <h1 className="text-2xl">Settings</h1>
+        <p className="text-lg text-muted-foreground">Your Profile Settings</p>
+      </div>
+
+      {/* Setup stripe onboarding section (if not done) */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-4xl font-extrabold text-center">
+            VERY IMPORTANT!!!
+          </CardTitle>
+          <CardDescription className="text-center">
+            Please set up your stripe onboarding to start accepting payments
+            from your clients
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-center">
+            Set up your onboarding account with Stripe so that you can accept
+            payments from your clients!
+          </p>
+        </CardContent>
+        <CardFooter>
+          <Button type="button" onClick={redirectToStripeOnboarding}>
+            Set Up Stripe Onboarding
+          </Button>
+        </CardFooter>
+      </Card>
+
+      {/* Edit Profile Section */}
+      <Card>
+        <form onSubmit={updateUserProfile}>
+          <CardHeader>
+            <CardTitle>General Data</CardTitle>
+            <CardDescription>
+              Provide general information about yourself. Don&apos;t forget to
+              save!
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <div className="space-y-1">
+                <Label>Your First Name</Label>
+                <Input
+                  name="name"
+                  type="text"
+                  id="name"
+                  placeholder="Your Name"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <Label>Your Email</Label>
+                <Input
+                  name="email"
+                  type="email"
+                  id="email"
+                  placeholder="Your Email"
+                  disabled
+                />
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button type="submit">Save Changes</Button>
+          </CardFooter>
+        </form>
+      </Card>
+
+      {/* View billing information */}
+      <Card>
+        <CardHeader>
+          <div className="flex flex-col items-center justify-between gap-y-2 md:gap-y-0 md:flex-row">
+            <CardTitle>View Billing Information</CardTitle>
+            <Button asChild>
+              <Link to="../billing">Take Me to Billing</Link>
+            </Button>
+          </div>
+        </CardHeader>
+      </Card>
+
+      {/* Danger zone. Delete account */}
+      <Card>
+        <CardHeader>
+          <div className="flex flex-col items-center justify-between md:flex-row gap-x-5">
+            <div>
+              <CardTitle className="text-red-500">Danger Zone</CardTitle>
+              <CardDescription className="max-w-sm">
+                Warning: Deleting your account will erase all of your
+                information, including payments. This can not be undone.
+              </CardDescription>
+            </div>
+
+            <Button>Delete My Account</Button>
+          </div>
+        </CardHeader>
+      </Card>
+    </div>
+  );
 };
 
 export default Profile;
