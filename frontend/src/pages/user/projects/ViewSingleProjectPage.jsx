@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/dialog";
 import { DialogTrigger } from "@/components/ui/dialog";
 import EditProjectForm from "@/components/popups/EditProjectForm";
+import CopyProjectLink from "@/components/popups/CopyProjectLink";
 
 const ViewSingleProjectPage = () => {
   const params = useParams();
@@ -56,19 +57,16 @@ const ViewSingleProjectPage = () => {
                 project.paymentStatus.slice(1)}
             </Badge>
           </div>
-          <p className="text-sm text-muted-foreground">{project.description}</p>
+          <p className="max-w-xs text-sm text-muted-foreground">
+            {project.description}
+          </p>
         </div>
 
-        {/* Edit project button. TODO: Convert to modal*/}
-        <EditProjectForm project={project} />
-      </div>
-      <div className="flex w-full">
-        <Input
-          readOnly
-          placeholder={`https://sonex.app/project/${project.id}?client_view=true`}
-          className="w-full"
-        />
-        <Button>Copy Client Link</Button>
+        {/* Project Buttons */}
+        <div className="flex items-center gap-4">
+          <EditProjectForm project={project} />
+          <CopyProjectLink project={project} />
+        </div>
       </div>
 
       {/* Project Overview and Stats */}
@@ -97,6 +95,9 @@ const ViewSingleProjectPage = () => {
           </CardHeader>
         </Card>
       </div>
+
+      {/* TODO: Add Clients View (Later update) */}
+
       <FileTable />
     </section>
   );
