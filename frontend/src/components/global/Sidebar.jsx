@@ -123,7 +123,7 @@ const SideBar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               {navLinks.map((link, index) => (
-                <SidebarMenuItem>
+                <SidebarMenuItem key={index}>
                   <SidebarMenuButton asChild>
                     <Link
                       to={link.route}

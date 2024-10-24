@@ -97,8 +97,7 @@ const ViewSingleProjectPage = () => {
       </div>
 
       {/* TODO: Add Clients View (Later update) */}
-
-      <FileTable />
+      <FileTable projectId={params.projectId} />
     </section>
   );
 };
