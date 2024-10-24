@@ -169,9 +169,11 @@ const FileTable = ({ projectId }) => {
             </TableRow>
             {/* All files from project */}
             {files.map((file) => (
-              <TableRow key={file.id} className="cursor-pointer">
+              <TableRow key={file.id}>
                 <TableCell>
-                  <Link to="#">{file.name}</Link>
+                  <Link to={`/project/${projectId}/track/${file.id}`}>
+                    {file.name}
+                  </Link>
                 </TableCell>
                 <TableCell>{file.type}</TableCell>
                 <TableCell>{file.dateAdded}</TableCell>

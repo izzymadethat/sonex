@@ -15,6 +15,7 @@ import { createBrowserRouter } from "react-router-dom";
 
 import Billing from "@/pages/user/billing/Billing.jsx";
 import Notifications from "@/pages/user/notifications/Notifications.jsx";
+import { ViewSingleFilePage } from "@/pages/user/files";
 
 export const router = createBrowserRouter([
   {
@@ -87,6 +88,19 @@ export const router = createBrowserRouter([
             element: <Billing />
           }
         ]
+      }
+    ]
+  },
+  {
+    path: "/project/:projectId",
+    children: [
+      {
+        index: true,
+        element: <ViewSingleProjectPage />
+      },
+      {
+        path: "track/:trackId",
+        element: <ViewSingleFilePage />
       }
     ]
   },
