@@ -16,17 +16,9 @@ import FileTable from "./FileTable";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { CheckCircle2 } from "lucide-react";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogTitle,
-  DialogHeader
-} from "@/components/ui/dialog";
-import { DialogTrigger } from "@/components/ui/dialog";
 import EditProjectForm from "@/components/popups/EditProjectForm";
 import CopyProjectLink from "@/components/popups/CopyProjectLink";
+import NavigateBackTo from "@/components/global/NavigateBackTo";
 
 const ViewSingleProjectPage = () => {
   const params = useParams();
@@ -40,6 +32,7 @@ const ViewSingleProjectPage = () => {
       {/* Project Details */}
       <div className="grid items-center justify-between grid-cols-1 space-y-4 lg:space-y-0 lg:grid-cols-5">
         <div className="flex flex-col items-center justify-center col-span-3 gap-4 lg:items-start">
+          <NavigateBackTo route="/user/me/projects" pageName="projects" />
           <div className="flex gap-2">
             <h1 className="text-2xl font-bold">{project.title}</h1>
             <Badge className="text-xs">
@@ -88,8 +81,7 @@ const ViewSingleProjectPage = () => {
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg lg:text-xl">Storage Used</CardTitle>
               <CardDescription className="text-lg font-extrabold text-muted-foreground">
-                {convertStorageInMBtoGB(project.storageUsed).toFixed(2)}Gb /
-                256Gb
+                {convertStorageInMBtoGB(project.storageUsed)}Gb / 256Gb
               </CardDescription>
             </div>
           </CardHeader>
