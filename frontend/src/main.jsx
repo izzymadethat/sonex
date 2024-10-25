@@ -5,6 +5,7 @@ import "./index.css";
 import { Provider } from "react-redux";
 import { store } from "./store/store.js";
 import { csrfFetch, restoreCSRF } from "./store/csrf.js";
+import { fetchUser } from "./features/user/userSlice.js";
 
 if (process.env.NODE_ENV !== "production") {
   restoreCSRF();
@@ -12,6 +13,8 @@ if (process.env.NODE_ENV !== "production") {
   window.csrfFetch = csrfFetch;
   window.store = store;
 }
+
+store.dispatch(fetchUser());
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

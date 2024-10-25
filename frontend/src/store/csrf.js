@@ -13,7 +13,7 @@ export async function csrfFetch(url, options = {}) {
   options.headers = options.headers || {};
 
   // if request not GET, set Content-Type to application/json and set XSRF-TOKEN to the CSRF token
-  if (options.method.toUppercase() !== "GET") {
+  if (options.method.toUpperCase() !== "GET") {
     options.headers["Content-Type"] =
       options.headers["Content-Type"] || "application/json";
 
