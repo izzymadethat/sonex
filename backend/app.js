@@ -5,7 +5,8 @@ const express = require("express");
 require("express-async-errors");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
-const { sessionAuth, environment } = require("./config");
+const MongoStore = require("connect-mongo");
+const { sessionAuth, environment, mongodb } = require("./config");
 const isProduction = environment === "production";
 const routes = require("./routes");
 const cors = require("cors");
@@ -42,9 +43,15 @@ const sessionOptions = {
     secure: isProduction,
     sameSite: isProduction && "lax",
     maxAge: Number(sessionAuth.accessExpiresIn) // 30 days
-  }
+  },
+  store: MongoStore.create({
+    mongoUrl: mongodb.dbURI,
+    dbName: "sonex-sessions"
+  })
 };
-app.use(cors(corsOptions)); // Allow cross-origin requests from localhost:5173
+if (!isProduction) {
+  app.use(cors(corsOptions)); // Allow cross-origin requests from localhost:5173
+}
 app.use(helmet()); // Adds security in headers
 app.use(session(sessionOptions)); // Session auth middleware
 app.use(
