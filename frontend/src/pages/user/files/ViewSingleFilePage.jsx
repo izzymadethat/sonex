@@ -23,6 +23,7 @@ import {
   CardHeader
 } from "@/components/ui/card";
 import NavigateBackTo from "@/components/global/NavigateBackTo";
+import CommentsSideBar from "./components/CommentsSideBar";
 
 const ViewSingleFilePage = () => {
   const params = useParams();
@@ -64,9 +65,12 @@ const ViewSingleFilePage = () => {
         pageName="this project details"
       />
       {/* Track Information */}
-      <div>
-        <h2 className="text-4xl font-bold ">Song Name</h2>
-        <p>uploaded by user</p>
+      <div className="flex justify-between">
+        <div>
+          <h2 className="text-4xl font-bold ">Song Name</h2>
+          <p>uploaded by user</p>
+        </div>
+        <CommentsSideBar />
       </div>
       {/* Player and Comment Button */}
       <div className="flex flex-col justify-center gap-4">
