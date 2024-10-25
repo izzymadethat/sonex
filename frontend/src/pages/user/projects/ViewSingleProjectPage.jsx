@@ -19,14 +19,28 @@ import { CheckCircle2 } from "lucide-react";
 import EditProjectForm from "@/components/popups/EditProjectForm";
 import CopyProjectLink from "@/components/popups/CopyProjectLink";
 import NavigateBackTo from "@/components/global/NavigateBackTo";
+import {
+  getSingleProject,
+  selectCurrentProject
+} from "@/features/projects/projectsSlice";
+import { useEffect } from "react";
+import PaymentStatusBadge from "./components/PaymentStatusBadge";
+import ProjectStatusBadge from "./components/ProjectStatusBadge";
 
 const ViewSingleProjectPage = () => {
   const params = useParams();
+  const { projectId } = params;
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const project = useSelector((state) =>
-    state.projects.find((p) => String(p.id) === params.projectId)
-  );
+  const project = useSelector(selectCurrentProject);
+
+  // payment status badge
+
+  useEffect(() => {
+    dispatch(getSingleProject(projectId));
+  }, [dispatch, projectId]);
+
+  if (!project) return <p>Loading...</p>;
   return (
     <section className="m-8 space-y-8">
       {/* Project Details */}
@@ -35,20 +49,8 @@ const ViewSingleProjectPage = () => {
           <NavigateBackTo route="/user/me/projects" pageName="projects" />
           <div className="flex gap-2">
             <h1 className="text-2xl font-bold">{project.title}</h1>
-            <Badge className="text-xs">
-              {project.status[0].toUpperCase() + project.status.slice(1)}
-            </Badge>
-            <Badge
-              className={`text-xs ${
-                project.paymentStatus === "paid"
-                  ? "bg-green-500 text-green-50 flex items-center hover:bg-green-600"
-                  : ""
-              }`}
-            >
-              {project.paymentStatus === "paid" && <CheckCircle2 />}
-              {project.paymentStatus[0].toUpperCase() +
-                project.paymentStatus.slice(1)}
-            </Badge>
+            <ProjectStatusBadge projectStatus={project.status} />
+            <PaymentStatusBadge paymentStatus={project.paymentStatus} />
           </div>
           <p className="max-w-xs text-sm text-muted-foreground">
             {project.description}
@@ -71,7 +73,9 @@ const ViewSingleProjectPage = () => {
                 Project Balance
               </CardTitle>
               <CardDescription className="text-lg font-extrabold text-muted-foreground">
-                ${project.projectAmount.toFixed(2)}
+                {project.paymentStatus === "no-charge"
+                  ? `No Charge`
+                  : `$${project.projectAmount.toFixed(2)}`}
               </CardDescription>
             </div>
           </CardHeader>

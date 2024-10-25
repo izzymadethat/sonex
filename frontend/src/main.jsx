@@ -6,6 +6,7 @@ import { Provider } from "react-redux";
 import { store } from "./store/store.js";
 import { csrfFetch, restoreCSRF } from "./store/csrf.js";
 import { fetchUser } from "./features/user/userSlice.js";
+import { getProjects } from "./features/projects/projectsSlice.js";
 
 if (process.env.NODE_ENV !== "production") {
   restoreCSRF();
@@ -15,6 +16,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 store.dispatch(fetchUser());
+store.dispatch(getProjects());
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

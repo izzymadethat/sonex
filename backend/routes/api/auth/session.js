@@ -87,7 +87,7 @@ router.post("/", validateLogin, async (req, res, next) => {
         }
 
         const loggedInUser = {
-          id: user._id,
+          id: user._id.toString(),
           email: user.email,
           firstName: user.firstName,
           username: user.username,

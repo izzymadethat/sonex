@@ -15,7 +15,7 @@ const UserLayout = () => {
   return (
     <SidebarProvider>
       <div className="flex w-full">
-        <SideBar />
+        <SideBar user={user} />
         <div className="w-full mx-6 lg:mx-4">
           <Topbar />
           <Outlet />

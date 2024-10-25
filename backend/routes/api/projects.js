@@ -8,6 +8,7 @@ const Project = require("../../models/project");
 const { authenticatedUsersOnly } = require("../../utils/auth");
 const handleValidationErrors = require("../../utils/validation");
 const commentRoutes = require("./comments");
+const { ObjectId } = require("mongoose").Types;
 
 // Comment routes
 router.use("/:projectId/comments", commentRoutes);
@@ -67,9 +68,23 @@ const validateProjectQuery = [
 // Get projects for user
 // GET /api/projects
 router.get("/", validateProjectQuery, async (req, res, next) => {
-  const userId = req.user.id;
-  const projects = await Project.find({ userId }).populate("clients");
-  res.json({ Projects: projects, User: req.user });
+  try {
+    const userId = new ObjectId(req.session.user.id);
+    const projects = await Project.find({ userId }).populate("clients");
+
+    // format the response
+    const projectsData = projects.map((project) => {
+      return {
+        ...project._doc,
+        _id: project._id.toString(),
+        userId: project.userId.toString()
+      };
+    });
+
+    res.json({ Projects: projectsData, User: req.session.user });
+  } catch (error) {
+    next(error);
+  }
 });
 
 // Create a project
@@ -80,16 +95,16 @@ router.post(
 
   validateProjectInput,
   async (req, res, next) => {
-    const userId = req.user.id;
-    const { title, description, projectAmount } = req.body;
-
-    // if (!title) {
-    //   return res.status(400).json({
-    //     errorMessage: "Please enter a title",
-    //   });
-    // }
+    if (!req.session.user) {
+      return res
+        .status(401)
+        .json({ message: "You must be logged in to create a project" });
+    }
 
     try {
+      const userId = req.session.user.id;
+
+      const { title, description, projectAmount } = req.body;
       const newProject = await new Project({
         title,
         description: description || null,
@@ -97,7 +112,6 @@ router.post(
         projectAmount: projectAmount || 0,
         paymentStatus: projectAmount ? "unpaid" : "no-charge"
       }).save();
-
       res.status(201).json(newProject);
     } catch (error) {
       next(error);
@@ -110,8 +124,7 @@ router.post(
 // user must be logged in
 router.get("/:projectId", async (req, res, next) => {
   const projectId = req.params.projectId;
-  const userId = req.user.id.toString();
-
+  const userId = req.session.user.id;
   try {
     const project = await Project.findById(projectId).populate("clients");
 

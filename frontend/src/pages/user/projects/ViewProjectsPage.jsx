@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, Trash2 } from "lucide-react";
 import {
   Table,
@@ -16,13 +16,17 @@ import {
   TooltipTrigger
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { useSelector } from "react-redux";
-import { selectAllProjects } from "@/features/projects/projectsSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getProjects,
+  selectAllProjects
+} from "@/features/projects/projectsSlice";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
 import NewProjectFormPopup from "@/components/popups/NewProjectForm";
 
 export default function ViewProjectsPage() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const projects = useSelector(selectAllProjects);
   const formattedProjects = projects.map((project) => {
@@ -31,7 +35,7 @@ export default function ViewProjectsPage() {
     const timeAgo = `${timePeriod} ago`;
 
     return {
-      id: project.id,
+      id: project._id,
       title: project.title,
       createdAt: timeAgo,
       status: project.status
@@ -39,6 +43,10 @@ export default function ViewProjectsPage() {
   });
 
   const [selected, setSelected] = useState([]);
+
+  useEffect(() => {
+    dispatch(getProjects());
+  }, [dispatch]);
   return (
     <section className="m-8">
       <div className="flex items-center justify-between mb-4">

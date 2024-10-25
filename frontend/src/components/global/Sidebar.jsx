@@ -111,7 +111,7 @@ const menu1 = [
   }
 ];
 
-const SideBar = () => {
+const SideBar = ({ user }) => {
   return (
     <Sidebar variant="floating" className="px-2 py-8 mx-2">
       <SidebarHeader>
@@ -167,13 +167,12 @@ const SideBar = () => {
           <DropdownMenuTrigger asChild className="cursor-pointer">
             <div className="flex items-center gap-2 mx-4">
               <Avatar>
-                <AvatarImage
-                  src="https://github.com/shadcn.png"
-                  alt="@shadcn"
-                />
-                <AvatarFallback>CN</AvatarFallback>
+                <AvatarImage src={user.avatar} alt="@shadcn" />
+                <AvatarFallback>
+                  {user.firstName[0].toUpperCase()}
+                </AvatarFallback>
               </Avatar>
-              <span className="ml-2">Sonex User</span>
+              <span className="ml-2">{user.email}</span>
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent>

@@ -19,7 +19,7 @@ import { CheckCircle } from "lucide-react";
 const CopyProjectLink = ({ project }) => {
   // Copy link when copy button is clicked
   const [copyLink] = useState(
-    `https//sonexaudio.app/project/${project.id}?client_view=true`
+    `https//sonexaudio.app/project/${project._id}?client_view=true`
   );
   const [isCopied, setIsCopied] = useState(false);
 
