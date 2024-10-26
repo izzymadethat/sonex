@@ -3,7 +3,7 @@ import {
   Header,
   Features,
   WhatsIncluded,
-  Footer
+  Footer,
 } from "../landing-page/sections";
 import { PricingPlan, MarketedUsers } from "../../components/customs/sections";
 import { HeaderChip } from "../../components/misc";
@@ -17,18 +17,17 @@ import { getProjects } from "@/features/projects/projectsSlice";
 const Home = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const userData = useSelector(selectUser);
-  const { status, currentUser: user } = userData;
-  const userLoaded = status === "succeeded" && user;
+  const { currentUser: user, status, error } = useSelector(selectUser);
 
-  useEffect(() => {
-    if (status === "idle") {
-      dispatch(fetchUser());
-      dispatch(getProjects());
-    } else if (userLoaded) {
-      return navigate;
-    }
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(fetchUser());
+  // }, [dispatch]);
+
+  // useEffect(() => {
+  //   if (user) {
+  //     navigate("/user/me", { replace: true });
+  //   }
+  // }, [user, navigate]);
 
   return (
     <div>

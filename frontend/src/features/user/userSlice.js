@@ -12,8 +12,8 @@ export const loginUser = createAsyncThunk(
         method: "POST",
         body: JSON.stringify({
           credential,
-          password
-        })
+          password,
+        }),
       });
       const data = await response.json();
 
@@ -42,7 +42,7 @@ export const fetchUser = createAsyncThunk("user/fetchCurrentUser", async () => {
 export const logoutUser = createAsyncThunk("user/logoutUser", async () => {
   try {
     const res = await csrfFetch("/api/auth/session", {
-      method: "DELETE"
+      method: "DELETE",
     });
     const data = await res.json();
   } catch (error) {
@@ -73,7 +73,7 @@ REDUX MAP (in progress)
 const initialState = {
   currentUser: null,
   status: "idle",
-  error: null
+  error: null,
 };
 
 const userSlice = createSlice({
@@ -88,7 +88,7 @@ const userSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.currentUser = action.payload.user;
+        state.currentUser = { ...action.payload.user };
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = "failed";
@@ -96,20 +96,17 @@ const userSlice = createSlice({
       })
       .addCase(fetchUser.pending, (state) => {
         state.status = "loading";
+        state.error = null;
       })
       .addCase(fetchUser.fulfilled, (state, action) => {
         state.status = "succeeded";
-        const user = {
-          ...action.payload,
-          createdAt: new Date(action.payload.createdAt).toISOString(),
-          updatedAt: new Date(action.payload.updatedAt).toISOString()
-        };
-        state.currentUser = user;
+        state.currentUser = { ...action.payload };
       })
       .addCase(logoutUser.fulfilled, (state) => {
         state.currentUser = null;
+        state.status = "idle";
       });
-  }
+  },
 });
 
 export const selectUser = (state) => state.user;

@@ -17,7 +17,7 @@ export async function csrfFetch(url, options = {}) {
     options.headers["Content-Type"] =
       options.headers["Content-Type"] || "application/json";
 
-    options.headers["XSRF-TOKEN"] = Cookies.get("XSRF-TOKEN");
+    options.headers["XSRF-TOKEN"] = (await restoreCSRF()).token;
   }
 
   options.credentials = "include";
@@ -32,6 +32,12 @@ export async function csrfFetch(url, options = {}) {
 }
 
 // DEVELOPMENT MODE: Restore CSRF token from cookies in browser
-export function restoreCSRF() {
-  return csrfFetch("/api/csrf/restore");
+export async function restoreCSRF() {
+  const res = await fetch("/api/csrf/restore", {
+    credentials: "include",
+  });
+
+  const data = await res.json();
+
+  return data;
 }

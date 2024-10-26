@@ -9,8 +9,10 @@ const Header = ({ user }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleDemoLogin = () => {
-    dispatch(loginUser({ credential: "demo@user.com", password: "password" })); //for demo purpose only
+  const handleDemoLogin = async () => {
+    await dispatch(
+      loginUser({ credential: "demo@user.com", password: "password" })
+    ); //for demo purpose only
     return navigate("/user/me");
   };
 

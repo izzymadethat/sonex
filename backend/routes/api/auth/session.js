@@ -13,7 +13,7 @@ const validateLogin = [
   check("password")
     .exists({ checkFalsy: true })
     .withMessage("Password is required"),
-  handleValidationErrors
+  handleValidationErrors,
 ];
 
 const validateSignup = [
@@ -32,21 +32,22 @@ const validateSignup = [
   check("password")
     .exists({ checkFalsy: true })
     .withMessage("Password is required"),
-  handleValidationErrors
+  handleValidationErrors,
 ];
 
 // Get current user
 // GET /api/auth/session
-router.get("/", (req, res) => {
-  if (!req.user) return res.json({ user: null });
+router.get("/", async (req, res) => {
+  if (!req.session.user) return res.json({ user: null });
 
-  const user = User.findById(req.user.id).select([
+  const user = await User.findById(req.session.user.id).select([
     "-hashedPassword",
     "-__v",
     "-projects",
-    "-clients"
+    "-clients",
   ]);
-  res.json({ user });
+
+  return res.json({ user });
 });
 
 // Login a user
@@ -57,7 +58,7 @@ router.post("/", validateLogin, async (req, res, next) => {
   try {
     // Try to find user by username or email
     const user = await User.findOne({
-      $or: [{ username: credential }, { email: credential }]
+      $or: [{ username: credential }, { email: credential }],
     });
 
     if (!user) {
@@ -65,7 +66,7 @@ router.post("/", validateLogin, async (req, res, next) => {
       err.status = 401;
       err.title = "Login Failed";
       err.errors = {
-        login: "Couldn't find user with that username or email"
+        login: "Couldn't find user with that username or email",
       };
       return next(err);
     }
@@ -84,7 +85,7 @@ router.post("/", validateLogin, async (req, res, next) => {
       err.status = 401;
       err.title = "Login Failed";
       err.errors = {
-        login: "The provided credentials were invalid."
+        login: "The provided credentials were invalid.",
       };
       return next(err);
     }
@@ -94,7 +95,7 @@ router.post("/", validateLogin, async (req, res, next) => {
       email: user.email,
       firstName: user.firstName,
       username: user.username,
-      role: "user"
+      role: "user",
     };
 
     // Add user to express session
@@ -121,7 +122,7 @@ router.post("/register", validateSignup, async (req, res, next) => {
       lastName: incomingUser.lastName,
       username: incomingUser.username,
       email: incomingUser.email,
-      hashedPassword
+      hashedPassword,
     };
 
     const newUser = new User(newUserInfo);

@@ -8,17 +8,20 @@ import {
   Loader2,
   Mic2,
   Music2,
-  User2
+  User2,
 } from "lucide-react";
 import BtnSecondary from "../../../components/buttons/BtnSecondary";
 import { notifications } from "../../../constants/notifications";
 import NotificationCard from "../../../components/customs/NotificationCard";
 import { userExample } from "../../../constants/user";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useSelector } from "react-redux";
-import { selectUser } from "@/features/user/userSlice";
-import { selectAllProjects } from "@/features/projects/projectsSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUser, selectUser } from "@/features/user/userSlice";
+import {
+  getProjects,
+  selectAllProjects,
+} from "@/features/projects/projectsSlice";
 import RecentProjects from "./RecentProjects";
 import { selectAllComments } from "@/features/comments/commentsSlice";
 import UnfinishedComments from "./UnfinishedComments";
@@ -58,21 +61,26 @@ const SampleTask = ({ projectNum }) => {
 // };
 
 function Dashboard() {
-  const userData = useSelector(selectUser);
-  const { status, currentUser: user } = userData;
-
+  const dispatch = useDispatch();
+  const { currentUser: user, status } = useSelector(selectUser);
   const projects = useSelector(selectAllProjects);
   const comments = useSelector(selectAllComments);
   const orderedProjects = projects
-    .slice()
-    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+    .slice(0, 6)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  useEffect(() => {
+    if (user) {
+      dispatch(getProjects());
+    }
+  }, [user, dispatch]);
 
   if (status === "loading") {
-    return <Loader2 size={64} className="animate-spin" />;
-  }
-
-  if (status === "succeeded" && !user) {
-    return navigate("/");
+    return (
+      <div className="flex items-center justify-center p-4 my-8 rounded-md shadow-md cursor-pointer bg-secondary hover:bg-primary hover:text-secondary">
+        <Loader2 size={24} />
+      </div>
+    );
   }
 
   return (

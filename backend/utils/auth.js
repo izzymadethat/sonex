@@ -12,16 +12,13 @@
  */
 
 exports.restoreUser = (req, res, next) => {
-  console.log("RESTORING USER");
-  req.user = null;
-  if (req.session.user) {
-    console.log(req.session.user);
-    req.user = req.session.user;
-    return next();
-  } else {
-    req.session.destroy();
-    return next();
-  }
+  console.log("RESTORING USER:");
+  console.log(req.cookies);
+
+  console.log("SESSION USER:");
+  console.log(req.session.user);
+
+  next();
 };
 
 exports.checkIfAuthenticated = (req, _res, next) => {
@@ -29,7 +26,7 @@ exports.checkIfAuthenticated = (req, _res, next) => {
     const error = new Error("Authentication required");
     error.status = 401;
     error.errors = {
-      message: "You must be logged in to access this route"
+      message: "You must be logged in to access this route",
     };
 
     return next(error);
