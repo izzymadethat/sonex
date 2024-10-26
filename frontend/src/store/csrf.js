@@ -20,6 +20,8 @@ export async function csrfFetch(url, options = {}) {
     options.headers["XSRF-TOKEN"] = Cookies.get("XSRF-TOKEN");
   }
 
+  options.credentials = "include";
+
   // Call window's fetch function with the url and options
   const res = await window.fetch(url, options);
 

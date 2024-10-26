@@ -7,14 +7,14 @@ const initialState = [
     name: "John",
     email: "johndoe@example.com",
     isVerified: true,
-    createdAt: sub(new Date(), { days: 39 })
+    createdAt: sub(new Date(), { days: 39 }).toISOString()
   },
   {
     id: 2,
     name: "Jane",
     email: "janesmith@example.com",
     isVerified: true,
-    createdAt: sub(new Date(), { days: 18 })
+    createdAt: sub(new Date(), { days: 18 }).toISOString()
   }
 ];
 

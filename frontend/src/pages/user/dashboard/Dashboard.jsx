@@ -5,6 +5,7 @@ import {
   DollarSign,
   FolderOpenDot,
   HardDrive,
+  Loader2,
   Mic2,
   Music2,
   User2
@@ -57,12 +58,22 @@ const SampleTask = ({ projectNum }) => {
 // };
 
 function Dashboard() {
-  const user = useSelector(selectUser);
+  const userData = useSelector(selectUser);
+  const { status, currentUser: user } = userData;
+
   const projects = useSelector(selectAllProjects);
   const comments = useSelector(selectAllComments);
   const orderedProjects = projects
     .slice()
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+
+  if (status === "loading") {
+    return <Loader2 size={64} className="animate-spin" />;
+  }
+
+  if (status === "succeeded" && !user) {
+    return navigate("/");
+  }
 
   return (
     <div className="dashboard">

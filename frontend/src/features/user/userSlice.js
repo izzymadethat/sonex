@@ -3,6 +3,7 @@ import { csrfFetch } from "@/store/csrf";
 
 const BASE_URL = "/api/auth/session";
 
+// Login user with given credentials
 export const loginUser = createAsyncThunk(
   "user/loginUser",
   async ({ credential, password }, { rejectWithValue }) => {
@@ -26,6 +27,8 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+// Fetch current user's data
+// TODO: add and do more with fields in database so I can store more data
 export const fetchUser = createAsyncThunk("user/fetchCurrentUser", async () => {
   try {
     const res = await csrfFetch("/api/auth/session");
@@ -36,21 +39,37 @@ export const fetchUser = createAsyncThunk("user/fetchCurrentUser", async () => {
   }
 });
 
-// const initialState = {
-//   id: "6715ab202717cc5a1b693d34",
-//   firstName: "Demo",
-//   lastName: "Lition",
-//   username: "demo-user",
-//   email: "demo@user.com",
-//   role: "user",
-//   storageUsed: 20248,
-//   storageLimit: 512 * 1024,
-//   subscriptionStatus: "active",
-//   subscriptionEndDate: new Date("2024-12-31"),
-//   status: "idle",
-//   error: null
-// };
+export const logoutUser = createAsyncThunk("user/logoutUser", async () => {
+  try {
+    const res = await csrfFetch("/api/auth/session", {
+      method: "DELETE"
+    });
+    const data = await res.json();
+  } catch (error) {
+    return error.message || "an error occurred";
+  }
+});
 
+/* 
+REDUX MAP (in progress)
+  currentUser: {
+    id: string | objectId,
+    firstName: string,
+    lastName: string,
+    username: string,
+    email: string,
+    role: enum ("admin" | "user" | "client"),
+    storageUsed: number (in gigabytes),
+    storageLimit: number (in gigabytes) <- total storage limit,
+    connectAccountId: string,
+    subscriptionStatus: enum ("active", "inactive"),
+    subscriptionStartDate: date,
+    subscriptionEndDate: date,
+  } | null
+
+  status: "idle" | "loading" | "succeeded" | "failed"
+  error: null | string
+*/
 const initialState = {
   currentUser: null,
   status: "idle",
@@ -69,17 +88,29 @@ const userSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.user = action.payload.user;
+        state.currentUser = action.payload.user;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       })
+      .addCase(fetchUser.pending, (state) => {
+        state.status = "loading";
+      })
       .addCase(fetchUser.fulfilled, (state, action) => {
-        state.currentUser = action.payload;
+        state.status = "succeeded";
+        const user = {
+          ...action.payload,
+          createdAt: new Date(action.payload.createdAt).toISOString(),
+          updatedAt: new Date(action.payload.updatedAt).toISOString()
+        };
+        state.currentUser = user;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.currentUser = null;
       });
   }
 });
 
-export const selectUser = (state) => state.user.currentUser;
+export const selectUser = (state) => state.user;
 export default userSlice.reducer;

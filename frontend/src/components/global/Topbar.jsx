@@ -5,6 +5,9 @@ import { ArrowLeftCircle, ArrowRightCircle, LogOut } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider } from "../ui/tooltip";
 import { TooltipTrigger } from "@radix-ui/react-tooltip";
 import { useSidebar } from "../ui/sidebar";
+import { useDispatch } from "react-redux";
+import { logoutUser } from "@/features/user/userSlice";
+import { useNavigate } from "react-router-dom";
 // import { SidebarTrigger } from "../ui/sidebar";
 
 // Custom sidebar trigger
@@ -19,6 +22,12 @@ const SidebarTrigger = () => {
 
 // Topbar for user dashboard
 const Topbar = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const handleLogout = async () => {
+    dispatch(logoutUser());
+    return navigate("/");
+  };
   return (
     <header className="flex items-center justify-between my-4 rounded-lg">
       <SidebarTrigger />
@@ -27,7 +36,7 @@ const Topbar = () => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
-              <Button>
+              <Button onClick={handleLogout}>
                 <LogOut />
               </Button>
             </TooltipTrigger>

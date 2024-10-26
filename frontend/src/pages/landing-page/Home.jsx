@@ -8,11 +8,31 @@ import {
 import { PricingPlan, MarketedUsers } from "../../components/customs/sections";
 import { HeaderChip } from "../../components/misc";
 import { faqs } from "../../constants";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUser, selectUser } from "@/features/user/userSlice";
+import { useEffect } from "react";
+import { getProjects } from "@/features/projects/projectsSlice";
 
 const Home = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const userData = useSelector(selectUser);
+  const { status, currentUser: user } = userData;
+  const userLoaded = status === "succeeded" && user;
+
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchUser());
+      dispatch(getProjects());
+    } else if (userLoaded) {
+      return navigate;
+    }
+  }, [dispatch]);
+
   return (
     <div>
-      <Header />
+      <Header user={user} />
 
       {/* Hero */}
       <section className="flex flex-col items-center justify-center h-screen space-y-8">

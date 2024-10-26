@@ -5,36 +5,36 @@ const BASE_URL = "/api/projects";
 
 /* 
 Redux Map (in progress...)
-projects: [
-  {
+  projects: [
+    {
+      id: string,
+      title: string,
+      description: string,
+      userId: string | ObjectId,
+      status: enum ("active" | "completed" | "archived"),
+      paymentStatus: enum ("unpaid" | "paid" | "no-charge"),
+      projectAmount: number,
+      amountPaid: number,
+      storageUsed: number,
+      clients: array of strings | array of ObjectIds,
+      createdAt: date,
+      updatedAt: date,
+    },
+  ] 
+  currentProject: {
     id: string,
-    title: string,
-    description: string,
-    userId: string | ObjectId,
-    status: enum ("active" | "completed" | "archived"),
-    paymentStatus: enum ("unpaid" | "paid" | "no-charge"),
-    projectAmount: number,
-    amountPaid: number,
-    storageUsed: number,
-    clients: array of strings | array of ObjectIds,
-    createdAt: date,
-    updatedAt: date,
-  },
-] 
-currentProject: {
-  id: string,
-    title: string,
-    description: string,
-    userId: string | ObjectId,
-    status: enum ("active" | "completed" | "archived"),
-    paymentStatus: enum ("unpaid" | "paid" | "no-charge"),
-    projectAmount: number,
-    amountPaid: number,
-    storageUsed: number,
-    clients: array of strings | array of ObjectIds,
-    createdAt: date,
-    updatedAt: date,
-}  
+      title: string,
+      description: string,
+      userId: string | ObjectId,
+      status: enum ("active" | "completed" | "archived"),
+      paymentStatus: enum ("unpaid" | "paid" | "no-charge"),
+      projectAmount: number,
+      amountPaid: number,
+      storageUsed: number,
+      clients: array of strings | array of ObjectIds,
+      createdAt: date,
+      updatedAt: date,
+  }  
 */
 
 export const getProjects = createAsyncThunk(

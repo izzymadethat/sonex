@@ -38,7 +38,14 @@ const validateSignup = [
 // Get current user
 // GET /api/auth/session
 router.get("/", (req, res) => {
-  const user = req.session.user || null;
+  if (!req.user) return res.json({ user: null });
+
+  const user = User.findById(req.user.id).select([
+    "-hashedPassword",
+    "-__v",
+    "-projects",
+    "-clients"
+  ]);
   res.json({ user });
 });
 
@@ -66,40 +73,34 @@ router.post("/", validateLogin, async (req, res, next) => {
     // check if password is correct
     // If so, login the user and generate session token
     // If not, return error message
-    bcrypt.compare(
+    const isMatch = bcrypt.compareSync(
       password,
-      user.hashedPassword.toString(),
-      async (err, isMatch) => {
-        // Server error
-        if (err) {
-          return next(err);
-        }
-
-        // Password is incorrect
-        if (!isMatch) {
-          const err = new Error("Login failed");
-          err.status = 401;
-          err.title = "Login Failed";
-          err.errors = {
-            login: "The provided credentials were invalid."
-          };
-          return next(err);
-        }
-
-        const loggedInUser = {
-          id: user._id.toString(),
-          email: user.email,
-          firstName: user.firstName,
-          username: user.username,
-          role: "user"
-        };
-
-        // Add user to express session
-        req.session.user = loggedInUser;
-
-        return res.status(200).json({ user: loggedInUser });
-      }
+      user.hashedPassword.toString()
     );
+
+    // Password is incorrect
+    if (!isMatch) {
+      const err = new Error("Login failed");
+      err.status = 401;
+      err.title = "Login Failed";
+      err.errors = {
+        login: "The provided credentials were invalid."
+      };
+      return next(err);
+    }
+
+    const loggedInUser = {
+      id: user._id.toString(),
+      email: user.email,
+      firstName: user.firstName,
+      username: user.username,
+      role: "user"
+    };
+
+    // Add user to express session
+    req.session.user = loggedInUser;
+
+    return res.status(200).json({ user: loggedInUser });
   } catch (error) {
     next(error);
   }

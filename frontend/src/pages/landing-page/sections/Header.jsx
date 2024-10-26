@@ -3,19 +3,16 @@ import { navLinks } from "../../../constants";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser, selectUser } from "@/features/user/userSlice";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
-const Header = () => {
+const Header = ({ user }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector(selectUser);
 
   const handleDemoLogin = () => {
     dispatch(loginUser({ credential: "demo@user.com", password: "password" })); //for demo purpose only
-  };
-
-  if (user) {
     return navigate("/user/me");
-  }
+  };
 
   return (
     <header className="flex justify-between p-4">

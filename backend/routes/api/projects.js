@@ -69,7 +69,7 @@ const validateProjectQuery = [
 // GET /api/projects
 router.get("/", validateProjectQuery, async (req, res, next) => {
   try {
-    const userId = new ObjectId(req.session.user.id);
+    const userId = new ObjectId(req.user.id);
     const projects = await Project.find({ userId }).populate("clients");
 
     // format the response
@@ -81,7 +81,7 @@ router.get("/", validateProjectQuery, async (req, res, next) => {
       };
     });
 
-    res.json({ Projects: projectsData, User: req.session.user });
+    res.json({ Projects: projectsData, User: req.user });
   } catch (error) {
     next(error);
   }
@@ -95,14 +95,8 @@ router.post(
 
   validateProjectInput,
   async (req, res, next) => {
-    if (!req.session.user) {
-      return res
-        .status(401)
-        .json({ message: "You must be logged in to create a project" });
-    }
-
     try {
-      const userId = req.session.user.id;
+      const userId = req.user.id;
 
       const { title, description, projectAmount } = req.body;
       const newProject = await new Project({
@@ -124,7 +118,7 @@ router.post(
 // user must be logged in
 router.get("/:projectId", async (req, res, next) => {
   const projectId = req.params.projectId;
-  const userId = req.session.user.id;
+  const userId = req.user.id;
   try {
     const project = await Project.findById(projectId).populate("clients");
 

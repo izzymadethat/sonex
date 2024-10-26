@@ -11,7 +11,20 @@
  *
  */
 
-function checkIfAuthenticated(req, _res, next) {
+exports.restoreUser = (req, res, next) => {
+  console.log("RESTORING USER");
+  req.user = null;
+  if (req.session.user) {
+    console.log(req.session.user);
+    req.user = req.session.user;
+    return next();
+  } else {
+    req.session.destroy();
+    return next();
+  }
+};
+
+exports.checkIfAuthenticated = (req, _res, next) => {
   if (!req.session.user && !req.session.client) {
     const error = new Error("Authentication required");
     error.status = 401;
@@ -23,8 +36,4 @@ function checkIfAuthenticated(req, _res, next) {
   }
 
   return next();
-}
-
-module.exports = {
-  checkIfAuthenticated
 };

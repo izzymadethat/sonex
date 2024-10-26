@@ -4,7 +4,10 @@ const apiRouter = require("./api");
 const multer = require("multer");
 const MongoServerError = require("mongoose");
 const { environment } = require("../config");
+const { restoreUser } = require("../utils/auth");
 const isProduction = environment === "production";
+
+router.use(restoreUser);
 
 router.get("/api/csrf/restore", (req, res) => {
   const csrfToken = req.csrfToken();
