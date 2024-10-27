@@ -21,10 +21,34 @@ import {
   DialogTitle,
   DialogTrigger
 } from "../ui/dialog";
+import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+import { createProject } from "@/features/projects/projectsSlice";
+import { Loader2 } from "lucide-react";
 
 const NewProjectFormPopup = () => {
+  const dispatch = useDispatch();
+  const { status } = useSelector((state) => state.projects);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [projectCost, setProjectCost] = useState("0");
+  const [date, setDate] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleCreateNewProject = async () => {
+    const projectInfo = {
+      title,
+      description,
+      projectCost: parseFloat(Number(projectCost).toFixed(2)),
+      date
+    };
+
+    await dispatch(createProject(projectInfo));
+    setIsOpen(false);
+  };
+
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button>New Project</Button>
       </DialogTrigger>
@@ -46,6 +70,8 @@ const NewProjectFormPopup = () => {
                 type="text"
                 name="title"
                 placeholder="Project Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
               />
             </div>
             <div className="flex flex-col gap-y-2">
@@ -54,15 +80,28 @@ const NewProjectFormPopup = () => {
                 name="description"
                 placeholder="Describe the project. 200 characters max"
                 maxLength={200}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
               />
             </div>
             <div className="flex flex-col gap-y-2">
               <Label>Project Cost</Label>
-              <Input name="project-cost" placeholder="0" type="number" />
+              <Input
+                name="project-cost"
+                placeholder="0"
+                type="number"
+                value={projectCost}
+                onChange={(e) => setProjectCost(e.target.value)}
+              />
             </div>
             <div className="flex flex-col gap-y-2">
               <Label>Expected Date</Label>
-              <Input name="due-date" type="date" />
+              <Input
+                name="due-date"
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+              />
             </div>
           </div>
         </section>
@@ -72,8 +111,20 @@ const NewProjectFormPopup = () => {
               Cancel
             </Button>
           </DialogClose>
-          <Button type="button" disabled>
-            Create Project
+
+          <Button
+            type="button"
+            onClick={handleCreateNewProject}
+            disabled={!title || title.length < 6 || status === "loading"}
+          >
+            {status === "loading" ? (
+              <>
+                <Loader2 size={24} className="mr-0.5 animate-spin" />
+                <span>Creating Project...</span>
+              </>
+            ) : (
+              "Create Project"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

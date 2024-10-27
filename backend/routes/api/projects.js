@@ -28,7 +28,7 @@ const validateProjectInput = [
     .optional()
     .isFloat({ min: 0 })
     .withMessage("Please enter a valid amount"),
-  handleValidationErrors,
+  handleValidationErrors
 ];
 const validateProjectQuery = [
   check("status")
@@ -63,7 +63,7 @@ const validateProjectQuery = [
     .withMessage(
       "Payment status must be 'unpaid', 'no-charge', 'paid', 'partially-paid', or 'overpaid'"
     ),
-  handleValidationErrors,
+  handleValidationErrors
 ];
 // Get projects for user
 // GET /api/projects
@@ -90,28 +90,23 @@ router.get("/", validateProjectQuery, async (req, res, next) => {
 // Create a project
 // POST /api/projects
 // user must be logged in
-router.post(
-  "/",
+router.post("/", validateProjectInput, async (req, res, next) => {
+  try {
+    const userId = req.session.user.id;
 
-  validateProjectInput,
-  async (req, res, next) => {
-    try {
-      const userId = req.user.id;
-
-      const { title, description, projectAmount } = req.body;
-      const newProject = await new Project({
-        title,
-        description: description || null,
-        userId,
-        projectAmount: projectAmount || 0,
-        paymentStatus: projectAmount ? "unpaid" : "no-charge",
-      }).save();
-      res.status(201).json(newProject);
-    } catch (error) {
-      next(error);
-    }
+    const { title, description, projectAmount } = req.body;
+    const newProject = await new Project({
+      title,
+      description: description || null,
+      userId,
+      projectAmount: projectAmount || 0,
+      paymentStatus: projectAmount ? "unpaid" : "no-charge"
+    }).save();
+    res.status(201).json(newProject);
+  } catch (error) {
+    next(error);
   }
-);
+});
 
 // Get a single project
 // GET /api/projects/:projectId
@@ -124,14 +119,14 @@ router.get("/:projectId", async (req, res, next) => {
 
     if (!project) {
       return res.status(404).json({
-        message: "Project not found",
+        message: "Project not found"
       });
     }
 
     // check if project belongs to user
     if (project.userId.toString() !== userId) {
       return res.status(403).json({
-        message: "You do not have permission to view this project",
+        message: "You do not have permission to view this project"
       });
     }
 
@@ -154,12 +149,12 @@ router.get(
       const project = await Project.findById(projectId);
       if (!project) {
         return res.status(404).json({
-          message: "Project not found",
+          message: "Project not found"
         });
       }
       if (project.userId.toString() !== userId) {
         return res.status(403).json({
-          message: "You do not have permission to view this project",
+          message: "You do not have permission to view this project"
         });
       }
       const clients = await Client.find({ projectId });
@@ -176,11 +171,10 @@ router.get(
 // project must be owned by user
 router.put(
   "/:projectId",
-
-  validateProjectInput,
+  validateProjectInput, // Assuming this middleware is already validating inputs
   async (req, res, next) => {
     const projectId = req.params.projectId;
-    const userId = req.user.id.toString();
+    const userId = req.session.user.id.toString();
 
     const {
       title,
@@ -188,7 +182,7 @@ router.put(
       status,
       projectAmount,
       amountPaid,
-      paymentStatus,
+      paymentStatus // This comes from the frontend
     } = req.body;
 
     try {
@@ -196,17 +190,18 @@ router.put(
 
       if (!existingProject) {
         return res.status(404).json({
-          message: "Project not found ",
+          message: "Project not found"
         });
       }
 
-      // check if project belongs to user
+      // Ensure the user owns the project before updating
       if (existingProject.userId.toString() !== userId) {
         return res.status(403).json({
-          message: "You do not have permission to update this project",
+          message: "You do not have permission to update this project"
         });
       }
 
+      // Update basic fields
       existingProject.title = title || existingProject.title;
       existingProject.description = description || existingProject.description;
       existingProject.status = status || existingProject.status;
@@ -215,22 +210,12 @@ router.put(
           ? projectAmount
           : existingProject.projectAmount;
 
-      let messages = {};
-
-      if (!amountPaid) {
-        existingProject.amountPaid = existingProject.amountPaid || 0;
-      }
-      // update payment status
-      // if the project amount was changed to 0, set the payment status to no-charge
-      if (projectAmount === 0) {
-        // If project amount is 0, mark as 'no-charge'
-        existingProject.paymentStatus = "no-charge";
-      } else {
-        // Handle other payment statuses if projectAmount > 0
-        existingProject.projectAmount = projectAmount;
-
-        // Reassess the payment status based on the current amountPaid
-        if (existingProject.amountPaid > existingProject.projectAmount) {
+      // Handle paymentStatus updates (manual or automatic)
+      if (!paymentStatus) {
+        // Automatically update paymentStatus based on projectAmount and amountPaid
+        if (projectAmount === 0) {
+          existingProject.paymentStatus = "no-charge";
+        } else if (existingProject.amountPaid > existingProject.projectAmount) {
           existingProject.paymentStatus = "overpaid";
         } else if (
           existingProject.amountPaid === existingProject.projectAmount
@@ -239,15 +224,18 @@ router.put(
         } else if (existingProject.amountPaid > 0) {
           existingProject.paymentStatus = "partially-paid";
         } else {
-          existingProject.paymentStatus = "unpaid"; // Handles cases where amountPaid is 0 or undefined
+          existingProject.paymentStatus = "unpaid";
         }
+      } else {
+        // Use the paymentStatus provided from the frontend
+        existingProject.paymentStatus = paymentStatus;
       }
 
-      // If a new amountPaid is provided in the request, process it
+      // Process amountPaid if provided
       if (amountPaid && amountPaid > 0) {
         existingProject.amountPaid = Number(amountPaid);
 
-        // Re-evaluate the payment status based on the new amountPaid
+        // Reevaluate payment status based on new amountPaid
         if (existingProject.amountPaid > existingProject.projectAmount) {
           existingProject.paymentStatus = "overpaid";
         } else if (
@@ -259,16 +247,20 @@ router.put(
         }
       }
 
+      // Check for overpayment warning
+      let messages = {};
       if (existingProject.amountPaid > existingProject.projectAmount) {
-        messages["Overpayment amount warning"] =
-          "Total amount paid is greater than project amount";
+        messages["Overpayment warning"] =
+          "Total amount paid is greater than project amount.";
       }
 
+      // Save updated project
       const updatedProject = await existingProject.save();
 
+      // Send the updated project data back to the frontend
       const results = {
         ...updatedProject._doc,
-        messages,
+        messages
       };
 
       res.status(200).json(results);
@@ -294,25 +286,25 @@ router.put(
       const existingProject = await Project.findById(projectId);
       if (!existingProject) {
         return res.status(404).json({
-          message: "Project not found",
+          message: "Project not found"
         });
       }
       if (existingProject.userId.toString() !== userId) {
         return res.status(403).json({
-          message: "You do not have permission to add clients to this project",
+          message: "You do not have permission to add clients to this project"
         });
       }
       const existingClient = await Client.findById(clientId);
       if (!existingClient) {
         return res.status(404).json({
-          message: "Client not found",
+          message: "Client not found"
         });
       }
 
       // Check if the user is in the client's users array
       if (!existingClient.users.includes(userId)) {
         return res.status(403).json({
-          message: "This client is not associated with your account",
+          message: "This client is not associated with your account"
         });
       }
 
@@ -331,21 +323,21 @@ router.put(
 // project must be owned by user
 router.delete("/:projectId", async (req, res, next) => {
   const projectId = req.params.projectId;
-  const userId = req.user.id.toString();
+  const userId = req.session.user.id.toString();
 
   try {
     const existingProject = await Project.findById(projectId);
 
     if (!existingProject) {
       return res.status(404).json({
-        message: "Project not found",
+        message: "Project not found"
       });
     }
 
     // check if project belongs to user
     if (existingProject.userId.toString() !== userId) {
       return res.status(403).json({
-        message: "You do not have permission to delete this project",
+        message: "You do not have permission to delete this project"
       });
     }
 
@@ -353,7 +345,7 @@ router.delete("/:projectId", async (req, res, next) => {
 
     res.status(200).json({
       message: "Successfully deleted project",
-      Project: deletedProject,
+      Project: deletedProject
     });
   } catch (error) {
     next(error);

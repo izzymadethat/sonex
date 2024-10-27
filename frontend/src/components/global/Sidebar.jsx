@@ -146,7 +146,7 @@ const SideBar = ({ user }) => {
           <SidebarGroupContent>
             <SidebarMenu>
               {menu1.map((link, index) => (
-                <SidebarMenuItem>
+                <SidebarMenuItem key={index}>
                   <SidebarMenuButton asChild>
                     <Link
                       to={link.route}

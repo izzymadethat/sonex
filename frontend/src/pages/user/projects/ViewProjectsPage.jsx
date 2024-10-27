@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  deleteProject,
   getProjects,
   selectAllProjects
 } from "@/features/projects/projectsSlice";
@@ -47,6 +48,9 @@ export default function ViewProjectsPage() {
   useEffect(() => {
     dispatch(getProjects());
   }, [dispatch]);
+  const handleDeleteProject = async (projectId) => {
+    await dispatch(deleteProject(projectId));
+  };
   return (
     <section className="m-8">
       <div className="flex items-center justify-between mb-4">
@@ -89,7 +93,10 @@ export default function ViewProjectsPage() {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button variant="destructive">
+                      <Button
+                        variant="destructive"
+                        onClick={() => handleDeleteProject(project.id)}
+                      >
                         <Trash2 />
                       </Button>
                     </TooltipTrigger>
