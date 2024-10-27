@@ -1,11 +1,9 @@
 const router = require("express").Router({ mergeParams: true });
-const Client = require("../../models/client");
 const Comment = require("../../models/comment");
 const Project = require("../../models/project");
-const { requireAuth, authenticatedUsersOnly } = require("../../utils/auth");
 const handleValidationErrors = require("../../utils/validation");
 const { check } = require("express-validator");
-
+const { ObjectId } = require("mongoose").Types;
 // These routes will handle a client and their comments
 // Routes either start with /api/comments or /api/projects/:projectId/comments
 
@@ -33,8 +31,9 @@ const validateCommentInput = [
 // Client creates a comment
 router.post("/", validateCommentInput, async (req, res, next) => {
   const { projectId } = req.params;
-  const clientId = (req.client && req.client.id) || req.user.id; // req.user is temporary;
-  const { text, type, timestamp } = req.body;
+  const { text, type, timestamp, email } = req.body;
+  // const clientId = (req.client && req.client.id) || req.user.id; // req.user is temporary;
+  const clientId = email; // for testing purposes
 
   try {
     const project = await Project.findById(projectId);
@@ -48,7 +47,7 @@ router.post("/", validateCommentInput, async (req, res, next) => {
     const comment = await new Comment({
       text,
       type,
-      timestamp,
+      timestamp: timestamp || null,
       projectId,
       clientId,
     }).save();
@@ -65,8 +64,8 @@ router.post("/", validateCommentInput, async (req, res, next) => {
 // Get all comments
 // Only the project owner can see all comments
 // Route is /api/comments not /api/projects/:projectId/comments
-router.get("/current", authenticatedUsersOnly, async (req, res, next) => {
-  const userId = req.user.id.toString();
+router.get("/", async (req, res, next) => {
+  const userId = new ObjectId(req.session.user.id);
 
   try {
     // Find all projects that the user owns
@@ -76,9 +75,12 @@ router.get("/current", authenticatedUsersOnly, async (req, res, next) => {
     const projectIds = projects.map((project) => project._id);
 
     // Fetch comments for these projects and populate client details
-    const comments = await Comment.find({
-      projectId: { $in: projectIds },
-    }).populate("clientId");
+    const comments = await Comment.find(
+      {
+        projectId: { $in: projectIds },
+      },
+      "-clientId -__v"
+    );
 
     res.json({ Comments: comments });
   } catch (error) {
@@ -91,7 +93,7 @@ router.get("/current", authenticatedUsersOnly, async (req, res, next) => {
 // Route is /api/projects/:projectId/comments
 router.get("/", async (req, res, next) => {
   const { projectId } = req.params;
-  const userId = req.user.id.toString();
+  const userId = req.session.user.id;
 
   try {
     // Check if the project exists and if the user is the owner
@@ -109,8 +111,8 @@ router.get("/", async (req, res, next) => {
     }
 
     // Fetch and return comments if the user is the owner
-    const comments = await Comment.find({ projectId }).populate("clientId");
-    res.json({ Comments: comments, projectId });
+    const comments = await Comment.find({ projectId });
+    res.json({ Comments: comments });
   } catch (error) {
     next(error);
   }
@@ -120,21 +122,21 @@ router.get("/", async (req, res, next) => {
 // Only the client that created the comment can update it
 router.put("/:commentId", validateCommentInput, async (req, res, next) => {
   const { commentId } = req.params;
-  const { text, type, timestamp } = req.body;
-  const clientId = (req.client && req.client.id) || req.user.id;
-
+  const { text, type, timestamp, email } = req.body;
+  // const clientId = (req.client && req.client.id) || req.user.id;
+  const clientId = req.body.email; // for testing purposes
   try {
-    const comment = await Comment.findById(commentId).populate("clientId");
+    const comment = await Comment.findById(commentId);
 
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });
     }
 
-    if (comment.clientId.toString() !== clientId) {
-      return res.status(403).json({
-        message: "You do not have permission to update this comment",
-      });
-    }
+    // if (comment.clientId.toString() !== clientId) {
+    //   return res.status(403).json({
+    //     message: "You do not have permission to update this comment",
+    //   });
+    // }
 
     comment.text = text || comment.text;
     comment.type = type || comment.type;
@@ -152,23 +154,23 @@ router.put("/:commentId", validateCommentInput, async (req, res, next) => {
 // Only the client that created the comment can delete it
 router.delete("/:commentId", async (req, res, next) => {
   const { commentId } = req.params;
-  const clientId = (req.client && req.client.id) || req.user.id;
+  // const clientId = (req.client && req.client.id) || req.user.id;
 
   try {
-    const comment = await Comment.findById(commentId).populate("clientId");
+    const comment = await Comment.findById(commentId);
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });
     }
 
-    if (comment.clientId.toString() !== clientId) {
-      return res.status(403).json({
-        message: "You do not have permission to delete this comment",
-      });
-    }
+    // if (comment.clientId.toString() !== clientId) {
+    //   return res.status(403).json({
+    //     message: "You do not have permission to delete this comment",
+    //   });
+    // }
 
     await Comment.findByIdAndDelete(commentId);
 
-    res.status(200).json({ message: "Comment deleted" });
+    res.status(200).json({ message: "Comment deleted", comment });
   } catch (error) {
     next(error);
   }

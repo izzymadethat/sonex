@@ -1,77 +1,92 @@
-import { Eye, Pencil } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
+import { Eye, Trash2 } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
+import { useDispatch, useSelector } from "react-redux";
+import { formatDistanceToNow, parseISO } from "date-fns";
+import { selectAllClients } from "@/features/clients/clientsSlice";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import NewClientFormPopup from "@/components/popups/NewClientForm";
 
-const clients = [
-  {
-    title: "Client 1",
-    created: "2022-01-01",
-    status: "Active",
-  },
-  {
-    title: "Client 2",
-    created: "2022-01-02",
-    status: "Inactive",
-  },
-  {
-    title: "Client 3",
-    created: "2022-01-03",
-    status: "Active",
-  },
-];
+export default function ViewClientsPage() {
+  const params = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const clients = useSelector(selectAllClients);
 
-const ViewClientsPage = () => {
-  const [selected, setSelected] = useState([]);
-  return <p>ViewClients</p>;
-};
-
-export default ViewClientsPage;
-
-// (
-//   <div className="flex flex-col gap-3">
-//       <h1 className="text-3xl font-bold uppercase">View Clients</h1>
-//       <p className="text-sm italic">View and Manage all of your clients</p>
-//       <Table
-//         color="primary"
-//         selectionMode="multiple"
-//         aria-label="Sonex user's clients table"
-//       >
-//         <TableHeader>
-//           <TableColumn>Title</TableColumn>
-//           <TableColumn>Created</TableColumn>
-//           <TableColumn>Status</TableColumn>
-//           <TableColumn>Actions</TableColumn>
-//         </TableHeader>
-//         <TableBody>
-//           {clients.map((client, key) => (
-//             <TableRow
-//               key={key}
-//               onClick={() =>
-//                 setSelected((prevKeys) =>
-//                   prevKeys.includes(key)
-//                     ? prevKeys.filter((k) => k !== key)
-//                     : [...prevKeys, key]
-//                 )
-//               }
-//             >
-//               <TableCell>{client.title}</TableCell>
-//               <TableCell>{client.created}</TableCell>
-//               <TableCell>{client.status}</TableCell>
-//               <TableCell className="flex gap-3">
-//                 <Tooltip content="Edit client" color="primary">
-//                   <Button isIconOnly size="sm" className="p-2">
-//                     <Pencil />
-//                   </Button>
-//                 </Tooltip>
-//                 <Tooltip content="View client" color="primary">
-//                   <Button isIconOnly size="sm" className="p-2">
-//                     <Eye />
-//                   </Button>
-//                 </Tooltip>
-//               </TableCell>
-//             </TableRow>
-//           ))}
-//         </TableBody>
-//       </Table>
-//       <Pagination loop showControls total={5} initialPage={1} />
-//     </div>
-// )
+  return (
+    <section className="m-8">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-2xl font-bold">Clients</h3>
+        <NewClientFormPopup />
+      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Client Since</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {clients.map((client) => (
+            <TableRow key={client.id}>
+              <TableCell>{client.name}</TableCell>
+              <TableCell>{client.email}</TableCell>
+              <TableCell>{client.createdAt.toLocaleString()}</TableCell>
+              <TableCell className="flex justify-center gap-3">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="outline" asChild>
+                        <Link to={`${client.id}`}>
+                          <Eye />
+                        </Link>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>View client</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button className="text-white bg-red-600">
+                        <Trash2 />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Delete client</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+        <TableFooter className="mt-4">
+          <TableRow>
+            <TableCell colSpan={3}>Total Projects</TableCell>
+            <TableCell className="text-right">{clients.length}</TableCell>
+          </TableRow>
+        </TableFooter>
+      </Table>
+    </section>
+  );
+}

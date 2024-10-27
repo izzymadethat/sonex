@@ -1,84 +1,132 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
+import { Eye, FolderKanban, Inbox, Trash2 } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  deleteProject,
+  getProjects,
+  selectAllProjects
+} from "@/features/projects/projectsSlice";
+import { formatDistanceToNow, parseISO } from "date-fns";
+import { Link, useNavigate } from "react-router-dom";
+import NewProjectFormPopup from "@/components/popups/NewProjectForm";
 
-import { Eye, Pencil } from "lucide-react";
+export default function ViewProjectsPage() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const projects = useSelector(selectAllProjects);
+  const formattedProjects = projects.map((project) => {
+    const date = parseISO(project.createdAt);
+    const timePeriod = formatDistanceToNow(date);
+    const timeAgo = `${timePeriod} ago`;
 
-const projects = [
-  {
-    title: "Project 1",
-    created: new Date().toLocaleDateString(),
-    status: "Active",
-  },
-  {
-    title: "Project 2",
-    created: new Date("2024-03-12").toLocaleDateString(),
-    status: "Active",
-  },
-  {
-    title: "Project 3",
-    created: new Date().toLocaleDateString(),
-    status: "Inactive",
-  },
-  {
-    title: "Project 4",
-    created: new Date().toLocaleDateString(),
-    status: "Inactive",
-  },
-];
+    return {
+      id: project._id,
+      title: project.title,
+      createdAt: timeAgo,
+      status: project.status
+    };
+  });
 
-export default function App() {
   const [selected, setSelected] = useState([]);
 
+  useEffect(() => {
+    dispatch(getProjects());
+  }, [dispatch]);
+  const handleDeleteProject = async (projectId) => {
+    await dispatch(deleteProject(projectId));
+  };
   return (
-   <p>View Projects</p>
+    <section className="m-8">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="mb-4 text-2xl font-bold">Projects</h3>
+        <NewProjectFormPopup triggerElement={<Button>New Project</Button>} />
+      </div>
+      {formattedProjects.length === 0 ? (
+        <div className="relative flex flex-col items-center justify-center p-10 text-center border-2 border-dashed h-fit">
+          <FolderKanban size={64} className="dark:text-primary" />
+          <h4 className="text-xl font-bold">You have no projects!</h4>
+          <p className="max-w-sm">
+            Start by creating a new project so that you can work with your
+            clients and get paid.
+          </p>
+        </div>
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Title</TableHead>
+              <TableHead>Created</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {formattedProjects.map((project) => (
+              <TableRow key={project.id}>
+                <TableCell>{project.title}</TableCell>
+                <TableCell>{project.createdAt}</TableCell>
+                <TableCell>{project.status}</TableCell>
+                <TableCell className="flex justify-center gap-3">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          onClick={() =>
+                            navigate(`/user/me/projects/${project.id}`)
+                          }
+                        >
+                          <Eye />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>View project</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="destructive"
+                          onClick={() => handleDeleteProject(project.id)}
+                        >
+                          <Trash2 />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Delete project</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+          <TableFooter className="mt-4">
+            <TableRow>
+              <TableCell colSpan={3}>Total Projects</TableCell>
+              <TableCell className="text-right">{projects.length}</TableCell>
+            </TableRow>
+          </TableFooter>
+        </Table>
+      )}
+    </section>
   );
 }
-
-// (
-//   <div className="flex flex-col gap-3">
-//   <h1 className="text-3xl font-bold uppercase">Projects</h1>
-//   <p className="text-sm italic">View and Manage all of your projects</p>
-//   <Table
-//     color="primary"
-//     selectionMode="multiple"
-//     aria-label="Sonex user's projects table"
-//   >
-//     <TableHeader>
-//       <TableColumn>Title</TableColumn>
-//       <TableColumn>Created</TableColumn>
-//       <TableColumn>Status</TableColumn>
-//       <TableColumn>Actions</TableColumn>
-//     </TableHeader>
-//     <TableBody>
-//       {projects.map((project, key) => (
-//         <TableRow
-//           key={key}
-//           onClick={() =>
-//             setSelected((prevKeys) =>
-//               prevKeys.includes(key)
-//                 ? prevKeys.filter((k) => k !== key)
-//                 : [...prevKeys, key]
-//             )
-//           }
-//         >
-//           <TableCell>{project.title}</TableCell>
-//           <TableCell>{project.created}</TableCell>
-//           <TableCell>{project.status}</TableCell>
-//           <TableCell className="flex gap-3">
-//             <Tooltip content="Edit project" color="primary">
-//               <Button isIconOnly size="sm" className="p-2">
-//                 <Pencil />
-//               </Button>
-//             </Tooltip>
-//             <Tooltip content="View project" color="primary">
-//               <Button isIconOnly size="sm" className="p-2">
-//                 <Eye />
-//               </Button>
-//             </Tooltip>
-//           </TableCell>
-//         </TableRow>
-//       ))}
-//     </TableBody>
-//   </Table>
-//   <Pagination loop showControls total={5} initialPage={1} />
-// </div>
-// )

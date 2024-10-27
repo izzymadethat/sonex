@@ -17,51 +17,46 @@ const validateClientInput = [
     .exists({ checkFalsy: true })
     .isEmail()
     .withMessage("Please enter a valid email address"),
-  handleValidationErrors,
+  handleValidationErrors
 ];
 
 // Add a new client to user
-router.post(
-  "/:userId/clients",
-  authenticatedUsersOnly,
-  validateClientInput,
-  async (req, res, next) => {
-    const session = await mongoose.startSession();
-    session.startTransaction();
+router.post("/:userId/clients", validateClientInput, async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-    try {
-      const userId = req.params.userId;
-      const { name, email } = req.body;
-      const client = new Client({
-        name: name || null,
-        email,
-      });
+  try {
+    const userId = req.params.userId;
+    const { name, email } = req.body;
+    const client = new Client({
+      name: name || null,
+      email
+    });
 
-      const updatedUser = await User.findOneAndUpdate(
-        { _id: userId },
-        { $push: { clients: client._id } },
-        { new: true, session }
-      );
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { $push: { clients: client._id } },
+      { new: true, session }
+    );
 
-      if (!updatedUser) {
-        await session.abortTransaction();
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      client.users.push(userId);
-      await client.save({ session });
-      await session.commitTransaction();
-      session.endSession();
-
-      res.json(client);
-    } catch (error) {
+    if (!updatedUser) {
       await session.abortTransaction();
-      next(error);
-    } finally {
-      session.endSession();
+      return res.status(404).json({ message: "User not found" });
     }
+
+    client.users.push(userId);
+    await client.save({ session });
+    await session.commitTransaction();
+    session.endSession();
+
+    res.json(client);
+  } catch (error) {
+    await session.abortTransaction();
+    next(error);
+  } finally {
+    session.endSession();
   }
-);
+});
 
 // Get all clients for user
 // GET /api/users/:userId/clients
@@ -77,7 +72,7 @@ const validateQuery = [
     .isInt({ min: 10, max: 75 })
     .withMessage("Size must be a positive integer")
     .toInt(),
-  handleValidationErrors,
+  handleValidationErrors
 ];
 router.get("/:userId/clients", validateQuery, async (req, res, next) => {
   const userId = req.params.userId;
@@ -99,7 +94,7 @@ router.get("/:userId/clients", validateQuery, async (req, res, next) => {
       total: totalClients,
       page,
       size,
-      totalPages: Math.ceil(totalClients / size),
+      totalPages: Math.ceil(totalClients / size)
     });
   } catch (error) {
     next(error);

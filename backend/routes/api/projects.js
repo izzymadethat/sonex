@@ -8,6 +8,7 @@ const Project = require("../../models/project");
 const { authenticatedUsersOnly } = require("../../utils/auth");
 const handleValidationErrors = require("../../utils/validation");
 const commentRoutes = require("./comments");
+const { ObjectId } = require("mongoose").Types;
 
 // Comment routes
 router.use("/:projectId/comments", commentRoutes);
@@ -66,59 +67,58 @@ const validateProjectQuery = [
 ];
 // Get projects for user
 // GET /api/projects
-router.get(
-  "/",
-  authenticatedUsersOnly,
-  validateProjectQuery,
-  async (req, res, next) => {
-    const userId = req.user.id;
-    const projects = await Project.find({ userId }).populate("clients");
+router.get("/", validateProjectQuery, async (req, res, next) => {
+  try {
+    const userId = new ObjectId(req.session.user.id);
+    const projects = await Project.find({ userId }, "-clients -comments -__v");
+
+    // format the response
+    // const projectsData = projects.map((project) => {
+    //   return {
+    //     ...project._doc,
+    //     _id: project._id.toString(),
+    //     userId: project.userId.toString(),
+    //   };
+    // });
+
     res.json({ Projects: projects, User: req.user });
+  } catch (error) {
+    next(error);
   }
-);
+});
 
 // Create a project
 // POST /api/projects
 // user must be logged in
-router.post(
-  "/",
-  authenticatedUsersOnly,
-  validateProjectInput,
-  async (req, res, next) => {
-    const userId = req.user.id;
+router.post("/", validateProjectInput, async (req, res, next) => {
+  try {
+    const userId = req.session.user.id;
+
     const { title, description, projectAmount } = req.body;
-
-    // if (!title) {
-    //   return res.status(400).json({
-    //     errorMessage: "Please enter a title",
-    //   });
-    // }
-
-    try {
-      const newProject = await new Project({
-        title,
-        description: description || null,
-        userId,
-        projectAmount: projectAmount || 0,
-        paymentStatus: projectAmount ? "unpaid" : "no-charge",
-      }).save();
-
-      res.status(201).json(newProject);
-    } catch (error) {
-      next(error);
-    }
+    const newProject = await new Project({
+      title,
+      description: description || null,
+      userId,
+      projectAmount: projectAmount || 0,
+      paymentStatus: projectAmount ? "unpaid" : "no-charge",
+    }).save();
+    res.status(201).json(newProject);
+  } catch (error) {
+    next(error);
   }
-);
+});
 
 // Get a single project
 // GET /api/projects/:projectId
 // user must be logged in
-router.get("/:projectId", authenticatedUsersOnly, async (req, res, next) => {
+router.get("/:projectId", async (req, res, next) => {
   const projectId = req.params.projectId;
-  const userId = req.user.id.toString();
-
+  const userId = req.session.user.id;
   try {
-    const project = await Project.findById(projectId).populate("clients");
+    const project = await Project.findById(
+      projectId,
+      "-clients -comments -__v"
+    );
 
     if (!project) {
       return res.status(404).json({
@@ -143,7 +143,7 @@ router.get("/:projectId", authenticatedUsersOnly, async (req, res, next) => {
 // GET /api/projects/:projectId/clients
 router.get(
   "/:projectId/clients",
-  authenticatedUsersOnly,
+
   async (req, res, next) => {
     const projectId = req.params.projectId;
     const userId = req.user.id.toString();
@@ -174,11 +174,10 @@ router.get(
 // project must be owned by user
 router.put(
   "/:projectId",
-  authenticatedUsersOnly,
-  validateProjectInput,
+  validateProjectInput, // Assuming this middleware is already validating inputs
   async (req, res, next) => {
     const projectId = req.params.projectId;
-    const userId = req.user.id.toString();
+    const userId = req.session.user.id.toString();
 
     const {
       title,
@@ -186,7 +185,7 @@ router.put(
       status,
       projectAmount,
       amountPaid,
-      paymentStatus,
+      paymentStatus, // This comes from the frontend
     } = req.body;
 
     try {
@@ -194,17 +193,18 @@ router.put(
 
       if (!existingProject) {
         return res.status(404).json({
-          message: "Project not found ",
+          message: "Project not found",
         });
       }
 
-      // check if project belongs to user
+      // Ensure the user owns the project before updating
       if (existingProject.userId.toString() !== userId) {
         return res.status(403).json({
           message: "You do not have permission to update this project",
         });
       }
 
+      // Update basic fields
       existingProject.title = title || existingProject.title;
       existingProject.description = description || existingProject.description;
       existingProject.status = status || existingProject.status;
@@ -213,22 +213,12 @@ router.put(
           ? projectAmount
           : existingProject.projectAmount;
 
-      let messages = {};
-
-      if (!amountPaid) {
-        existingProject.amountPaid = existingProject.amountPaid || 0;
-      }
-      // update payment status
-      // if the project amount was changed to 0, set the payment status to no-charge
-      if (projectAmount === 0) {
-        // If project amount is 0, mark as 'no-charge'
-        existingProject.paymentStatus = "no-charge";
-      } else {
-        // Handle other payment statuses if projectAmount > 0
-        existingProject.projectAmount = projectAmount;
-
-        // Reassess the payment status based on the current amountPaid
-        if (existingProject.amountPaid > existingProject.projectAmount) {
+      // Handle paymentStatus updates (manual or automatic)
+      if (!paymentStatus) {
+        // Automatically update paymentStatus based on projectAmount and amountPaid
+        if (projectAmount === 0) {
+          existingProject.paymentStatus = "no-charge";
+        } else if (existingProject.amountPaid > existingProject.projectAmount) {
           existingProject.paymentStatus = "overpaid";
         } else if (
           existingProject.amountPaid === existingProject.projectAmount
@@ -237,15 +227,18 @@ router.put(
         } else if (existingProject.amountPaid > 0) {
           existingProject.paymentStatus = "partially-paid";
         } else {
-          existingProject.paymentStatus = "unpaid"; // Handles cases where amountPaid is 0 or undefined
+          existingProject.paymentStatus = "unpaid";
         }
+      } else {
+        // Use the paymentStatus provided from the frontend
+        existingProject.paymentStatus = paymentStatus;
       }
 
-      // If a new amountPaid is provided in the request, process it
+      // Process amountPaid if provided
       if (amountPaid && amountPaid > 0) {
         existingProject.amountPaid = Number(amountPaid);
 
-        // Re-evaluate the payment status based on the new amountPaid
+        // Reevaluate payment status based on new amountPaid
         if (existingProject.amountPaid > existingProject.projectAmount) {
           existingProject.paymentStatus = "overpaid";
         } else if (
@@ -257,13 +250,17 @@ router.put(
         }
       }
 
+      // Check for overpayment warning
+      let messages = {};
       if (existingProject.amountPaid > existingProject.projectAmount) {
-        messages["Overpayment amount warning"] =
-          "Total amount paid is greater than project amount";
+        messages["Overpayment warning"] =
+          "Total amount paid is greater than project amount.";
       }
 
+      // Save updated project
       const updatedProject = await existingProject.save();
 
+      // Send the updated project data back to the frontend
       const results = {
         ...updatedProject._doc,
         messages,
@@ -282,7 +279,7 @@ router.put(
 // client must already exist for user
 router.put(
   "/:projectId/clients",
-  authenticatedUsersOnly,
+
   async (req, res, next) => {
     const projectId = req.params.projectId;
     const userId = req.user.id.toString();
@@ -327,9 +324,9 @@ router.put(
 // DELETE /api/projects/:projectId
 // user must be logged in
 // project must be owned by user
-router.delete("/:projectId", authenticatedUsersOnly, async (req, res, next) => {
+router.delete("/:projectId", async (req, res, next) => {
   const projectId = req.params.projectId;
-  const userId = req.user.id.toString();
+  const userId = req.session.user.id.toString();
 
   try {
     const existingProject = await Project.findById(projectId);

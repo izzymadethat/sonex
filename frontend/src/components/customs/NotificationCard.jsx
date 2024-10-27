@@ -1,4 +1,4 @@
-import "../../styles/notification-card.css";
+import "@/styles/notification-card.css";
 
 const NotificationCard = ({ notification }) => {
   return (
@@ -7,7 +7,7 @@ const NotificationCard = ({ notification }) => {
       <div class="notiborderglow"></div>
       <div class="notititle">{notification.title}</div>
       <div className="z-10">
-        <p className="text-[9px] text-[#32a6ff] px-5 hover:translate-x-1 duration-300 transition-all">
+        <p className="text-[#32a6ff] px-5 hover:translate-x-1 duration-300 transition-all">
           {notification.author} | {notification.date}
         </p>
         <div class="notibody">{notification.message}</div>
