@@ -1,54 +1,54 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { csrfFetch } from "@/store/csrf";
+import axiosInstance from "@/store/csrf";
 
-const BASE_URL = "/api/auth/session";
+const BASE_URL = "/auth/session";
 
 // Login user with given credentials
 export const loginUser = createAsyncThunk(
   "user/loginUser",
   async ({ credential, password }, { rejectWithValue }) => {
     try {
-      const response = await csrfFetch(BASE_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          credential,
-          password,
-        }),
+      const response = await axiosInstance.post("/auth/session", {
+        credential,
+        password,
       });
-      const data = await response.json();
-
-      if (!response.ok) {
-        return rejectWithValue(data.errors?.login || "Failed to login");
-      }
-      return data;
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.message || "an error occurred");
+      console.log(error);
+      return rejectWithValue("An error occurred");
     }
   }
 );
 
 // Fetch current user's data
 // TODO: add and do more with fields in database so I can store more data
-export const fetchUser = createAsyncThunk("user/fetchCurrentUser", async () => {
-  try {
-    const res = await csrfFetch("/api/auth/session");
-    const data = await res.json();
-    return data.user;
-  } catch (error) {
-    return error.message || "an error occurred";
+export const fetchUser = createAsyncThunk(
+  "user/fetchCurrentUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.get("/auth/session"); // Use .get() for clarity
+      return res.data.user; // Directly return user data
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data.errors?.message || "An error occurred"
+      );
+    }
   }
-});
+);
 
-export const logoutUser = createAsyncThunk("user/logoutUser", async () => {
-  try {
-    const res = await csrfFetch("/api/auth/session", {
-      method: "DELETE",
-    });
-    const data = await res.json();
-  } catch (error) {
-    return error.message || "an error occurred";
+export const logoutUser = createAsyncThunk(
+  "user/logoutUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.delete("/auth/session"); // Use .delete() for clarity
+      return res.data; // Optionally return any response data if needed
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data.errors?.message || "An error occurred"
+      );
+    }
   }
-});
+);
 
 /* 
 REDUX MAP (in progress)
