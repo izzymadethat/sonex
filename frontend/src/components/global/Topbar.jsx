@@ -8,6 +8,7 @@ import { useSidebar } from "../ui/sidebar";
 import { useDispatch } from "react-redux";
 import { logoutUser } from "@/features/user/userSlice";
 import { useNavigate } from "react-router-dom";
+import { unloadProjects } from "@/features/projects/projectsSlice";
 // import { SidebarTrigger } from "../ui/sidebar";
 
 // Custom sidebar trigger
@@ -26,6 +27,7 @@ const Topbar = () => {
   const navigate = useNavigate();
   const handleLogout = async () => {
     dispatch(logoutUser());
+    dispatch(unloadProjects());
     return navigate("/");
   };
   return (

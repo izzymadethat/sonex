@@ -3,13 +3,14 @@ import SideBar from "./Sidebar";
 import Topbar from "./Topbar";
 import { SidebarProvider, SidebarTrigger } from "../ui/sidebar";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUser, selectUser } from "@/features/user/userSlice";
+import { fetchUser, logoutUser, selectUser } from "@/features/user/userSlice";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import { getProjects } from "@/features/projects/projectsSlice";
+import { getProjects, unloadProjects } from "@/features/projects/projectsSlice";
 
 const UserLayout = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { currentUser, status } = useSelector(selectUser);
 
   useEffect(() => {
@@ -19,6 +20,12 @@ const UserLayout = () => {
     };
     fetchData();
   }, [dispatch]);
+
+  const handleLogout = async () => {
+    await dispatch(logoutUser());
+    await dispatch(unloadProjects());
+    navigate("/");
+  };
 
   // Show a loader while data is being fetched
   if (status === "loading") {
@@ -40,7 +47,7 @@ const UserLayout = () => {
   return (
     <SidebarProvider>
       <div className="flex w-full">
-        <SideBar user={currentUser} />
+        <SideBar user={currentUser} onLogoutClick={handleLogout} />
         <div className="w-full mx-6 lg:mx-4">
           <Topbar />
           <Outlet />

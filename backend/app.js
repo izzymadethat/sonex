@@ -26,7 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 // Security and authentication middleware for each request
 const corsOptions = {
   origin: "http://localhost:5173",
-  credentials: true,
+  credentials: true
 };
 // const csurfOptions = {
 //   secure: isProduction,
@@ -42,12 +42,12 @@ const sessionOptions = {
     httpOnly: true,
     secure: isProduction,
     sameSite: isProduction && "lax",
-    maxAge: Number(sessionAuth.accessExpiresIn), // 30 days
+    maxAge: Number(sessionAuth.accessExpiresIn) * 1000 // 30 days
   },
   store: MongoStore.create({
     mongoUrl: mongodb.dbURI,
-    dbName: "sonex-sessions",
-  }),
+    dbName: "sonex-sessions"
+  })
 };
 if (!isProduction) {
   app.use(cors(corsOptions)); // Allow cross-origin requests from localhost:5173
@@ -56,7 +56,7 @@ app.use(helmet()); // Adds security in headers
 app.use(session(sessionOptions)); // Session auth middleware
 app.use(
   csurf({
-    cookie: false,
+    cookie: false
   })
 ); // CSRF protection
 

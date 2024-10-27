@@ -139,7 +139,13 @@ const initialState = {
 const projectsSlice = createSlice({
   name: "projects",
   initialState,
-  reducers: {},
+  reducers: {
+    unloadProjects: (state) => {
+      state.allProjects = [];
+      state.currentProject = null;
+      state.status = "idle";
+    }
+  },
   extraReducers: (builder) => {
     builder
       // when getting all spots succeeds
@@ -189,6 +195,7 @@ const projectsSlice = createSlice({
   }
 });
 
+export const { unloadProjects } = projectsSlice.actions;
 export const selectAllProjects = (state) => state.projects.allProjects;
 export const selectCurrentProject = (state) => state.projects.currentProject;
 export default projectsSlice.reducer;
