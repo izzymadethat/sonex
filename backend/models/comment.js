@@ -1,34 +1,39 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const commentSchema = new Schema({
-  text: {
-    type: String,
-    required: true,
-    maxLength: 150,
+const commentSchema = new Schema(
+  {
+    text: {
+      type: String,
+      required: true,
+      maxLength: 150,
+    },
+    email: String,
+    // clientId: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: "Client",
+    //   required: true,
+    // },
+    projectId: {
+      type: Schema.Types.ObjectId,
+      ref: "Project",
+      required: true,
+    },
+    timestamp: {
+      type: String || null,
+    },
+    type: {
+      type: String,
+      enum: ["revision", "feedback"],
+      required: true,
+    },
+    isCompleted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  clientId: {
-    type: Schema.Types.ObjectId,
-    ref: "Client",
-    required: true,
-  },
-  projectId: {
-    type: Schema.Types.ObjectId,
-    ref: "Project",
-    required: true,
-  },
-  timestamp: {
-    type: String,
-  },
-  type: {
-    type: String,
-    enum: ["revision", "general feedback"],
-  },
-  isCompleted: {
-    type: Boolean,
-    default: false,
-  },
-});
+  { timestamps: true }
+);
 
 const Comment = mongoose.model("Comment", commentSchema);
 

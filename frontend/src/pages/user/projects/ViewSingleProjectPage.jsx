@@ -8,7 +8,7 @@ import {
   CardDescription,
   CardTitle,
   CardHeader,
-  CardFooter
+  CardFooter,
 } from "@/components/ui/card";
 
 import { convertStorageInMBtoGB } from "@/helper/equations";
@@ -21,7 +21,7 @@ import CopyProjectLink from "@/components/popups/CopyProjectLink";
 import NavigateBackTo from "@/components/global/NavigateBackTo";
 import {
   getSingleProject,
-  selectCurrentProject
+  selectCurrentProject,
 } from "@/features/projects/projectsSlice";
 import { useEffect } from "react";
 import PaymentStatusBadge from "./components/PaymentStatusBadge";
