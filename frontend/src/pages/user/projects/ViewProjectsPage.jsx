@@ -55,7 +55,7 @@ export default function ViewProjectsPage() {
     <section className="m-8">
       <div className="flex items-center justify-between mb-4">
         <h3 className="mb-4 text-2xl font-bold">Projects</h3>
-        <NewProjectFormPopup />
+        <NewProjectFormPopup triggerElement={<Button>New Project</Button>} />
       </div>
       {formattedProjects.length === 0 ? (
         <div className="relative flex flex-col items-center justify-center p-10 text-center border-2 border-dashed h-fit">

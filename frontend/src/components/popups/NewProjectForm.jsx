@@ -26,7 +26,7 @@ import { useState } from "react";
 import { createProject } from "@/features/projects/projectsSlice";
 import { Loader2 } from "lucide-react";
 
-const NewProjectFormPopup = () => {
+const NewProjectFormPopup = ({ triggerElement }) => {
   const dispatch = useDispatch();
   const { status } = useSelector((state) => state.projects);
   const [title, setTitle] = useState("");
@@ -39,7 +39,7 @@ const NewProjectFormPopup = () => {
     const projectInfo = {
       title,
       description,
-      projectCost: parseFloat(Number(projectCost).toFixed(2)),
+      projectAmount: parseFloat(Number(projectCost).toFixed(2)),
       date
     };
 
@@ -49,9 +49,7 @@ const NewProjectFormPopup = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button>New Project</Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{triggerElement}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create a New Project</DialogTitle>

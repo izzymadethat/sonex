@@ -8,7 +8,7 @@ import {
   Loader2,
   Mic2,
   Music2,
-  User2,
+  User2
 } from "lucide-react";
 import BtnSecondary from "../../../components/buttons/BtnSecondary";
 import { notifications } from "../../../constants/notifications";
@@ -20,12 +20,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchUser, selectUser } from "@/features/user/userSlice";
 import {
   getProjects,
-  selectAllProjects,
+  selectAllProjects
 } from "@/features/projects/projectsSlice";
 import RecentProjects from "./RecentProjects";
 import { selectAllComments } from "@/features/comments/commentsSlice";
 import UnfinishedComments from "./UnfinishedComments";
 import SupportForm from "./SupportForm";
+import NewProjectFormPopup from "@/components/popups/NewProjectForm";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 const SampleTask = ({ projectNum }) => {
   const [clicked, setClicked] = useState(false);
@@ -124,9 +126,13 @@ function Dashboard() {
       {projects.length > 0 ? (
         <RecentProjects projects={orderedProjects} />
       ) : (
-        <div className="flex items-center justify-center p-4 my-8 rounded-md shadow-md cursor-pointer bg-secondary hover:bg-primary hover:text-secondary">
-          No projects found. Click to create a new one.
-        </div>
+        <NewProjectFormPopup
+          triggerElement={
+            <div className="flex items-center justify-center p-4 my-8 rounded-md shadow-md cursor-pointer bg-secondary hover:bg-primary hover:text-secondary">
+              No projects found. Click to create a new one.
+            </div>
+          }
+        />
       )}
 
       <div className="flex flex-col w-full gap-6 mb-6 lg:flex-row">
