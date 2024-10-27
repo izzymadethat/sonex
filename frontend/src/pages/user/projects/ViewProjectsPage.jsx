@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Eye, Trash2 } from "lucide-react";
+import { Eye, FolderKanban, Inbox, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -57,65 +57,76 @@ export default function ViewProjectsPage() {
         <h3 className="mb-4 text-2xl font-bold">Projects</h3>
         <NewProjectFormPopup />
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>Created</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {formattedProjects.map((project) => (
-            <TableRow key={project.id}>
-              <TableCell>{project.title}</TableCell>
-              <TableCell>{project.createdAt}</TableCell>
-              <TableCell>{project.status}</TableCell>
-              <TableCell className="flex justify-center gap-3">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="outline"
-                        onClick={() =>
-                          navigate(`/user/me/projects/${project.id}`)
-                        }
-                      >
-                        <Eye />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>View project</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="destructive"
-                        onClick={() => handleDeleteProject(project.id)}
-                      >
-                        <Trash2 />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Delete project</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </TableCell>
+      {formattedProjects.length === 0 ? (
+        <div className="relative flex flex-col items-center justify-center p-10 text-center border-2 border-dashed h-fit">
+          <FolderKanban size={64} className="dark:text-primary" />
+          <h4 className="text-xl font-bold">You have no projects!</h4>
+          <p className="max-w-sm">
+            Start by creating a new project so that you can work with your
+            clients and get paid.
+          </p>
+        </div>
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Title</TableHead>
+              <TableHead>Created</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-        <TableFooter className="mt-4">
-          <TableRow>
-            <TableCell colSpan={3}>Total Projects</TableCell>
-            <TableCell className="text-right">{projects.length}</TableCell>
-          </TableRow>
-        </TableFooter>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {formattedProjects.map((project) => (
+              <TableRow key={project.id}>
+                <TableCell>{project.title}</TableCell>
+                <TableCell>{project.createdAt}</TableCell>
+                <TableCell>{project.status}</TableCell>
+                <TableCell className="flex justify-center gap-3">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          onClick={() =>
+                            navigate(`/user/me/projects/${project.id}`)
+                          }
+                        >
+                          <Eye />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>View project</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="destructive"
+                          onClick={() => handleDeleteProject(project.id)}
+                        >
+                          <Trash2 />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Delete project</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+          <TableFooter className="mt-4">
+            <TableRow>
+              <TableCell colSpan={3}>Total Projects</TableCell>
+              <TableCell className="text-right">{projects.length}</TableCell>
+            </TableRow>
+          </TableFooter>
+        </Table>
+      )}
     </section>
   );
 }
