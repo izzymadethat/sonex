@@ -118,6 +118,7 @@ const ViewSingleFilePage = () => {
   const projectComments = useSelector(selectCommentsByProject) || {};
   const file = useSelector(selectCurrentTrack);
   const { projectId, fileName } = params;
+  const currentProject = projectComments[projectId];
 
   // const [currentTime, setCurrentTime] = useState(0);
   const [isATimeStampedComment, setIsATimeStampedComment] = useState(true);
@@ -126,6 +127,7 @@ const ViewSingleFilePage = () => {
   const [client, setClient] = useState("");
   const [downloadLink, setDownloadLink] = useState("");
   const audioRef = useRef(null);
+  console.log(projectComments);
 
   useEffect(() => {
     const existingClient = localStorage.getItem("clientEmail");
