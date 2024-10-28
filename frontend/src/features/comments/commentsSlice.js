@@ -71,7 +71,7 @@ export const fetchCommentsByProject = createAsyncThunk(
   async (projectId, thunkAPI) => {
     try {
       const response = await axiosInstance.get(
-        `/projects/${projectId}/comments}`
+        `/projects/${projectId}/comments`
       );
       return response.data.Comments;
     } catch (error) {
@@ -128,7 +128,7 @@ const initialState = {
   commentsByProject: null,
   currentComment: null,
   status: "idle",
-  error: null,
+  error: null
 };
 
 const commentsSlice = createSlice({
@@ -144,7 +144,7 @@ const commentsSlice = createSlice({
     },
     setCurrentComment: (state, action) => {
       state.currentComment = action.payload;
-    },
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -212,7 +212,7 @@ const commentsSlice = createSlice({
         delete state.commentsByProject[action.payload.projectId];
         state.currentComment = null;
       });
-  },
+  }
 });
 
 export const { unloadComments, setCurrentComment } = commentsSlice.actions;

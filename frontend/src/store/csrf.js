@@ -8,7 +8,7 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
   baseURL: "/api",
-  withCredentials: true,
+  withCredentials: true
 });
 
 axiosInstance.interceptors.request.use(
@@ -19,7 +19,8 @@ axiosInstance.interceptors.request.use(
       if (csrfToken) {
         config.headers["XSRF-TOKEN"] = csrfToken;
       }
-      config.headers["Content-Type"] = "application/json";
+      config.headers["Content-Type"] =
+        config.headers["Content-Type"] || "application/json";
     }
 
     return config;

@@ -6,41 +6,34 @@ const fileSchema = new Schema(
     name: {
       type: String,
       required: true,
-      unique: true,
+      unique: true
     },
     type: {
       type: String,
-      required: true,
+      required: true
     },
     projectId: {
       type: Schema.Types.ObjectId,
       ref: "Project",
-      required: true,
+      required: true
     },
     userId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
-    }, // nullable
-    clientId: {
-      type: Schema.Types.ObjectId,
-      ref: "Client",
-    }, // nullable
+      ref: "User"
+    },
     path: {
       type: String,
       required: true,
-      unique: true,
-    },
+      unique: true
+    }, // s3 path
     size: {
       type: Number,
-      required: true,
+      required: true
     },
     isDownloadable: {
       type: Boolean,
-      default: false,
-    },
-    streamingUrl: {
-      type: String,
-    },
+      default: false
+    }
   },
   { timestamps: true }
 );

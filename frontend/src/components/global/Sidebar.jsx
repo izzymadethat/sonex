@@ -113,6 +113,7 @@ const menu1 = [
 ];
 
 const SideBar = ({ user, onLogoutClick }) => {
+  if (!user) return null;
   return (
     <Sidebar variant="floating" className="px-2 py-8 mx-2">
       <SidebarHeader>
@@ -168,7 +169,7 @@ const SideBar = ({ user, onLogoutClick }) => {
           <DropdownMenuTrigger asChild className="cursor-pointer">
             <div className="flex items-center gap-2 mx-4">
               <Avatar>
-                <AvatarImage src={user.avatar} alt="@shadcn" />
+                <AvatarImage src={user?.avatar} alt="@shadcn" />
                 <AvatarFallback>
                   {user?.firstName[0].toUpperCase()}
                 </AvatarFallback>
@@ -181,9 +182,9 @@ const SideBar = ({ user, onLogoutClick }) => {
               MySonex User Info:
             </DropdownMenuLabel>
             <DropdownMenuLabel>
-              {user.firstName} {user.lastName}
+              {user?.firstName} {user?.lastName}
             </DropdownMenuLabel>
-            <DropdownMenuLabel>{user.email}</DropdownMenuLabel>
+            <DropdownMenuLabel>{user?.email}</DropdownMenuLabel>
             <DropdownMenuSeparator className="w-1/2" />
             <DropdownMenuItem
               asChild

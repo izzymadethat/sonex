@@ -8,7 +8,7 @@ import {
   CardDescription,
   CardTitle,
   CardHeader,
-  CardFooter,
+  CardFooter
 } from "@/components/ui/card";
 
 import { convertStorageInMBtoGB } from "@/helper/equations";
@@ -21,11 +21,16 @@ import CopyProjectLink from "@/components/popups/CopyProjectLink";
 import NavigateBackTo from "@/components/global/NavigateBackTo";
 import {
   getSingleProject,
-  selectCurrentProject,
+  selectCurrentProject
 } from "@/features/projects/projectsSlice";
 import { useEffect } from "react";
 import PaymentStatusBadge from "./components/PaymentStatusBadge";
 import ProjectStatusBadge from "./components/ProjectStatusBadge";
+import {
+  fetchProjectFiles,
+  selectProjectFiles
+} from "@/features/files/filesSlice";
+import { fetchCommentsByProject } from "@/features/comments/commentsSlice";
 
 const ViewSingleProjectPage = () => {
   const params = useParams();
@@ -33,11 +38,15 @@ const ViewSingleProjectPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const project = useSelector(selectCurrentProject);
-
+  const files = useSelector(selectProjectFiles);
+  const totalFileSize = files.reduce((acc, file) => acc + file.size, 0);
+  console.log(totalFileSize);
   // payment status badge
 
   useEffect(() => {
     dispatch(getSingleProject(projectId));
+    dispatch(fetchCommentsByProject(projectId));
+    dispatch(fetchProjectFiles(projectId));
   }, [dispatch, projectId]);
 
   if (!project) return <p>Loading...</p>;

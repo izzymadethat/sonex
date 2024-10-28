@@ -24,8 +24,8 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { useSelector } from "react-redux";
-import { selectProjectFiles } from "@/features/files/filesSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteFile, selectProjectFiles } from "@/features/files/filesSlice";
 import { Link } from "react-router-dom";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -101,12 +101,13 @@ const UploadDropDownMenu = ({ onFileSelect }) => {
 };
 
 const FileTable = ({ projectId }) => {
+  const dispatch = useDispatch();
   const allFiles = useSelector(selectProjectFiles);
   const files = allFiles
     .slice()
     .filter((file) => String(file.projectId) === String(projectId))
     .map((f) => {
-      const date = parseISO(f.dateAdded);
+      const date = parseISO(f.createdAt);
       const timePeriod = formatDistanceToNow(date);
       const timeAgo = `${timePeriod} ago`;
 
@@ -169,16 +170,23 @@ const FileTable = ({ projectId }) => {
             </TableRow>
             {/* All files from project */}
             {files.map((file) => (
-              <TableRow key={file.id}>
+              <TableRow key={file._id}>
                 <TableCell>
-                  <Link to={`/project/${projectId}/track/${file.id}`}>
+                  <Link to={`/project/${projectId}/track/${file.name}`}>
                     {file.name}
                   </Link>
                 </TableCell>
-                <TableCell>{file.type}</TableCell>
+                <TableCell>
+                  {file.type === "wave" ? "wav" : file.type}
+                </TableCell>
                 <TableCell>{file.dateAdded}</TableCell>
                 <TableCell>
-                  <Button variant="destructive">
+                  <Button
+                    variant="destructive"
+                    onClick={() =>
+                      dispatch(deleteFile({ projectId, fileName: file.name }))
+                    }
+                  >
                     <Trash2 />
                   </Button>
                 </TableCell>

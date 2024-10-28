@@ -7,7 +7,7 @@ import { fetchUser, logoutUser, selectUser } from "@/features/user/userSlice";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { getProjects, unloadProjects } from "@/features/projects/projectsSlice";
-import { fetchCommentsByProject } from "@/features/comments/commentsSlice";
+import { fetchComments } from "@/features/comments/commentsSlice";
 
 const UserLayout = () => {
   const dispatch = useDispatch();
@@ -19,7 +19,6 @@ const UserLayout = () => {
       await dispatch(fetchUser());
       await dispatch(getProjects());
       await dispatch(fetchComments());
-      await dispatch(fetchCommentsByProject());
     };
     fetchData();
   }, [dispatch]);

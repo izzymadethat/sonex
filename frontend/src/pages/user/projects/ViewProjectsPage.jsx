@@ -30,18 +30,21 @@ export default function ViewProjectsPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const projects = useSelector(selectAllProjects);
-  const formattedProjects = projects.map((project) => {
-    const date = parseISO(project.createdAt);
-    const timePeriod = formatDistanceToNow(date);
-    const timeAgo = `${timePeriod} ago`;
+  const formattedProjects = projects
+    .slice()
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .map((project) => {
+      const date = parseISO(project.createdAt);
+      const timePeriod = formatDistanceToNow(date);
+      const timeAgo = `${timePeriod} ago`;
 
-    return {
-      id: project._id,
-      title: project.title,
-      createdAt: timeAgo,
-      status: project.status
-    };
-  });
+      return {
+        id: project._id,
+        title: project.title,
+        createdAt: timeAgo,
+        status: project.status
+      };
+    });
 
   const [selected, setSelected] = useState([]);
 

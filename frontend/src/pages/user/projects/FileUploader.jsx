@@ -11,14 +11,18 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { uploadFiles } from "@/features/files/filesSlice";
 import { convertFileSizeInBytestoMB } from "@/helper/equations";
 import { Inbox, Loader2, Trash2Icon, UploadCloud, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 
 const FileUploader = () => {
   const { projectId } = useParams();
+  const dispatch = useDispatch();
+  const { isLoading, error } = useSelector((state) => state.files);
   const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [rejects, setRejects] = useState([]);
@@ -43,10 +47,20 @@ const FileUploader = () => {
   // User able to remove ALL files before uploading
   const handleRemoveAllFiles = () => setFiles([]);
 
-  // TODO: Submit all files to backend, then reload state
-  const handleSubmitFilesToProject = (e) => {
+  // TODO: Why is multer showing file size as 0 bytes after hitting middleware?
+  const handleSubmitFilesToProject = async (e) => {
     e.preventDefault();
-    console.log("Submitting files to your project...");
+
+    const fileData = new FormData();
+    files.forEach((file) => {
+      fileData.append("tracks", file);
+    });
+    const data = {
+      fileData,
+      projectId
+    };
+    await dispatch(uploadFiles(data));
+    setFiles([]);
   };
 
   return (
@@ -56,7 +70,15 @@ const FileUploader = () => {
         <div className="max-w-5xl p-10 mx-auto my-4 border border-dashed rounded-lg">
           <div className="flex items-center justify-between mb-4 ">
             <h4 className="text-primary">Files to be uploaded...</h4>{" "}
-            <Button disabled>Upload Files</Button>
+            <Button onClick={handleSubmitFilesToProject}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Uploading...
+                </>
+              ) : (
+                "Upload Files"
+              )}
+            </Button>
           </div>
           <Separator />
           <ul className="grid grid-cols-2 gap-2 my-4 md:grid-cols-4 lg:justify-center">
@@ -117,6 +139,7 @@ const FileUploader = () => {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
+              {error && <p className="text-xs text-red-500">{error}</p>}
             </div>
           )}
         </div>
