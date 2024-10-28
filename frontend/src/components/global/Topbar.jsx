@@ -9,6 +9,8 @@ import { useDispatch } from "react-redux";
 import { logoutUser } from "@/features/user/userSlice";
 import { useNavigate } from "react-router-dom";
 import { unloadProjects } from "@/features/projects/projectsSlice";
+import { unloadComments } from "@/features/comments/commentsSlice";
+import { unloadFiles } from "@/features/files/filesSlice";
 // import { SidebarTrigger } from "../ui/sidebar";
 
 // Custom sidebar trigger
@@ -28,6 +30,8 @@ const Topbar = () => {
   const handleLogout = async () => {
     dispatch(logoutUser());
     dispatch(unloadProjects());
+    dispatch(unloadComments());
+    dispatch(unloadFiles());
     return navigate("/");
   };
   return (

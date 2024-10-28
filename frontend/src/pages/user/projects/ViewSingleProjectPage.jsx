@@ -40,7 +40,6 @@ const ViewSingleProjectPage = () => {
   const project = useSelector(selectCurrentProject);
   const files = useSelector(selectProjectFiles);
   const totalFileSize = files.reduce((acc, file) => acc + file.size, 0);
-  console.log(totalFileSize);
   // payment status badge
 
   useEffect(() => {

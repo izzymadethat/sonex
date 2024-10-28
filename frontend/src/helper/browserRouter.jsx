@@ -99,7 +99,7 @@ export const router = createBrowserRouter([
         element: <ViewSingleProjectPage />
       },
       {
-        path: "track/:trackId",
+        path: "track/:fileName",
         element: <ViewSingleFilePage />
       }
     ]

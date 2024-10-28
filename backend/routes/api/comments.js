@@ -25,7 +25,7 @@ const validateCommentInput = [
       "Please enter a valid timestamp in the format MM:SS or HH:MM:SS"
     ),
 
-  handleValidationErrors,
+  handleValidationErrors
 ];
 
 // Client creates a comment
@@ -40,16 +40,16 @@ router.post("/", validateCommentInput, async (req, res, next) => {
 
     if (!project) {
       return res.status(404).json({
-        message: "Project not found",
+        message: "Project not found"
       });
     }
 
     const comment = await new Comment({
       text,
-      type,
-      timestamp: timestamp || null,
+      type: type ?? "revision",
+      timestamp: timestamp ?? null,
       projectId,
-      clientId,
+      clientId
     }).save();
 
     project.comments.push(comment._id); // TODO: also add comment to client
@@ -77,7 +77,7 @@ router.get("/", async (req, res, next) => {
     // Fetch comments for these projects and populate client details
     const comments = await Comment.find(
       {
-        projectId: { $in: projectIds },
+        projectId: { $in: projectIds }
       },
       "-clientId -__v"
     );
@@ -106,7 +106,7 @@ router.get("/", async (req, res, next) => {
     // Verify the project is owned by the current user
     if (project.userId.toString() !== userId) {
       return res.status(403).json({
-        message: "You do not have permission to view comments for this project",
+        message: "You do not have permission to view comments for this project"
       });
     }
 

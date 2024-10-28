@@ -135,10 +135,15 @@ const filesSlice = createSlice({
         state.projectFiles = state.projectFiles.filter(
           (project) => project._id !== action.payload
         );
+      })
+      .addCase(getSingleFile.fulfilled, (state, action) => {
+        state.currentTrack = action.payload;
       });
   }
 });
 
+export const { unloadFiles } = filesSlice.actions;
 export const selectProjectFiles = (state) => state.files.projectFiles;
+export const selectCurrentTrack = (state) => state.files.currentTrack;
 
 export default filesSlice.reducer;

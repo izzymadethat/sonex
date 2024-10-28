@@ -1,34 +1,71 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 
 const CommentForm = ({
-  onSubmit,
   existingClient,
   timestamp,
   isTimeStampedComment,
-  onCheckedChange
+  onCheckedChange,
+  onClientEmailChange
 }) => {
+  const [emailInput, setEmailInput] = useState("");
+  const [commentInput, setCommentInput] = useState("");
+  const requiredInfoEntered = emailInput && commentInput;
+
+  useEffect(() => {
+    if (existingClient) {
+      setEmailInput(existingClient);
+    }
+  }, [existingClient]);
+
+  // Submit comment
+  const handleSubmitComment = (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("email", emailInput);
+    formData.append("text", commentInput);
+    if (isTimeStampedComment) {
+      formData.append("timestamp", timestamp);
+    } else {
+      formData.append("type", "feedback");
+    }
+    localStorage.setItem("clientEmail", emailInput);
+    if (onClientEmailChange) {
+      onClientEmailChange(emailInput);
+    }
+    setCommentInput("");
+    console.log(formData);
+  };
+
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Thoughts?</CardTitle>
+      <CardHeader className="text-xl text-center">
+        <CardTitle>Share Your Thoughts and Revisions</CardTitle>
+        <p className="text-sm text-gray-500 dark:text-gray-300">
+          Make a comment at the specific time you need to make a revision. You
+          may also scroll through the song and pause at certain point. Comments
+          unchecked are considered as feedback.
+        </p>
       </CardHeader>
       <CardContent>
-        <form action={onSubmit}>
-          <Input
-            name="client-name"
-            placeholder="Your name"
-            defaultValue={existingClient?.client_name}
-            required
-          />
+        <form onSubmit={handleSubmitComment} className="flex flex-col gap-4">
           <Input
             name="client-email"
             placeholder="Your email"
-            defaultValue={existingClient?.client_email}
+            type="email"
+            value={emailInput}
+            onChange={(e) => setEmailInput(e.target.value)}
             required
           />
           <Textarea
@@ -36,10 +73,12 @@ const CommentForm = ({
             placeholder="Enter your thoughts (200 characters max)"
             maxLength={200}
             required
+            value={commentInput}
+            onChange={(e) => setCommentInput(e.target.value)}
           />
 
           <div>
-            <div>
+            <div className="flex gap-1">
               <Checkbox
                 name="comment-timestamp"
                 checked={isTimeStampedComment}
@@ -47,10 +86,17 @@ const CommentForm = ({
               />
               <Label>Leave a comment @ {timestamp} </Label>
             </div>
-
-            <Button>Submit Comment</Button>
           </div>
         </form>
+        <CardFooter className="flex items-center justify-end">
+          <Button
+            type="button"
+            disabled={!requiredInfoEntered}
+            onClick={handleSubmitComment}
+          >
+            Submit Comment
+          </Button>
+        </CardFooter>
       </CardContent>
     </Card>
   );

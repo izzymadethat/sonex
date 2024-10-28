@@ -1,6 +1,6 @@
 import { selectUser } from "@/features/user/userSlice";
 import { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import AudioPlayer from "./components/AudioPlayer";
 import ReactAudioPlayer from "react-audio-player";
@@ -24,17 +24,38 @@ import {
 } from "@/components/ui/card";
 import NavigateBackTo from "@/components/global/NavigateBackTo";
 import CommentsSideBar from "./components/CommentsSideBar";
+import { getSingleFile, selectCurrentTrack } from "@/features/files/filesSlice";
+import CommentForm from "./components/CommentForm";
+import { MessageSquare } from "lucide-react";
 
 const ViewSingleFilePage = () => {
   const params = useParams();
-  const user = useSelector(selectUser);
-  const client = !user;
+  const dispatch = useDispatch();
+  const { currentUser: user } = useSelector(selectUser);
+  const file = useSelector(selectCurrentTrack);
+  const { projectId, fileName } = params;
 
   const [currentTime, setCurrentTime] = useState(0);
   const [isATimeStampedComment, setIsATimeStampedComment] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [client, setClient] = useState("");
 
   const audioRef = useRef(null);
+
+  useEffect(() => {
+    const existingClient = localStorage.getItem("clientEmail");
+    if (existingClient) {
+      setClient(existingClient);
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchFile = async () => {
+      await dispatch(getSingleFile({ projectId, fileName }));
+    };
+
+    fetchFile();
+  }, [dispatch, projectId, fileName]);
 
   // Keep track of song time while making comments
   useEffect(() => {
@@ -50,13 +71,12 @@ const ViewSingleFilePage = () => {
     }
   }, [audioRef]);
 
-  // Submit comment
-  const handleSubmitComment = () => {
-    console.log("Submitting comment...");
-  };
-
   const handleTimestampCommentCheckChange = () =>
     setIsATimeStampedComment(!isATimeStampedComment);
+
+  if (!file) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="max-w-2xl p-8 mx-auto space-y-8 lg:max-w-4xl">
@@ -67,21 +87,45 @@ const ViewSingleFilePage = () => {
       {/* Track Information */}
       <div className="flex justify-between">
         <div>
-          <h2 className="text-4xl font-bold ">Song Name</h2>
-          <p>uploaded by user</p>
+          <h2 className="text-4xl font-bold ">{file.name}</h2>
+          <p>
+            uploaded by {user.firstName} /{" "}
+            <span>added on {file.createdAt}</span>
+          </p>
         </div>
         <CommentsSideBar />
       </div>
       {/* Player and Comment Button */}
       <div className="flex flex-col justify-center gap-4">
         <ReactAudioPlayer
-          src="https://cdn.pixabay.com/audio/2024/10/18/audio_883a8b2ed8.mp3"
+          src={file.streamUrl}
           ref={audioRef}
           controls
           className="rounded-md"
         />
       </div>
-      <Card>
+      {/* Comment Form */}
+      <div className="grid grid-cols-5 gap-4">
+        <div className="col-span-3">
+          <CommentForm
+            existingClient={client}
+            timestamp={currentTime}
+            isTimeStampedComment={isATimeStampedComment}
+            onCheckedChange={handleTimestampCommentCheckChange}
+            onClientEmailChange={setClient}
+          />
+        </div>
+        <div className="flex flex-col items-center justify-center col-span-2 gap-4 p-8 text-center border-2 border-dashed rounded-md">
+          <MessageSquare size={64} className="text-primary" />
+          <p className="max-w-sm text-lg font-bold">
+            You haven't made any comments yet.
+          </p>
+          <p className="italic max-w-52">
+            Use the form to add your revision or provide feedback.
+          </p>
+        </div>
+      </div>
+      {/* <Card>
         <CardHeader className="text-xl">Make a comment</CardHeader>
         <CardContent>
           <div className="flex flex-col gap-2">
@@ -100,7 +144,7 @@ const ViewSingleFilePage = () => {
             Submit Comment
           </Button>
         </CardFooter>
-      </Card>
+      </Card> */}
     </div>
   );
 };

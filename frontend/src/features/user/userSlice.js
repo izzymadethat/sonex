@@ -10,7 +10,7 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await axiosInstance.post("/auth/session", {
         credential,
-        password,
+        password
       });
       return response.data;
     } catch (error) {
@@ -73,7 +73,7 @@ REDUX MAP (in progress)
 const initialState = {
   currentUser: null,
   status: "idle",
-  error: null,
+  error: null
 };
 
 const userSlice = createSlice({
@@ -88,7 +88,7 @@ const userSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.currentUser = { ...action.payload.user };
+        state.currentUser = action.payload.user;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = "failed";
@@ -106,7 +106,7 @@ const userSlice = createSlice({
         state.currentUser = null;
         state.status = "idle";
       });
-  },
+  }
 });
 
 export const selectUser = (state) => state.user;

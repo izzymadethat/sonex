@@ -5,10 +5,18 @@ const router = express.Router();
 const { check } = require("express-validator");
 const Client = require("../../models/client");
 const Project = require("../../models/project");
+const Comment = require("../../models/comment");
 const { authenticatedUsersOnly } = require("../../utils/auth");
 const handleValidationErrors = require("../../utils/validation");
 const commentRoutes = require("./comments");
 const fileRoutes = require("./files");
+const File = require("../../models/file");
+const { s3Client } = require("../../config/aws-s3.config");
+const {
+  ListObjectsV2Command,
+  DeleteObjectsCommand
+} = require("@aws-sdk/client-s3");
+const { awsS3 } = require("../../config");
 const { ObjectId } = require("mongoose").Types;
 
 // Comment routes
@@ -330,7 +338,7 @@ router.put(
 router.delete("/:projectId", async (req, res, next) => {
   const projectId = req.params.projectId;
   const userId = req.session.user.id.toString();
-
+  const projectFolderKey = `projects/${projectId}`;
   try {
     const existingProject = await Project.findById(projectId);
 
@@ -347,6 +355,27 @@ router.delete("/:projectId", async (req, res, next) => {
       });
     }
 
+    // const deletedProject = await Project.findByIdAndDelete(projectId);
+    // Delete all comments and files associated with the project
+    const listedProjects = await s3Client.send(
+      new ListObjectsV2Command({
+        Bucket: awsS3.bucketName,
+        Prefix: projectFolderKey
+      })
+    );
+
+    if (listedProjects.Contents && listedProjects.Contents.length > 0) {
+      await s3Client.send(
+        new DeleteObjectsCommand({
+          Bucket: awsS3.bucketName,
+          Delete: {
+            Objects: listedProjects.Contents.map((item) => ({ Key: item.Key }))
+          }
+        })
+      );
+    }
+    await File.deleteMany({ projectId });
+    await Comment.deleteMany({ projectId });
     const deletedProject = await Project.findByIdAndDelete(projectId);
 
     res.status(200).json({
