@@ -83,9 +83,12 @@ export const fetchCommentsByProject = createAsyncThunk(
 
 export const addComment = createAsyncThunk(
   "comments/addComment",
-  async (comment, thunkAPI) => {
+  async ({ projectId, comment }, thunkAPI) => {
     try {
-      const response = await axiosInstance.post("/comments", comment);
+      const response = await axiosInstance.post(
+        `projects/${projectId}/comments`,
+        comment
+      );
       return response.data;
     } catch (error) {
       console.log(error);
@@ -217,4 +220,6 @@ const commentsSlice = createSlice({
 
 export const { unloadComments, setCurrentComment } = commentsSlice.actions;
 export const selectAllComments = (state) => state.comments.allComments;
+export const selectCommentsByProject = (state) =>
+  state.comments.commentsByProject;
 export default commentsSlice.reducer;

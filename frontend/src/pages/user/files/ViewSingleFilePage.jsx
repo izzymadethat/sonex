@@ -6,7 +6,9 @@ import AudioPlayer from "./components/AudioPlayer";
 import ReactAudioPlayer from "react-audio-player";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTrigger
 } from "@/components/ui/dialog";
@@ -24,23 +26,34 @@ import {
 } from "@/components/ui/card";
 import NavigateBackTo from "@/components/global/NavigateBackTo";
 import CommentsSideBar from "./components/CommentsSideBar";
-import { getSingleFile, selectCurrentTrack } from "@/features/files/filesSlice";
+import {
+  getSingleFile,
+  selectCurrentTrack,
+  setCurrentTime,
+  setPaused,
+  setPlaying,
+  setTrackDuration
+} from "@/features/files/filesSlice";
 import CommentForm from "./components/CommentForm";
 import { MessageSquare } from "lucide-react";
+import { selectCommentsByProject } from "@/features/comments/commentsSlice";
 
 const ViewSingleFilePage = () => {
   const params = useParams();
   const dispatch = useDispatch();
   const { currentUser: user } = useSelector(selectUser);
+  const projectComments = useSelector(selectCommentsByProject);
   const file = useSelector(selectCurrentTrack);
   const { projectId, fileName } = params;
+  const currentProject = projectComments[projectId];
 
-  const [currentTime, setCurrentTime] = useState(0);
+  // const [currentTime, setCurrentTime] = useState(0);
   const [isATimeStampedComment, setIsATimeStampedComment] = useState(true);
   const [loading, setLoading] = useState(false);
   const [client, setClient] = useState("");
 
   const audioRef = useRef(null);
+  console.log(projectComments);
 
   useEffect(() => {
     const existingClient = localStorage.getItem("clientEmail");
@@ -59,17 +72,49 @@ const ViewSingleFilePage = () => {
 
   // Keep track of song time while making comments
   useEffect(() => {
-    const audioElement = audioRef.current.audioEl;
+    const audioElement = audioRef.current.audioEl?.current;
     if (audioElement) {
-      const timePlayed = setInterval(() => {
-        setCurrentTime(formatTime(audioElement.current.currentTime));
-      }, 1000);
+      const handleTimeUpdate = () => {
+        dispatch(setCurrentTime(formatTime(audioElement.currentTime)));
+      };
+
+      const handlePlay = () => {
+        dispatch(setPlaying());
+      };
+
+      const handlePause = () => {
+        dispatch(setPaused());
+      };
+      const handleLoadedMetadata = () => {
+        dispatch(setTrackDuration(audioElement.duration));
+      };
+
+      audioElement.addEventListener("timeupdate", handleTimeUpdate);
+      audioElement.addEventListener("play", handlePlay);
+      audioElement.addEventListener("pause", handlePause);
+      audioElement.addEventListener("loadedmetadata", handleLoadedMetadata);
 
       return () => {
-        clearInterval(timePlayed);
+        audioElement.removeEventListener("timeupdate", handleTimeUpdate);
+        audioElement.removeEventListener("play", handlePlay);
+        audioElement.removeEventListener("pause", handlePause);
+        audioElement.removeEventListener(
+          "loadedmetadata",
+          handleLoadedMetadata
+        );
       };
     }
-  }, [audioRef]);
+    // // if (audioElement) {
+    // //   const timePlayed = setInterval(() => {
+    // //     setCurrentTime(formatTime(audioElement.current.currentTime));
+    // //   }, 1000);
+
+    // //   return () => {
+    // //     clearInterval(timePlayed);
+    // //   };
+    // // }
+    // return () => {};
+  }, [dispatch, audioRef]);
 
   const handleTimestampCommentCheckChange = () =>
     setIsATimeStampedComment(!isATimeStampedComment);
@@ -109,42 +154,66 @@ const ViewSingleFilePage = () => {
         <div className="col-span-3">
           <CommentForm
             existingClient={client}
-            timestamp={currentTime}
+            timestamp={file.currentTime}
             isTimeStampedComment={isATimeStampedComment}
             onCheckedChange={handleTimestampCommentCheckChange}
             onClientEmailChange={setClient}
+            projectId={projectId}
           />
         </div>
-        <div className="flex flex-col items-center justify-center col-span-2 gap-4 p-8 text-center border-2 border-dashed rounded-md">
-          <MessageSquare size={64} className="text-primary" />
-          <p className="max-w-sm text-lg font-bold">
-            You haven't made any comments yet.
-          </p>
-          <p className="italic max-w-52">
-            Use the form to add your revision or provide feedback.
-          </p>
+        <div className="flex flex-col items-center col-span-2 gap-4 p-8 text-center border-2 border-dashed rounded-md">
+          {currentProject && currentProject.length > 0 ? (
+            <>
+              {currentProject.map((comment) => (
+                <Dialog key={comment._id}>
+                  <DialogTrigger asChild>
+                    <Card
+                      key={comment._id}
+                      className="cursor-pointer hover:bg-primary hover:text-secondary"
+                    >
+                      <CardHeader>{comment.text}</CardHeader>
+                    </Card>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <h4 className="text-2xl font-bold text-center">
+                        {" "}
+                        Comment type: {comment.type.toUpperCase()}
+                      </h4>
+                    </DialogHeader>
+                    <div className="flex flex-col justify-center gap-4 text-center">
+                      <p className="text-lg">{comment.text}</p>
+                      {comment.type === "revision" && (
+                        <p className="text-lg text-primary">
+                          {" "}
+                          Comment made by {comment.email || "you"} @{" "}
+                          {comment.timestamp}
+                        </p>
+                      )}
+                    </div>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button variant="outline">Close</Button>
+                      </DialogClose>
+                      <Button variant="destructive">Delete</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              ))}
+            </>
+          ) : (
+            <>
+              <MessageSquare size={64} className="text-primary" />
+              <p className="max-w-sm text-lg font-bold">
+                You haven't made any comments yet.
+              </p>
+              <p className="italic max-w-52">
+                Use the form to add your revision or provide feedback.
+              </p>
+            </>
+          )}
         </div>
       </div>
-      {/* <Card>
-        <CardHeader className="text-xl">Make a comment</CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-2">
-            <Input placeholder="Email address" />
-            <Textarea placeholder="Enter your comment" rows={10} />
-            <div className="flex gap-1">
-              <Checkbox id="isTimeStampedComment" defaultChecked />
-              <Label htmlFor="isTimeStampedComment">
-                Add comment @ {currentTime}
-              </Label>
-            </div>
-          </div>
-        </CardContent>
-        <CardFooter className="flex items-center justify-end">
-          <Button type="button" onClick={handleSubmitComment}>
-            Submit Comment
-          </Button>
-        </CardFooter>
-      </Card> */}
     </div>
   );
 };

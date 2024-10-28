@@ -10,14 +10,13 @@ const { ObjectId } = require("mongoose").Types;
 const validateCommentInput = [
   check("text")
     .exists({ checkFalsy: true })
-    .withMessage("Please enter a comment")
-    .isLength({ min: 1, max: 250 })
-    .withMessage("Comment must be between 1 and 250 characters"),
+    .withMessage("Please enter a comment"),
+  // .isLength({ gt: 6, lte: 250 })
+  // .withMessage("Comment must be between 6 and 250 characters"),
   check("type")
-    .exists({ checkFalsy: true })
-    .withMessage("Please enter a comment type")
-    .isIn(["revision", "general feedback"])
-    .withMessage("Comment type must be 'revision' or 'general feedback'"),
+    .optional()
+    .isIn(["revision", "feedback"])
+    .withMessage("Comment type must be 'revision' or 'feedback'"),
   check("timestamp")
     .optional()
     .matches(/^(\d{2}:)?\d{2}:\d{2}$/)
@@ -49,7 +48,7 @@ router.post("/", validateCommentInput, async (req, res, next) => {
       type: type ?? "revision",
       timestamp: timestamp ?? null,
       projectId,
-      clientId
+      email
     }).save();
 
     project.comments.push(comment._id); // TODO: also add comment to client

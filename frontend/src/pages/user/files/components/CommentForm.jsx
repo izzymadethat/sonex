@@ -11,14 +11,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { addComment } from "@/features/comments/commentsSlice";
 
 const CommentForm = ({
   existingClient,
   timestamp,
   isTimeStampedComment,
   onCheckedChange,
-  onClientEmailChange
+  onClientEmailChange,
+  projectId
 }) => {
+  const dispatch = useDispatch();
   const [emailInput, setEmailInput] = useState("");
   const [commentInput, setCommentInput] = useState("");
   const requiredInfoEntered = emailInput && commentInput;
@@ -30,22 +34,24 @@ const CommentForm = ({
   }, [existingClient]);
 
   // Submit comment
-  const handleSubmitComment = (e) => {
+  const handleSubmitComment = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("email", emailInput);
-    formData.append("text", commentInput);
+    const formData = {
+      email: emailInput,
+      text: commentInput,
+      type: isTimeStampedComment ? "revision" : "feedback"
+    };
     if (isTimeStampedComment) {
-      formData.append("timestamp", timestamp);
-    } else {
-      formData.append("type", "feedback");
+      formData.timestamp = timestamp;
     }
+
+    await dispatch(addComment({ projectId, comment: formData }));
     localStorage.setItem("clientEmail", emailInput);
     if (onClientEmailChange) {
       onClientEmailChange(emailInput);
     }
-    setCommentInput("");
-    console.log(formData);
+    // setCommentInput("");
+    // console.log(formData);
   };
 
   return (

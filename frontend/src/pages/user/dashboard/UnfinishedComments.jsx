@@ -1,36 +1,54 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import {
+  findProjectById,
+  selectAllProjects
+} from "@/features/projects/projectsSlice";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
-const UnfinishedComment = ({ projectNum, comment }) => {
+const UnfinishedComment = ({ comment, projects }) => {
+  const dispatch = useDispatch();
   const [clicked, setClicked] = useState(false);
+  const [projectTitle, setProjectTitle] = useState("");
+
+  useEffect(() => {
+    const getProjectTitle = async () => {
+      const project = projects.find((p) => p._id === comment.projectId);
+      setProjectTitle(project.title);
+    };
+    getProjectTitle();
+  }, [dispatch]);
 
   return (
-    <div
-      className={`flex items-center w-full gap-2 p-4 rounded-md shadow-md cursor-pointer ${
-        clicked
-          ? "bg-secondary-foreground/30"
-          : "hover:bg-primary hover:font-bold bg-secondary hover:text-secondary"
-      }`}
+    <Badge
+      className={`flex items-center w-full gap-2 p-4 rounded-md shadow-md cursor-pointer `}
+      variant={clicked ? "" : "secondary"}
       onClick={() => setClicked(!clicked)}
     >
-      <div className="w-4 h-4 rounded-full bg-primary"></div>
       <span className={clicked ? "line-through" : ""}>
-        {clicked
-          ? `Completed: ${comment.text}`
-          : `${comment.text} : Project ${projectNum}`}
+        {clicked ? (
+          `Completed: ${comment.text}`
+        ) : (
+          <>
+            {comment.text} :{" "}
+            <span className="font-bold uppercase">{projectTitle}</span>
+          </>
+        )}
       </span>
-    </div>
+    </Badge>
   );
 };
 
 const UnfinishedCommentsGrid = ({ unfinishedComments }) => {
+  const projects = useSelector(selectAllProjects);
   return (
     <div className="grid grid-cols-1 gap-2 max-h-[225px] lg:max-h-[300px] overflow-scroll px-6 lg:px-0">
       {unfinishedComments.map((comment) => (
         <UnfinishedComment
           key={comment.id}
-          projectNum={comment.projectId}
           comment={comment}
+          projects={projects}
         />
       ))}
       <Button>Mark all as completed</Button>

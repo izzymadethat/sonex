@@ -141,6 +141,7 @@ router.delete("/", (req, res) => {
   // Destroy the user's auth session (removes "sonex_session_id" from cookies, not csrf token)
   req.session.destroy();
   res.clearCookie("sonex_session_id");
+  res.clearCookie("XSRF-TOKEN");
   res.json({ message: "Logout successful" });
 });
 

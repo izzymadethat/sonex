@@ -1,5 +1,5 @@
 import axiosInstance from "@/store/csrf";
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, isPlain } from "@reduxjs/toolkit";
 
 /* 
 REDUX MAP (in progress...)
@@ -90,7 +90,12 @@ export const deleteFile = createAsyncThunk(
 
 const initialState = {
   projectFiles: [],
-  currentTrack: null,
+  currentTrack: {
+    currentTime: 0,
+    duration: 0,
+    isPlaying: false,
+    streamUrl: ""
+  },
   isLoading: false,
   error: null
 };
@@ -103,6 +108,30 @@ const filesSlice = createSlice({
       state.projectFiles = [];
       state.isLoading = false;
       state.error = null;
+    },
+    setPlaying: (state) => {
+      if (state.currentTrack) {
+        state.currentTrack.isPlaying = true;
+      }
+    },
+    setPaused: (state) => {
+      if (state.currentTrack) {
+        state.currentTrack.isPlaying = false;
+      }
+    },
+    loadTrack: (state, action) => {
+      state.currentTrack = {
+        ...action.payload,
+        currentTime: 0,
+        isPlaying: false,
+        duration: 0
+      };
+    },
+    setCurrentTime: (state, action) => {
+      state.currentTrack.currentTime = action.payload;
+    },
+    setTrackDuration: (state, action) => {
+      state.currentTrack.duration = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -137,12 +166,24 @@ const filesSlice = createSlice({
         );
       })
       .addCase(getSingleFile.fulfilled, (state, action) => {
-        state.currentTrack = action.payload;
+        state.currentTrack = {
+          ...action.payload,
+          currentTime: 0,
+          isPlaying: false,
+          duration: 0
+        };
       });
   }
 });
 
-export const { unloadFiles } = filesSlice.actions;
+export const {
+  unloadFiles,
+  setPlaying,
+  setPaused,
+  loadTrack,
+  setCurrentTime,
+  setTrackDuration
+} = filesSlice.actions;
 export const selectProjectFiles = (state) => state.files.projectFiles;
 export const selectCurrentTrack = (state) => state.files.currentTrack;
 

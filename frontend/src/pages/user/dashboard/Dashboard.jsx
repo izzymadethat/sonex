@@ -86,7 +86,7 @@ function Dashboard() {
   }
 
   return (
-    <div className="dashboard">
+    <div className="">
       <h1 className="my-4 text-3xl font-bold">Hello, {user.firstName}</h1>
 
       <div className="flex flex-col w-full mb-6">

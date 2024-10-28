@@ -103,7 +103,7 @@ export const deleteProject = createAsyncThunk(
 const initialState = {
   allProjects: [],
   currentProject: null,
-  status: "idle",
+  status: "idle"
 };
 
 const projectsSlice = createSlice({
@@ -115,6 +115,13 @@ const projectsSlice = createSlice({
       state.currentProject = null;
       state.status = "idle";
     },
+    findProjectById: (state, action) => {
+      const { projectId } = action.payload;
+      const project = state.allProjects.find((p) => p._id === projectId);
+      if (project) {
+        return project;
+      }
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -162,10 +169,10 @@ const projectsSlice = createSlice({
           state.currentProject = null;
         }
       });
-  },
+  }
 });
 
-export const { unloadProjects } = projectsSlice.actions;
+export const { unloadProjects, findProjectById } = projectsSlice.actions;
 export const selectAllProjects = (state) => state.projects.allProjects;
 export const selectCurrentProject = (state) => state.projects.currentProject;
 export default projectsSlice.reducer;

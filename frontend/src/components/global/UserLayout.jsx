@@ -52,7 +52,9 @@ const UserLayout = () => {
         <SideBar user={currentUser} onLogoutClick={handleLogout} />
         <div className="w-full mx-6 lg:mx-4">
           <Topbar />
-          <Outlet />
+          <div className="mt-8 lg:mx-6 xl:max-w-6xl xl:mx-auto">
+            <Outlet />
+          </div>
         </div>
       </div>
     </SidebarProvider>
