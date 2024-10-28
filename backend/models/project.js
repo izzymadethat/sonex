@@ -1,26 +1,28 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const Comment = require("./comment");
+const File = require("./file");
 
 const projectSchema = new Schema(
   {
     title: {
       type: String,
       required: true,
-      unique: true,
+      unique: true
     },
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: true
     },
     description: {
-      type: String,
+      type: String
     },
     status: {
       type: String,
       enum: ["active", "completed", "archived"],
       required: true,
-      default: "active",
+      default: "active"
     },
     paymentStatus: {
       type: String,
@@ -30,36 +32,43 @@ const projectSchema = new Schema(
         "paid",
         "partially-paid",
         "failed",
-        "overpaid",
+        "overpaid"
       ],
       required: true,
-      default: "unpaid",
+      default: "unpaid"
     },
     projectAmount: {
       type: Number,
       default: 0,
-      required: true,
+      required: true
     },
     amountPaid: {
       type: Number,
       default: 0,
-      required: true,
+      required: true
     },
     clients: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Client",
-      },
+        ref: "Client"
+      }
     ],
     comments: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Comment",
-      },
-    ],
+        ref: "Comment"
+      }
+    ]
   },
   { timestamps: true }
 );
+
+// Delete all comments and files when a project is deleted
+// projectSchema.pre("remove", async (next) => {
+//   await Comment.deleteMany({ projectId: this._id });
+//   await File.deleteMany({ projectId: this._id });
+//   next();
+// });
 
 const Project = mongoose.model("Project", projectSchema);
 
