@@ -6,143 +6,142 @@ const User = require("../../../models/user");
 const router = express.Router();
 
 const validateLogin = [
-  check("credential")
-    .exists({ checkFalsy: true })
-    .notEmpty()
-    .withMessage("Valid username or email is required"),
-  check("password")
-    .exists({ checkFalsy: true })
-    .withMessage("Password is required"),
-  handleValidationErrors
+	check("credential")
+		.exists({ checkFalsy: true })
+		.notEmpty()
+		.withMessage("Valid username or email is required"),
+	check("password")
+		.exists({ checkFalsy: true })
+		.withMessage("Password is required"),
+	handleValidationErrors,
 ];
 
 const validateSignup = [
-  check("firstName")
-    .exists({ checkFalsy: true })
-    .withMessage("First name is required"),
-  check("lastName")
-    .exists({ checkFalsy: true })
-    .withMessage("Last name is required"),
-  check("username")
-    .exists({ checkFalsy: true })
-    .withMessage("Username is required")
-    .isLength({ min: 6, max: 20 })
-    .withMessage("Username must be between 6 and 20 characters long"),
-  check("email").exists({ checkFalsy: true }).withMessage("Email is required"),
-  check("password")
-    .exists({ checkFalsy: true })
-    .withMessage("Password is required"),
-  handleValidationErrors
+	check("firstName")
+		.exists({ checkFalsy: true })
+		.withMessage("First name is required"),
+	check("lastName")
+		.exists({ checkFalsy: true })
+		.withMessage("Last name is required"),
+	check("username")
+		.exists({ checkFalsy: true })
+		.withMessage("Username is required")
+		.isLength({ min: 6, max: 20 })
+		.withMessage("Username must be between 6 and 20 characters long"),
+	check("email").exists({ checkFalsy: true }).withMessage("Email is required"),
+	check("password")
+		.exists({ checkFalsy: true })
+		.withMessage("Password is required"),
+	handleValidationErrors,
 ];
 
 // Get current user
 // GET /api/auth/session
 router.get("/", async (req, res) => {
-  if (!req.session.user) return res.json({ user: null });
+	if (!req.session.user) return res.json({ user: null });
 
-  const user = await User.findById(req.session.user.id).select([
-    "-hashedPassword",
-    "-__v",
-    "-projects",
-    "-clients"
-  ]);
+	const user = await User.findById(req.session.user.id).select([
+		"-hashedPassword",
+		"-__v",
+		"-projects",
+		"-clients",
+	]);
 
-  return res.json({ user });
+	return res.json({ user });
 });
 
 // Login a user
 // POST /api/auth/session
 router.post("/", validateLogin, async (req, res, next) => {
-  const { credential, password } = req.body;
+	const { credential, password } = req.body;
 
-  try {
-    // Try to find user by username or email
-    const user = await User.findOne({
-      $or: [{ username: credential }, { email: credential }]
-    });
+	try {
+		// Try to find user by username or email
+		const user = await User.findOne({
+			$or: [{ username: credential }, { email: credential }],
+		});
 
-    if (!user) {
-      const err = new Error("Login failed");
-      err.status = 401;
-      err.title = "Login Failed";
-      err.errors = {
-        login: "Couldn't find user with that username or email"
-      };
-      return next(err);
-    }
+		if (!user) {
+			const err = new Error("Login failed");
+			err.status = 401;
+			err.title = "Login Failed";
+			err.errors = {
+				login: "Couldn't find user with that username or email",
+			};
+			return next(err);
+		}
 
-    // check if password is correct
-    // If so, login the user and generate session token
-    // If not, return error message
-    const isMatch = bcrypt.compareSync(
-      password,
-      user.hashedPassword.toString()
-    );
+		// check if password is correct
+		// If so, login the user and generate session token
+		// If not, return error message
+		const isMatch = bcrypt.compareSync(
+			password,
+			user.hashedPassword.toString(),
+		);
 
-    // Password is incorrect
-    if (!isMatch) {
-      const err = new Error("Login failed");
-      err.status = 401;
-      err.title = "Login Failed";
-      err.errors = {
-        login: "The provided credentials were invalid."
-      };
-      return next(err);
-    }
+		// Password is incorrect
+		if (!isMatch) {
+			const err = new Error("Login failed");
+			err.status = 401;
+			err.title = "Login Failed";
+			err.errors = {
+				login: "The provided credentials were invalid.",
+			};
+			return next(err);
+		}
 
-    const loggedInUser = {
-      id: user._id.toString(),
-      email: user.email,
-      firstName: user.firstName,
-      username: user.username,
-      role: "user"
-    };
+		const loggedInUser = {
+			id: user._id.toString(),
+			email: user.email,
+			firstName: user.firstName,
+			username: user.username,
+			role: "user",
+		};
 
-    // Add user to express session
-    req.session.user = loggedInUser;
+		// Add user to express session
+		req.session.user = loggedInUser;
 
-    return res.status(200).json({ user: loggedInUser });
-  } catch (error) {
-    next(error);
-  }
+		return res.status(200).json({ user: loggedInUser });
+	} catch (error) {
+		next(error);
+	}
 });
 
 // Signup a user
 // POST /api/auth/session/register
 router.post("/register", validateSignup, async (req, res, next) => {
-  const incomingUser = req.body;
+	const incomingUser = req.body;
 
-  try {
-    const salt = bcrypt.genSaltSync(10);
-    // Hash password with salt then create new user
-    const hashedPassword = await bcrypt.hash(incomingUser.password, salt);
+	try {
+		const salt = bcrypt.genSaltSync(10);
+		// Hash password with salt then create new user
+		const hashedPassword = await bcrypt.hash(incomingUser.password, salt);
 
-    const newUserInfo = {
-      firstName: incomingUser.firstName,
-      lastName: incomingUser.lastName,
-      username: incomingUser.username,
-      email: incomingUser.email,
-      hashedPassword
-    };
+		const newUserInfo = {
+			firstName: incomingUser.firstName,
+			lastName: incomingUser.lastName,
+			username: incomingUser.username,
+			email: incomingUser.email,
+			hashedPassword,
+		};
 
-    const newUser = new User(newUserInfo);
-    await newUser.save();
-    return res
-      .status(201)
-      .json({ message: "User created successfully", user: newUser });
-  } catch (error) {
-    next(error);
-  }
+		const newUser = new User(newUserInfo);
+		await newUser.save();
+		return res
+			.status(201)
+			.json({ message: "User created successfully", user: newUser });
+	} catch (error) {
+		next(error);
+	}
 });
 
 // Logout a user
 // DELETE /api/auth/session
 router.delete("/", (req, res) => {
-  // Destroy the user's auth session (removes "sonex_session_id" from cookies, not csrf token)
-  req.session.destroy();
-  res.clearCookie("sonex_session_id");
-  res.clearCookie("XSRF-TOKEN");
-  res.json({ message: "Logout successful" });
+	// Destroy the user's auth session (removes "sonex_session_id" from cookies, not csrf token)
+	req.session.destroy();
+	res.clearCookie("sonex_session_id");
+	res.json({ message: "Logout successful" });
 });
 
 module.exports = router;
