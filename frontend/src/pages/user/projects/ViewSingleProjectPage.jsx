@@ -93,7 +93,8 @@ const ViewSingleProjectPage = () => {
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg lg:text-xl">Storage Used</CardTitle>
               <CardDescription className="text-lg font-extrabold text-muted-foreground">
-                {convertStorageInMBtoGB(project.storageUsed)}Gb / 256Gb
+                {convertStorageInMBtoGB(project.storageUsed).toFixed(2)}Gb /
+                256Gb
               </CardDescription>
             </div>
           </CardHeader>

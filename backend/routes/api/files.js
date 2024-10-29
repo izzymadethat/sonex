@@ -15,12 +15,26 @@ const upload = multer({
   storage: multerS3({
     s3: s3Client,
     bucket: awsS3.bucketName,
-    key: (req, file, cb) => {
+    key: async (req, file, cb) => {
       const { projectId } = req.params;
-      cb(null, `projects/${projectId}/${file.originalname}`);
+      try {
+        const s3FilePath = `projects/${projectId}/${file.originalname}`;
+
+        cb(null, s3FilePath);
+      } catch (error) {
+        cb(error, null);
+      }
     },
     contentType: (_req, file, cb) => {
       cb(null, file.mimetype);
+    },
+    metadata: (req, file, cb) => {
+      // setting custom metadata for each file
+      cb(null, {
+        projectId: req.params.projectId,
+        userId: req.session.user.id,
+        uploadedTo: "Sonex Audio Solutions"
+      });
     }
   }),
   fileFilter: (_req, file, cb) => {
@@ -36,6 +50,7 @@ const upload = multer({
 router.post("/", upload.array("tracks"), async (req, res, next) => {
   const { projectId } = req.params;
   const files = req.files;
+  const fileSizes = JSON.parse(req.body.fileSizes);
   try {
     const project = await Project.findById(projectId);
     if (!project) {
@@ -52,17 +67,25 @@ router.post("/", upload.array("tracks"), async (req, res, next) => {
 
     const fileResults = await Promise.all(
       files.map(async (file) => {
+        const fileSize = fileSizes[file.originalname];
         const s3Key = file.key;
 
         const savedFile = await new File({
           name: file.originalname,
-          size: file.size,
+          size: fileSize,
           type: file.mimetype.split("/")[1],
           path: s3Key,
           projectId,
-          userId: req.session.user.id
+          userId: req.session.user.id,
+          isDownloadable:
+            project.paymentStatus === "no-charge" ||
+            project.paymentStatus === "paid" ||
+            project.projectAmount === 0 ||
+            false
         }).save();
 
+        project.files.push(savedFile._id);
+        await project.save();
         return savedFile;
       })
     );

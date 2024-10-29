@@ -69,7 +69,6 @@ const EditProjectForm = ({ project }) => {
   };
 
   const handleUpdateProject = async () => {
-    console.log("Updating project...");
     const updatedForm = {
       id: project._id,
       title: titleInput,
@@ -78,7 +77,6 @@ const EditProjectForm = ({ project }) => {
       paymentStatus: paymentStatus,
       projectAmount: parseFloat(Number(projectAmount).toFixed(2))
     };
-    console.log(updatedForm);
     await dispatch(updateProject(updatedForm));
     setIsOpen(false);
   };

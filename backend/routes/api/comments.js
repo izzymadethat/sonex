@@ -119,9 +119,9 @@ router.get("/", async (req, res, next) => {
 
 // Update a comment
 // Only the client that created the comment can update it
-router.put("/:commentId", validateCommentInput, async (req, res, next) => {
+router.put("/:commentId", async (req, res, next) => {
   const { commentId } = req.params;
-  const { text, type, timestamp, email } = req.body;
+  const { text, type, timestamp, email, isCompleted } = req.body;
   // const clientId = (req.client && req.client.id) || req.user.id;
   const clientId = req.body.email; // for testing purposes
   try {
@@ -140,6 +140,8 @@ router.put("/:commentId", validateCommentInput, async (req, res, next) => {
     comment.text = text || comment.text;
     comment.type = type || comment.type;
     comment.timestamp = timestamp || comment.timestamp;
+    comment.isCompleted =
+      isCompleted !== undefined ? isCompleted : comment.isCompleted;
 
     await comment.save();
 

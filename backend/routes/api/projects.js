@@ -81,7 +81,20 @@ const validateProjectQuery = [
 router.get("/", validateProjectQuery, async (req, res, next) => {
   try {
     const userId = new ObjectId(req.session.user.id);
-    const projects = await Project.find({ userId }, "-clients -comments -__v");
+    const projects = await Project.find(
+      { userId },
+      "-clients -comments -__v"
+    ).populate("files");
+    const projectResults = projects.map((project) => {
+      const projectSize = project.files.reduce(
+        (acc, file) => acc + file.size / 1024 / 1024,
+        0
+      );
+      return {
+        ...project._doc,
+        storageUsed: projectSize
+      };
+    });
 
     // format the response
     // const projectsData = projects.map((project) => {
@@ -92,7 +105,7 @@ router.get("/", validateProjectQuery, async (req, res, next) => {
     //   };
     // });
 
-    res.json({ Projects: projects, User: req.user });
+    res.json({ Projects: projectResults, User: req.user });
   } catch (error) {
     next(error);
   }
@@ -144,7 +157,18 @@ router.get("/:projectId", async (req, res, next) => {
       });
     }
 
-    res.status(200).json(project);
+    const files = await File.find({ projectId });
+    const storageUsed = files.reduce(
+      (acc, file) => acc + file.size / 1024 / 1024,
+      0
+    );
+
+    const projectResult = {
+      ...project._doc,
+      storageUsed
+    };
+
+    res.status(200).json({ project: projectResult });
   } catch (error) {
     next(error);
   }

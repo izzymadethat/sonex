@@ -16,7 +16,6 @@ Redux Map (in progress...)
       paymentStatus: enum ("unpaid" | "paid" | "no-charge"),
       projectAmount: number,
       amountPaid: number,
-      storageUsed: number,
       createdAt: date,
       updatedAt: date,
     },
@@ -54,7 +53,7 @@ export const getSingleProject = createAsyncThunk(
   async (projectId, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`${BASE_URL}/${projectId}`);
-      return response.data; // Return the project data directly
+      return response.data.project; // Return the project data directly
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
     }

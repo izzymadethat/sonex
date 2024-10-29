@@ -58,6 +58,12 @@ const projectSchema = new Schema(
         type: Schema.Types.ObjectId,
         ref: "Comment"
       }
+    ],
+    files: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "File"
+      }
     ]
   },
   { timestamps: true }

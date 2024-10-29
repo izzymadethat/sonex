@@ -47,18 +47,22 @@ const FileUploader = () => {
   // User able to remove ALL files before uploading
   const handleRemoveAllFiles = () => setFiles([]);
 
-  // TODO: Why is multer showing file size as 0 bytes after hitting middleware?
   const handleSubmitFilesToProject = async (e) => {
     e.preventDefault();
 
     const fileData = new FormData();
+    const fileSizes = {};
     files.forEach((file) => {
       fileData.append("tracks", file);
+      fileSizes[file.name] = file.size;
     });
+    fileData.append("fileSizes", JSON.stringify(fileSizes));
+
     const data = {
       fileData,
       projectId
     };
+
     await dispatch(uploadFiles(data));
     setFiles([]);
   };
@@ -81,30 +85,30 @@ const FileUploader = () => {
             </Button>
           </div>
           <Separator />
-          <ul className="grid grid-cols-2 gap-2 my-4 md:grid-cols-4 lg:justify-center">
+          <ul className="grid grid-cols-2 gap-4 my-4 lg:justify-center lg:grid-cols-4">
             {/* Show files waiting to be uploaded */}
             {files.map((file, index) => (
               <li
                 key={index}
-                className="flex flex-col items-center gap-2 p-3 border lg:flex-row rounded-xl w-fit"
+                className="flex flex-col items-center justify-center gap-1.5 p-3 w-full border xl:flex-row rounded-xl text-center xl:justify-between"
               >
+                <div>
+                  <p className="ml-4 text-xs font-bold ">
+                    {file.name.slice(0, 12)}
+                    {file.name.length > 12 && <span>...</span>}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {convertFileSizeInBytestoMB(file.size).toFixed(2)}MB
+                  </p>
+                </div>
                 <Button
                   type="button"
                   variant="destructive"
-                  className="w-ft"
+                  className="w-fit"
                   onClick={() => handleRemoveFile(index)}
                 >
-                  <Trash2Icon size={16} />
+                  <Trash2Icon size={12} />
                 </Button>
-                <div>
-                  <p className="text-xs font-bold">
-                    {file.name.slice(0, 13)}
-                    {file.name.slice(12) && <span>...</span>}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {convertFileSizeInBytestoMB(file.size)}MB
-                  </p>
-                </div>
               </li>
             ))}
           </ul>

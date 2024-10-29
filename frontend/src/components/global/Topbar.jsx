@@ -41,7 +41,7 @@ const Topbar = () => {
         <ModeToggle />
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger asChild>
               <Button onClick={handleLogout}>
                 <LogOut />
               </Button>

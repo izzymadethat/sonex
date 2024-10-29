@@ -30,9 +30,9 @@ const RecentProjects = ({ projects }) => {
       <div className="grid grid-cols-1 gap-2 lg:grid-cols-2 max-h-[225px] lg:max-h-[300px] overflow-scroll px-6 lg:px-0">
         {renderRecentProjects}
       </div>
-      <Button asChild>
+      {/* <Button asChild>
         <Link to="projects">View All Projects</Link>
-      </Button>
+      </Button> */}
     </section>
   );
 };

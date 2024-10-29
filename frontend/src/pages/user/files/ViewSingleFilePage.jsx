@@ -53,7 +53,6 @@ const ViewSingleFilePage = () => {
   const [client, setClient] = useState("");
 
   const audioRef = useRef(null);
-  console.log(projectComments);
 
   useEffect(() => {
     const existingClient = localStorage.getItem("clientEmail");

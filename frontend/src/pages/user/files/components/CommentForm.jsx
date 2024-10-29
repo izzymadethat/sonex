@@ -50,8 +50,7 @@ const CommentForm = ({
     if (onClientEmailChange) {
       onClientEmailChange(emailInput);
     }
-    // setCommentInput("");
-    // console.log(formData);
+    setCommentInput("");
   };
 
   return (

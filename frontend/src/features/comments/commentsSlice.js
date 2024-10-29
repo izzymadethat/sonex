@@ -60,7 +60,7 @@ export const fetchComments = createAsyncThunk(
       const response = await axiosInstance.get("/comments");
       return response.data.Comments;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return thunkAPI.rejectWithValue("An error occurred");
     }
   }
@@ -75,7 +75,7 @@ export const fetchCommentsByProject = createAsyncThunk(
       );
       return response.data.Comments;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return thunkAPI.rejectWithValue("An error occurred");
     }
   }
@@ -91,7 +91,7 @@ export const addComment = createAsyncThunk(
       );
       return response.data;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return thunkAPI.rejectWithValue("An error occurred");
     }
   }
@@ -100,7 +100,7 @@ export const addComment = createAsyncThunk(
 export const updateComment = createAsyncThunk(
   "comments/updateComment",
   async (updatedCommentInfo, thunkAPI) => {
-    const commentId = updatedCommentInfo.id;
+    const commentId = updatedCommentInfo._id;
     try {
       const response = await axiosInstance.put(
         `/comments/${commentId}`,
@@ -108,7 +108,7 @@ export const updateComment = createAsyncThunk(
       );
       return response.data.comment;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return thunkAPI.rejectWithValue("An error occurred");
     }
   }
@@ -198,7 +198,7 @@ const commentsSlice = createSlice({
         const updatedComment = action.payload;
         state.status = "succeeded";
         state.allComments.map((comment) => {
-          if (comment.id === updatedComment.id) {
+          if (comment._id === updatedComment._id) {
             return updatedComment;
           }
           return comment;

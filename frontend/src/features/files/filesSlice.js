@@ -33,7 +33,7 @@ export const fetchProjectFiles = createAsyncThunk(
       );
       return response.data;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return thunkAPI.rejectWithValue(error.message);
     }
   }
@@ -54,7 +54,7 @@ export const uploadFiles = createAsyncThunk(
       );
       return response.data.Files;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return thunkAPI.rejectWithValue(error.message);
     }
   }

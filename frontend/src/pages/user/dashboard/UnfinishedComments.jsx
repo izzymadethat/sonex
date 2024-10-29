@@ -1,5 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardHeader } from "@/components/ui/card";
+import { updateComment } from "@/features/comments/commentsSlice";
 import {
   findProjectById,
   selectAllProjects
@@ -21,10 +23,15 @@ const UnfinishedComment = ({ comment, projects }) => {
   }, [dispatch]);
 
   return (
-    <Badge
-      className={`flex items-center w-full gap-2 p-4 rounded-md shadow-md cursor-pointer `}
+    <Card
+      className={`flex items-center w-full gap-2 p-4 rounded-md shadow-md cursor-pointer hover:bg-secondary/50`}
       variant={clicked ? "" : "secondary"}
-      onClick={() => setClicked(!clicked)}
+      onClick={() => {
+        setClicked(!clicked);
+        // setTimeout(() => {
+        //   dispatch(updateComment({ ...comment, isCompleted: clicked }));
+        // }, 3500);
+      }}
     >
       <span className={clicked ? "line-through" : ""}>
         {clicked ? (
@@ -36,7 +43,7 @@ const UnfinishedComment = ({ comment, projects }) => {
           </>
         )}
       </span>
-    </Badge>
+    </Card>
   );
 };
 
@@ -46,7 +53,7 @@ const UnfinishedCommentsGrid = ({ unfinishedComments }) => {
     <div className="grid grid-cols-1 gap-2 max-h-[225px] lg:max-h-[300px] overflow-scroll px-6 lg:px-0">
       {unfinishedComments.map((comment) => (
         <UnfinishedComment
-          key={comment.id}
+          key={comment._id}
           comment={comment}
           projects={projects}
         />
