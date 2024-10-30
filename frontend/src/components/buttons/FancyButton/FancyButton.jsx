@@ -1,4 +1,4 @@
-import "../../styles/fancy-button.css";
+import "./fancy-button.css";
 
 const FancyButton = () => {
   return (

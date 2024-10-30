@@ -16,10 +16,10 @@ export default MarketedUsers;
 //     <div className="ml-10">
 //       <h2 className="text-3xl font-extrabold">
 //         Built for{" "}
-//         <span className="text-primary underline">{usr.header}</span>
+//         <span className="underline text-primary">{usr.header}</span>
 //       </h2>
 //       <div className="grid grid-cols-5 gap-4 place-items-center">
-//         <div className="col-span-2 space-y-4 max-w-lg">
+//         <div className="max-w-lg col-span-2 space-y-4">
 //           <h4 className="text-3xl">{usr.contentTitle}</h4>
 //           <p>{usr.content}</p>
 //           <Button disabled fullWidth>

@@ -5,7 +5,7 @@ import { loginUser, selectUser } from "@/features/user/userSlice";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
-const Header = ({ user }) => {
+const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -13,6 +13,7 @@ const Header = ({ user }) => {
     await dispatch(
       loginUser({ credential: "demo@user.com", password: "password" })
     ); //for demo purpose only
+
     return navigate("/user/me");
   };
 

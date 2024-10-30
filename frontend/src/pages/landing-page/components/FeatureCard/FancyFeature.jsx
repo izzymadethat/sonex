@@ -1,4 +1,4 @@
-import "../../styles/fancy-feature.css";
+import "./fancy-feature.css";
 
 const FancyFeature = () => {
   return (

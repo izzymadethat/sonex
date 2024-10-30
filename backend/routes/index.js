@@ -10,7 +10,7 @@ const isProduction = environment === "production";
 router.use(restoreUser);
 
 router.get("/api/csrf/restore", (req, res) => {
-  const csrfToken = req.csrfToken();
+  // const csrfToken = req.csrfToken();
   res.cookie("XSRF-TOKEN", csrfToken);
   return res.json({ token: csrfToken });
 });
@@ -22,7 +22,7 @@ if (isProduction) {
   const path = require("path");
   // Generate a csrf token api routes
   router.get("/", (req, res) => {
-    res.cookie("XSRF-TOKEN", req.csrfToken());
+    // res.cookie("XSRF-TOKEN", req.csrfToken());
     return res.sendFile(
       path.resolve(__dirname, "../../frontend", "dist", "index.html")
     );
@@ -33,7 +33,7 @@ if (isProduction) {
 
   // Generate a csrf token for non-API routes
   router.get(/^(?!\/?api).*/, (req, res) => {
-    res.cookie("XSRF-TOKEN", req.csrfToken());
+    // res.cookie("XSRF-TOKEN", req.csrfToken());
     return res.sendFile(
       path.resolve(__dirname, "../../frontend", "dist", "index.html")
     );
@@ -45,7 +45,7 @@ if (isProduction) {
   // but don't send as a response, only cookie
   if (!isProduction) {
     router.get("/api/csrf/restore", (req, res) => {
-      res.cookie("XSRF-TOKEN", req.csrfToken());
+      // res.cookie("XSRF-TOKEN", req.csrfToken());
       return res.json({});
     });
   }

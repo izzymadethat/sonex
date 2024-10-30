@@ -10,9 +10,9 @@ import {
   Music2,
   User2
 } from "lucide-react";
-import BtnSecondary from "../../../components/buttons/BtnSecondary";
+import BtnSecondary from "../../../components/buttons/SecondaryButton/BtnSecondary";
 import { notifications } from "../../../constants/notifications";
-import NotificationCard from "../../../components/customs/NotificationCard";
+import NotificationCard from "../../../components/informational/NotificationCard/NotificationCard";
 import { userExample } from "../../../constants/user";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -22,10 +22,10 @@ import {
   getProjects,
   selectAllProjects
 } from "@/features/projects/projectsSlice";
-import RecentProjects from "./RecentProjects";
+import RecentProjects from "./components/RecentProjects";
 import { selectAllComments } from "@/features/comments/commentsSlice";
-import UnfinishedComments from "./UnfinishedComments";
-import SupportForm from "./SupportForm";
+import UnfinishedComments from "./components/UnfinishedComments";
+import SupportForm from "./components/SupportForm";
 import NewProjectFormPopup from "@/components/popups/NewProjectForm";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {

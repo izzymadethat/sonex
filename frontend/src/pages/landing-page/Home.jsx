@@ -1,13 +1,14 @@
-import { FancyButton } from "../../components/buttons";
+import FancyButton from "@/components/buttons/FancyButton";
 import {
-  Header,
+  PricingPlan,
   Features,
-  WhatsIncluded,
   Footer,
-} from "../landing-page/sections";
-import { PricingPlan, MarketedUsers } from "../../components/customs/sections";
-import { HeaderChip } from "../../components/misc";
-import { faqs } from "../../constants";
+  Header,
+  MarketedUsers,
+  WhatsIncluded,
+  HeaderChip
+} from "./components";
+import { faqs } from "@/constants";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUser, selectUser } from "@/features/user/userSlice";
@@ -19,19 +20,11 @@ const Home = () => {
   const dispatch = useDispatch();
   const { currentUser: user, status, error } = useSelector(selectUser);
 
-  // useEffect(() => {
-  //   dispatch(fetchUser());
-  // }, [dispatch]);
-
-  // useEffect(() => {
-  //   if (user) {
-  //     navigate("/user/me", { replace: true });
-  //   }
-  // }, [user, navigate]);
+  // Navigate to user dashboard if user
 
   return (
     <div>
-      <Header user={user} />
+      <Header />
 
       {/* Hero */}
       <section className="flex flex-col items-center justify-center h-screen space-y-8">

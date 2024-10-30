@@ -43,23 +43,30 @@ const sessionOptions = {
     secure: isProduction,
     sameSite: isProduction && "lax",
     maxAge: Number(sessionAuth.accessExpiresIn) * 1000 // 30 days
-  },
-  store: MongoStore.create({
-    mongoUrl: mongodb.dbURI,
-    dbName: "sonex-sessions"
-  })
+  }
 };
 if (!isProduction) {
   app.use(cors(corsOptions)); // Allow cross-origin requests from localhost:5173
 }
-app.use(helmet()); // Adds security in headers
-app.use(session(sessionOptions)); // Session auth middleware
 app.use(
-  csurf({
-    cookie: false
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      mediaSrc: ["'self'", "https://*.cloudfront.net"]
+    }
   })
-); // CSRF protection
-
+);
+app.use(
+  helmet.crossOriginResourcePolicy({
+    policy: "cross-origin"
+  })
+); // Adds security in headers
+app.use(session(sessionOptions)); // Session auth middleware
+// app.use(
+//   csurf({
+//     cookie: true
+//   })
+// ); // CSRF protection
 app.use(routes);
 
 module.exports = app;

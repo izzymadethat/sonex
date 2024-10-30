@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, RectangleEllipsis } from "lucide-react";
 import { useState } from "react";
-import Loader from "../../components/misc/Loader";
+import Loader from "../../components/informational/Loader/Loader";
 import axios from "axios";
 
 const API_URL = "http://localhost:4000/api/auth/session";
