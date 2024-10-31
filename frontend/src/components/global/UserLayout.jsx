@@ -1,51 +1,50 @@
 import { Outlet, useNavigate } from "react-router-dom";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import SideBar from "./Sidebar";
 import Topbar from "./Topbar";
-import { SidebarProvider, SidebarTrigger } from "../ui/sidebar";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUser, logoutUser, selectUser } from "@/features/user/userSlice";
-import { useEffect } from "react";
-import { Loader2 } from "lucide-react";
+import { logoutUser, restoreUser, selectUser } from "@/features/user/userSlice";
 import { getProjects, unloadProjects } from "@/features/projects/projectsSlice";
 import { fetchComments } from "@/features/comments/commentsSlice";
+import { Loader2 } from "lucide-react";
 
 const UserLayout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { currentUser, status } = useSelector(selectUser);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const { currentUser, error } = useSelector(selectUser);
 
   useEffect(() => {
-    const fetchData = async () => {
-      await dispatch(fetchUser());
+    dispatch(restoreUser()).then(async () => {
       await dispatch(getProjects());
       await dispatch(fetchComments());
-    };
-    fetchData();
+      setIsLoaded(true);
+    });
   }, [dispatch]);
 
   const handleLogout = async () => {
     await dispatch(logoutUser());
     await dispatch(unloadProjects());
+    await dispatch(unloadComments());
+    await dispatch(unloadFiles());
     navigate("/");
   };
 
-  // Show a loader while data is being fetched
-  if (status === "loading") {
+  // if (!isLoaded && !currentUser) {
+  //   return <p>Loading...</p>;
+  // } else if (error) {
+  //   return <h1>Error: {error}</h1>;
+  // }
+
+  if (error) {
     return (
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center w-full h-screen">
         <Loader2 className="animate-spin" />
       </div>
     );
   }
 
-  // If there's no current user, you can redirect or show a message
-  if (!currentUser) {
-    return (
-      <div className="flex items-center justify-center">
-        No user logged in. Please log in.
-      </div>
-    );
-  }
   return (
     <SidebarProvider>
       <div className="flex w-full">

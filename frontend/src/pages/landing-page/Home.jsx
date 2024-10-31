@@ -11,7 +11,7 @@ import {
 import { faqs } from "@/constants";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUser, selectUser } from "@/features/user/userSlice";
+import { selectUser } from "@/features/user/userSlice";
 import { useEffect } from "react";
 import { getProjects } from "@/features/projects/projectsSlice";
 
@@ -20,7 +20,7 @@ const Home = () => {
   const dispatch = useDispatch();
   const { currentUser: user, status, error } = useSelector(selectUser);
 
-  // Navigate to user dashboard if user
+  // TODO: Navigate to user dashboard if user
 
   return (
     <div>

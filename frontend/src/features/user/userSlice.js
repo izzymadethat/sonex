@@ -6,31 +6,37 @@ const BASE_URL = "/auth/session";
 // Login user with given credentials
 export const loginUser = createAsyncThunk(
   "user/loginUser",
-  async ({ credential, password }, { rejectWithValue }) => {
+  async (userCred, thunkAPI) => {
     try {
       const response = await axiosInstance.post("/auth/session", {
-        credential,
-        password
+        credential: userCred.credential,
+        password: userCred.password
       });
+      await thunkAPI.dispatch(restoreUser());
       return response.data;
     } catch (error) {
-      console.error(error);
-      return rejectWithValue("An error occurred");
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.errors?.server ||
+          error.response?.data?.errors?.login ||
+          "An unknown error occurred."
+      );
     }
   }
 );
 
 // Fetch current user's data
 // TODO: add and do more with fields in database so I can store more data
-export const fetchUser = createAsyncThunk(
-  "user/fetchCurrentUser",
-  async (_, { rejectWithValue }) => {
+export const restoreUser = createAsyncThunk(
+  "user/restoreUser",
+  async (_, thunkAPI) => {
     try {
-      const res = await axiosInstance.get("/auth/session"); // Use .get() for clarity
-      return res.data.user; // Directly return user data
+      const res = await axiosInstance.get("/auth/session");
+      return res.data.user;
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data.errors?.message || "An error occurred"
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.errors?.server ||
+          error.response?.data?.errors?.login ||
+          "An unknown error occurred."
       );
     }
   }
@@ -38,14 +44,12 @@ export const fetchUser = createAsyncThunk(
 
 export const logoutUser = createAsyncThunk(
   "user/logoutUser",
-  async (_, { rejectWithValue }) => {
+  async (_, thunkAPI) => {
     try {
-      const res = await axiosInstance.delete("/auth/session"); // Use .delete() for clarity
-      return res.data; // Optionally return any response data if needed
+      const res = await axiosInstance.delete("/auth/session");
+      return res.data;
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data.errors?.message || "An error occurred"
-      );
+      return thunkAPI.rejectWithValue(error.response?.data.errors?.login);
     }
   }
 );
@@ -59,20 +63,15 @@ REDUX MAP (in progress)
     username: string,
     email: string,
     role: enum ("admin" | "user" | "client"),
-    storageUsed: number (in gigabytes),
-    storageLimit: number (in gigabytes) <- total storage limit,
     connectAccountId: string,
     subscriptionStatus: enum ("active", "inactive"),
     subscriptionStartDate: date,
     subscriptionEndDate: date,
   } | null
-
-  status: "idle" | "loading" | "succeeded" | "failed"
   error: null | string
 */
 const initialState = {
   currentUser: null,
-  status: "idle",
   error: null
 };
 
@@ -82,29 +81,22 @@ const userSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(loginUser.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
-      })
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.status = "succeeded";
         state.currentUser = action.payload.user;
       })
       .addCase(loginUser.rejected, (state, action) => {
-        state.status = "failed";
         state.error = action.payload;
       })
-      .addCase(fetchUser.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
+      .addCase(restoreUser.fulfilled, (state, action) => {
+        state.currentUser = action.payload;
       })
-      .addCase(fetchUser.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.currentUser = { ...action.payload };
+      .addCase(restoreUser.rejected, (state, action) => {
+        state.error = action.payload;
       })
       .addCase(logoutUser.fulfilled, (state) => {
         state.currentUser = null;
         state.status = "idle";
+        state.error = null;
       });
   }
 });

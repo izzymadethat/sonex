@@ -10,9 +10,11 @@ const Header = () => {
   const navigate = useNavigate();
 
   const handleDemoLogin = async () => {
-    await dispatch(
-      loginUser({ credential: "demo@user.com", password: "password" })
-    ); //for demo purpose only
+    const userCred = {
+      credential: "demo@user.com",
+      password: "password"
+    };
+    await dispatch(loginUser(userCred)); //for demo purpose only
 
     return navigate("/user/me");
   };

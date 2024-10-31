@@ -1,29 +1,26 @@
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardTitle,
   CardHeader,
   CardFooter
 } from "@/components/ui/card";
-
-import { convertStorageInMBtoGB } from "@/helper/equations";
+import {
+  convertFileSizeInBytestoMB,
+  convertStorageInMBtoGB
+} from "@/helper/equations";
 import FileTable from "./FileTable";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { CheckCircle2 } from "lucide-react";
 import EditProjectForm from "@/components/popups/EditProjectForm";
 import CopyProjectLink from "@/components/popups/CopyProjectLink";
 import NavigateBackTo from "@/components/global/NavigateBackTo";
 import {
+  getProjects,
   getSingleProject,
   selectCurrentProject
 } from "@/features/projects/projectsSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import PaymentStatusBadge from "./components/PaymentStatusBadge";
 import ProjectStatusBadge from "./components/ProjectStatusBadge";
 import {
@@ -31,24 +28,52 @@ import {
   selectProjectFiles
 } from "@/features/files/filesSlice";
 import { fetchCommentsByProject } from "@/features/comments/commentsSlice";
+import Loader from "@/components/informational/Loader/Loader";
 
 const ViewSingleProjectPage = () => {
   const params = useParams();
   const { projectId } = params;
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const project = useSelector(selectCurrentProject);
   const files = useSelector(selectProjectFiles);
-  const totalFileSize = files.reduce((acc, file) => acc + file.size, 0);
-  // payment status badge
+  const [loading, setLoading] = useState(true);
+  const [totalStorageUsed, setTotalStorageUsed] = useState(0);
 
   useEffect(() => {
-    dispatch(getSingleProject(projectId));
-    dispatch(fetchCommentsByProject(projectId));
-    dispatch(fetchProjectFiles(projectId));
+    setLoading(true);
+    const restoreAccountInfo = async () => {
+      // Fetch the project files, comments, project details and files
+      dispatch(getProjects());
+      dispatch(getSingleProject(projectId)).then(() => {
+        dispatch(fetchCommentsByProject(projectId));
+        dispatch(fetchProjectFiles(projectId));
+      });
+    };
+
+    restoreAccountInfo();
+
+    setLoading(false);
   }, [dispatch, projectId]);
 
-  if (!project) return <p>Loading...</p>;
+  // Every time a file is uploaded, recalculate the total storage used
+  useEffect(() => {
+    const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+    setTotalStorageUsed(convertFileSizeInBytestoMB(totalSize));
+  }, [files]);
+
+  // const updateTotalStorage = (files) => {
+  //   const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+  //   setTotalStorageUsed(convertFileSizeInBytestoMB(totalSize));
+  // };
+
+  if (loading || !project) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-48rem)]">
+        <Loader />
+      </div>
+    );
+  }
+
   return (
     <section className="m-8 space-y-8">
       {/* Project Details */}
@@ -80,7 +105,7 @@ const ViewSingleProjectPage = () => {
               <CardTitle className="text-lg lg:text-xl">
                 Project Balance
               </CardTitle>
-              <CardDescription className="text-lg font-extrabold text-muted-foreground">
+              <CardDescription className="text-lg font-bold text-muted-foreground">
                 {project.paymentStatus === "no-charge"
                   ? `No Charge`
                   : `$${project.projectAmount.toFixed(2)}`}
@@ -92,9 +117,8 @@ const ViewSingleProjectPage = () => {
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg lg:text-xl">Storage Used</CardTitle>
-              <CardDescription className="text-lg font-extrabold text-muted-foreground">
-                {convertStorageInMBtoGB(project.storageUsed).toFixed(2)}Gb /
-                256Gb
+              <CardDescription className="text-lg font-bold text-muted-foreground">
+                {convertStorageInMBtoGB(totalStorageUsed).toFixed(2)}Gb / 256Gb
               </CardDescription>
             </div>
           </CardHeader>

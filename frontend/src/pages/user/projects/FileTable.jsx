@@ -38,7 +38,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { convertFileSizeInBytestoMB } from "@/helper/equations";
 
 const UploadDropDownMenu = ({ onFileSelect }) => {
   const fileInputRef = useRef(null);
@@ -148,6 +149,11 @@ const FileTable = ({ projectId }) => {
               </TableHead>
               <TableHead>
                 <div className="flex items-center gap-2">
+                  <Label>File Size (in Mb)</Label>
+                </div>
+              </TableHead>
+              <TableHead>
+                <div className="flex items-center gap-2">
                   <Label>Date Added</Label>
                 </div>
               </TableHead>
@@ -178,6 +184,9 @@ const FileTable = ({ projectId }) => {
                 </TableCell>
                 <TableCell>
                   {file.type === "wave" ? "wav" : file.type}
+                </TableCell>
+                <TableCell>
+                  {convertFileSizeInBytestoMB(file.size).toFixed(2)} Mb
                 </TableCell>
                 <TableCell>{file.dateAdded}</TableCell>
                 <TableCell>

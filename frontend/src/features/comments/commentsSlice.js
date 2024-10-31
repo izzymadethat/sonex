@@ -187,8 +187,9 @@ const commentsSlice = createSlice({
       .addCase(addComment.fulfilled, (state, action) => {
         const comment = action.payload;
         state.status = "succeeded";
-        state.allComments.push(comment);
-        state.commentsByProject[comment.projectId] = comment;
+        state.commentsByProject[comment.projectId] =
+          state.commentsByProject[comment.projectId] || [];
+        state.commentsByProject[comment.projectId].push(comment);
       })
       .addCase(addComment.rejected, (state, action) => {
         state.status = "failed";
@@ -196,14 +197,16 @@ const commentsSlice = createSlice({
       })
       .addCase(updateComment.fulfilled, (state, action) => {
         const updatedComment = action.payload;
-        state.status = "succeeded";
-        state.allComments.map((comment) => {
-          if (comment._id === updatedComment._id) {
-            return updatedComment;
-          }
-          return comment;
-        });
-        state.commentsByProject[updatedComment.projectId] = updatedComment;
+        const index = state.allComments.findIndex(
+          (comment) => comment._id === updatedComment._id
+        );
+        if (index !== -1) {
+          state.allComments[index] = updatedComment;
+        }
+        state.commentsByProject[updatedComment.projectId] =
+          state.commentsByProject[updatedComment.projectId].map((comment) =>
+            comment._id === updatedComment._id ? updatedComment : comment
+          );
         state.currentComment = updatedComment;
       })
       .addCase(deleteComment.fulfilled, (state, action) => {
@@ -211,9 +214,18 @@ const commentsSlice = createSlice({
         state.allComments = state.allComments.filter(
           (comment) => comment.id !== action.payload.commentId
         );
-        // delete the comment from the commentsByProject object
-        delete state.commentsByProject[action.payload.projectId];
-        state.currentComment = null;
+
+        // Remove the deleted comment from commentsByProject
+        const projectComments =
+          state.commentsByProject[action.payload.projectId];
+        if (projectComments) {
+          state.commentsByProject[action.payload.projectId] =
+            projectComments.filter(
+              (comment) => comment.id !== action.payload.commentId
+            );
+        }
+
+        state.currentComment = null; // Optionally reset currentComment
       });
   }
 });

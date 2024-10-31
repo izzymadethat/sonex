@@ -1,15 +1,6 @@
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter
-} from "../ui/card";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { Link } from "react-router-dom";
 import { Textarea } from "../ui/textarea";
 import {
   Dialog,
@@ -23,7 +14,7 @@ import {
 } from "../ui/dialog";
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
-import { createProject } from "@/features/projects/projectsSlice";
+import { createProject, getProjects } from "@/features/projects/projectsSlice";
 import { Loader2 } from "lucide-react";
 
 const NewProjectFormPopup = ({ triggerElement }) => {
@@ -44,6 +35,7 @@ const NewProjectFormPopup = ({ triggerElement }) => {
     };
 
     await dispatch(createProject(projectInfo));
+    await dispatch(getProjects());
     setIsOpen(false);
   };
 

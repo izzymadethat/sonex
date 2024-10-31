@@ -69,7 +69,11 @@ export const getSingleFile = createAsyncThunk(
       );
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
+      return thunkAPI.rejectWithValue(
+        error.response?.data.errors?.server ||
+          error.response?.data.message ||
+          "An unknown error occurred."
+      );
     }
   }
 );
@@ -81,9 +85,14 @@ export const deleteFile = createAsyncThunk(
       const response = await axiosInstance.delete(
         `/projects/${projectId}/uploads/${fileName}`
       );
+      thunkAPI.dispatch(fetchProjectFiles(projectId));
+      thunkAPI.dispatch(fetchCommentsByProject(projectId));
+      thunkAPI.dispatch(fetchProjectFiles(projectId));
       return response.data.fileId;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
+      return thunkAPI.rejectWithValue(
+        error.response.data?.errors?.server || "An unknown error occurred."
+      );
     }
   }
 );
@@ -106,7 +115,7 @@ const filesSlice = createSlice({
   reducers: {
     unloadFiles: (state) => {
       state.projectFiles = [];
-      state.isLoading = false;
+      state.isLoading = initialState.isLoading;
       state.error = null;
     },
     setPlaying: (state) => {
@@ -154,7 +163,7 @@ const filesSlice = createSlice({
       })
       .addCase(uploadFiles.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.projectFiles = state.projectFiles.concat(action.payload);
+        state.projectFiles = [...state.projectFiles, ...action.payload];
       })
       .addCase(uploadFiles.rejected, (state, action) => {
         state.isLoading = false;
@@ -162,7 +171,7 @@ const filesSlice = createSlice({
       })
       .addCase(deleteFile.fulfilled, (state, action) => {
         state.projectFiles = state.projectFiles.filter(
-          (project) => project._id !== action.payload
+          (file) => file._id !== action.payload
         );
       })
       .addCase(getSingleFile.fulfilled, (state, action) => {

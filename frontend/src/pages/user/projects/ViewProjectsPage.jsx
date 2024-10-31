@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Eye, FolderKanban, Inbox, Trash2 } from "lucide-react";
+import { Eye, FolderKanban, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -23,7 +23,7 @@ import {
   selectAllProjects
 } from "@/features/projects/projectsSlice";
 import { formatDistanceToNow, parseISO } from "date-fns";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import NewProjectFormPopup from "@/components/popups/NewProjectForm";
 
 export default function ViewProjectsPage() {
@@ -46,14 +46,14 @@ export default function ViewProjectsPage() {
       };
     });
 
-  const [selected, setSelected] = useState([]);
-
   useEffect(() => {
     dispatch(getProjects());
   }, [dispatch]);
+
   const handleDeleteProject = async (projectId) => {
     await dispatch(deleteProject(projectId));
   };
+
   return (
     <section className="m-8">
       <div className="flex items-center justify-between mb-4">

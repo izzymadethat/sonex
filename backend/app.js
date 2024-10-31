@@ -26,7 +26,9 @@ app.use(express.urlencoded({ extended: true }));
 // Security and authentication middleware for each request
 const corsOptions = {
   origin: "http://localhost:5173",
-  credentials: true
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"],
+  methods: ["GET", "POST", "PUT", "DELETE"]
 };
 // const csurfOptions = {
 //   secure: isProduction,

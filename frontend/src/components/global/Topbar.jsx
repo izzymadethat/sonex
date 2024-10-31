@@ -35,7 +35,7 @@ const Topbar = () => {
     return navigate("/");
   };
   return (
-    <header className="flex items-center justify-between my-4 rounded-lg">
+    <header className="sticky flex items-center justify-between my-4 rounded-lg top-4">
       <SidebarTrigger />
       <div className="flex gap-2 rounded-full cursor-pointer ">
         <ModeToggle />

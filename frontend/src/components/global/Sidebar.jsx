@@ -113,7 +113,6 @@ const menu1 = [
 ];
 
 const SideBar = ({ user, onLogoutClick }) => {
-  if (!user) return null;
   return (
     <Sidebar variant="floating" className="px-2 py-8 mx-2">
       <SidebarHeader>

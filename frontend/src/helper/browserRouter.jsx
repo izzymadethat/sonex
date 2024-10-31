@@ -93,6 +93,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/project/:projectId",
+    element: <UserLayout />,
     children: [
       {
         index: true,

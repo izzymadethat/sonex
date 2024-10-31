@@ -1,8 +1,7 @@
-import { selectUser } from "@/features/user/userSlice";
+import { restoreUser, selectUser } from "@/features/user/userSlice";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import AudioPlayer from "./components/AudioPlayer";
 import ReactAudioPlayer from "react-audio-player";
 import {
   Dialog,
@@ -13,20 +12,12 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 import { formatTime } from "@/helper/formatters";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader
-} from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 import NavigateBackTo from "@/components/global/NavigateBackTo";
 import CommentsSideBar from "./components/CommentsSideBar";
 import {
+  fetchProjectFiles,
   getSingleFile,
   selectCurrentTrack,
   setCurrentTime,
@@ -36,13 +27,22 @@ import {
 } from "@/features/files/filesSlice";
 import CommentForm from "./components/CommentForm";
 import { MessageSquare } from "lucide-react";
-import { selectCommentsByProject } from "@/features/comments/commentsSlice";
+import {
+  fetchCommentsByProject,
+  selectCommentsByProject
+} from "@/features/comments/commentsSlice";
+import {
+  getProjects,
+  getSingleProject
+} from "@/features/projects/projectsSlice";
+import Loader from "@/components/informational/Loader/Loader";
+import CustomAudioPlayer from "./components/AudioPlayer";
 
 const ViewSingleFilePage = () => {
   const params = useParams();
   const dispatch = useDispatch();
   const { currentUser: user } = useSelector(selectUser);
-  const projectComments = useSelector(selectCommentsByProject);
+  const projectComments = useSelector(selectCommentsByProject) || {};
   const file = useSelector(selectCurrentTrack);
   const { projectId, fileName } = params;
   const currentProject = projectComments[projectId];
@@ -51,27 +51,40 @@ const ViewSingleFilePage = () => {
   const [isATimeStampedComment, setIsATimeStampedComment] = useState(true);
   const [loading, setLoading] = useState(false);
   const [client, setClient] = useState("");
-
   const audioRef = useRef(null);
 
   useEffect(() => {
     const existingClient = localStorage.getItem("clientEmail");
     if (existingClient) {
       setClient(existingClient);
+    } else {
+      setClient("");
+      dispatch(restoreUser());
     }
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
+    setLoading(true);
     const fetchFile = async () => {
       await dispatch(getSingleFile({ projectId, fileName }));
     };
 
+    const restoreAccountInfo = async () => {
+      // Fetch the project files, comments, project details and files
+      dispatch(getProjects());
+      dispatch(getSingleProject(projectId));
+      dispatch(fetchCommentsByProject(projectId));
+      dispatch(fetchProjectFiles(projectId));
+    };
+
     fetchFile();
+    restoreAccountInfo();
+    setLoading(false);
   }, [dispatch, projectId, fileName]);
 
   // Keep track of song time while making comments
   useEffect(() => {
-    const audioElement = audioRef.current.audioEl?.current;
+    const audioElement = audioRef.current;
     if (audioElement) {
       const handleTimeUpdate = () => {
         dispatch(setCurrentTime(formatTime(audioElement.currentTime)));
@@ -103,23 +116,17 @@ const ViewSingleFilePage = () => {
         );
       };
     }
-    // // if (audioElement) {
-    // //   const timePlayed = setInterval(() => {
-    // //     setCurrentTime(formatTime(audioElement.current.currentTime));
-    // //   }, 1000);
-
-    // //   return () => {
-    // //     clearInterval(timePlayed);
-    // //   };
-    // // }
-    // return () => {};
   }, [dispatch, audioRef]);
 
   const handleTimestampCommentCheckChange = () =>
     setIsATimeStampedComment(!isATimeStampedComment);
 
-  if (!file) {
-    return <div>Loading...</div>;
+  if (!file || loading || !user || !audioRef) {
+    return (
+      <div>
+        <Loader />
+      </div>
+    );
   }
 
   return (
@@ -141,13 +148,19 @@ const ViewSingleFilePage = () => {
       </div>
       {/* Player and Comment Button */}
       <div className="flex flex-col justify-center gap-4">
-        <ReactAudioPlayer
+        <audio
           src={file.streamUrl}
           ref={audioRef}
           controls
-          className="rounded-md"
+          className="rounded-sm"
         />
       </div>
+
+      {/*
+      *** Future Update
+      FIXME: Add a custom audio player 
+      <CustomAudioPlayer audioSrc={file.streamUrl} /> 
+      */}
       {/* Comment Form */}
       <div className="grid grid-cols-5 gap-4">
         <div className="col-span-3">
