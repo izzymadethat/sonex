@@ -6,8 +6,13 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser, restoreUser, selectUser } from "@/features/user/userSlice";
 import { getProjects, unloadProjects } from "@/features/projects/projectsSlice";
-import { fetchComments } from "@/features/comments/commentsSlice";
+import {
+  fetchComments,
+  unloadComments
+} from "@/features/comments/commentsSlice";
 import { Loader2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import { unloadFiles } from "@/features/files/filesSlice";
 
 const UserLayout = () => {
   const dispatch = useDispatch();
@@ -24,11 +29,17 @@ const UserLayout = () => {
   }, [dispatch]);
 
   const handleLogout = async () => {
-    await dispatch(logoutUser());
     await dispatch(unloadProjects());
     await dispatch(unloadComments());
     await dispatch(unloadFiles());
-    navigate("/");
+    await dispatch(logoutUser());
+    toast({
+      title: "Logged Out Sucessfully!",
+      description: "You have been logged out."
+    });
+    if (logoutUser.fulfilled) {
+      return navigate("/");
+    }
   };
 
   // if (!isLoaded && !currentUser) {

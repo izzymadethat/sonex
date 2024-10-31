@@ -42,6 +42,23 @@ export const restoreUser = createAsyncThunk(
   }
 );
 
+export const updateUser = createAsyncThunk(
+  "user/updateUser",
+  async (user, thunkAPI) => {
+    try {
+      const res = await axiosInstance.put("/auth/session", user);
+      await thunkAPI.dispatch(restoreUser());
+      return res.data.user;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.errors?.server ||
+          error.response?.data?.errors?.login ||
+          "An unknown error occurred."
+      );
+    }
+  }
+);
+
 export const logoutUser = createAsyncThunk(
   "user/logoutUser",
   async (_, thunkAPI) => {
@@ -50,6 +67,20 @@ export const logoutUser = createAsyncThunk(
       return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data.errors?.login);
+    }
+  }
+);
+
+export const deleteUser = createAsyncThunk(
+  "user/deleteUser",
+  async (userId, thunkAPI) => {
+    try {
+      const res = await axiosInstance.delete(`/users/${userId}`);
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data.errors?.server || "An unknown error occurred."
+      );
     }
   }
 );
@@ -93,9 +124,15 @@ const userSlice = createSlice({
       .addCase(restoreUser.rejected, (state, action) => {
         state.error = action.payload;
       })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.currentUser = { ...state.currentUser, ...action.payload };
+      })
       .addCase(logoutUser.fulfilled, (state) => {
         state.currentUser = null;
-        state.status = "idle";
+        state.error = null;
+      })
+      .addCase(deleteUser.fulfilled, (state) => {
+        state.currentUser = null;
         state.error = null;
       });
   }

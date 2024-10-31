@@ -9,16 +9,102 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+import { Textarea } from "@/components/ui/textarea";
+import { unloadComments } from "@/features/comments/commentsSlice";
+import { unloadFiles } from "@/features/files/filesSlice";
+import { unloadProjects } from "@/features/projects/projectsSlice";
+import {
+  deleteUser,
+  logoutUser,
+  selectUser,
+  updateUser
+} from "@/features/user/userSlice";
+import { Loader2 } from "lucide-react";
+import { useEffect } from "react";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 
 const Profile = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { currentUser: user } = useSelector(selectUser);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [bio, setBio] = useState("");
+  const [profilePicture, setProfilePicture] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveDisabled, setSaveDisabled] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      setFirstName(user.firstName);
+      setLastName(user.lastName);
+      setEmail(user.email);
+      setUsername(user.username);
+      setBio(user.bio);
+    }
+  }, [user]);
+
+  // set button to be disabled if no changes are made
+  // not currently working
+  // useEffect(() => {
+  //   if (user) {
+  //     if (
+  //       firstName === user.firstName ||
+  //       lastName === user.lastName ||
+  //       bio === user.bio
+  //     ) {
+  //       setSaveDisabled(true);
+  //     } else {
+  //       setSaveDisabled(false);
+  //     }
+  //   }
+  // }, [firstName, lastName, bio, user]);
+
   const redirectToStripeOnboarding = () =>
     console.log("Redirecting to stripe onboarding");
 
-  const updateUserProfile = (e) => {
+  // TODO: Add user pic in later release
+  const updateUserProfile = async (e) => {
     e.preventDefault();
-    console.log("Updating user profile");
+    try {
+      setIsSaving(true);
+      console.log("Updating user profile");
+      const formData = {
+        firstName,
+        lastName,
+        email,
+        username,
+        bio
+      };
+      // if (profilePicture) {
+      //   profilePicture = profilePicture[0];
+      // }
+
+      dispatch(updateUser(formData)).then(() => {
+        setIsSaving(false);
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  const handleDeleteUser = async () => {
+    try {
+      await dispatch(deleteUser(user._id));
+      await dispatch(unloadProjects());
+      await dispatch(unloadComments());
+      await dispatch(unloadFiles());
+      await dispatch(logoutUser());
+      return navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="items-start gap-8 my-4 space-y-8">
       <div>
@@ -61,31 +147,90 @@ const Profile = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <div className="space-y-1">
-                <Label>Your First Name</Label>
-                <Input
-                  name="name"
-                  type="text"
-                  id="name"
-                  placeholder="Your Name"
-                />
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <Label>First Name</Label>
+                  <Input
+                    name="name"
+                    type="text"
+                    id="name"
+                    placeholder="Enter your first name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label>Last Name</Label>
+                  <Input
+                    name="name"
+                    type="text"
+                    id="name"
+                    placeholder="Enter your last name"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <Label>Email</Label>
+                  <Input
+                    name="email"
+                    type="email"
+                    id="email"
+                    placeholder="Email"
+                    value={email + " (cannot be changed)"}
+                    disabled
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label>Username</Label>
+                  <Input
+                    name="email"
+                    type="email"
+                    id="email"
+                    placeholder="Email"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    disabled
+                  />
+                </div>
               </div>
 
               <div className="space-y-1">
-                <Label>Your Email</Label>
+                <Label>Bio</Label>
+                <Textarea
+                  placeholder="Tell us about yourself"
+                  rows={5}
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                />
+              </div>
+
+              {/* Profile Picture */}
+              <div className="space-y-1">
+                <Label>Update Profile Picture</Label>
                 <Input
-                  name="email"
-                  type="email"
-                  id="email"
-                  placeholder="Your Email"
-                  disabled
+                  type="file"
+                  placeholder="Profile Picture"
+                  onChange={(e) => setProfilePicture(e.target.files[0])}
                 />
               </div>
             </div>
           </CardContent>
           <CardFooter>
-            <Button type="submit">Save Changes</Button>
+            <Button type="submit" disabled={isSaving}>
+              {isSaving ? (
+                <>
+                  <Loader2 />
+                  <span>"Saving data..."</span>
+                </>
+              ) : (
+                "Save Changes"
+              )}
+            </Button>
           </CardFooter>
         </form>
       </Card>
@@ -114,7 +259,7 @@ const Profile = () => {
               </CardDescription>
             </div>
 
-            <Button>Delete My Account</Button>
+            <Button onClick={handleDeleteUser}>Delete My Account</Button>
           </div>
         </CardHeader>
       </Card>

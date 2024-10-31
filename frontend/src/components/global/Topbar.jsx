@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { unloadProjects } from "@/features/projects/projectsSlice";
 import { unloadComments } from "@/features/comments/commentsSlice";
 import { unloadFiles } from "@/features/files/filesSlice";
+import { toast } from "@/hooks/use-toast";
 // import { SidebarTrigger } from "../ui/sidebar";
 
 // Custom sidebar trigger
@@ -28,11 +29,18 @@ const Topbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleLogout = async () => {
-    dispatch(logoutUser());
     dispatch(unloadProjects());
     dispatch(unloadComments());
     dispatch(unloadFiles());
-    return navigate("/");
+    dispatch(logoutUser());
+
+    toast({
+      title: "Logged Out Sucessfully!",
+      description: "You have been logged out."
+    });
+    if (logoutUser.fulfilled) {
+      return navigate("/");
+    }
   };
   return (
     <header className="sticky flex items-center justify-between my-4 rounded-lg top-4">

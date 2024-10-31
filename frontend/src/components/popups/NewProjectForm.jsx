@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import { createProject, getProjects } from "@/features/projects/projectsSlice";
 import { Loader2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 const NewProjectFormPopup = ({ triggerElement }) => {
   const dispatch = useDispatch();
@@ -37,6 +38,11 @@ const NewProjectFormPopup = ({ triggerElement }) => {
     await dispatch(createProject(projectInfo));
     await dispatch(getProjects());
     setIsOpen(false);
+    toast({
+      title: "Project Created",
+      description: "Your project has been created",
+      variant: "success"
+    });
   };
 
   return (
