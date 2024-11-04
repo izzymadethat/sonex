@@ -135,21 +135,6 @@ router.post("/register", validateSignup, async (req, res, next) => {
 	}
 });
 
-// Update a user session data
-// PUT /api/auth/session
-router.put("/", async (req, res, next) => {
-  try {
-    const updatedUser = await User.findByIdAndUpdate(
-      req.session.user.id,
-      req.body,
-      { new: true }
-    );
-    return res.json({ user: updatedUser });
-  } catch (error) {
-    next(error);
-  }
-});
-
 // Logout a user
 // DELETE /api/auth/session
 router.delete("/", (req, res) => {
