@@ -84,7 +84,7 @@ const Profile = () => {
       //   profilePicture = profilePicture[0];
       // }
 
-      dispatch(updateUser(formData)).then(() => {
+      dispatch(updateUser({ user: formData, id: user._id })).then(() => {
         setIsSaving(false);
       });
     } catch (error) {

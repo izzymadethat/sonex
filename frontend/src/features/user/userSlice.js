@@ -44,9 +44,9 @@ export const restoreUser = createAsyncThunk(
 
 export const updateUser = createAsyncThunk(
   "user/updateUser",
-  async (user, thunkAPI) => {
+  async ({ user, id }, thunkAPI) => {
     try {
-      const res = await axiosInstance.put("/auth/session", user);
+      const res = await axiosInstance.put(`/users/${id}`, user);
       await thunkAPI.dispatch(restoreUser());
       return res.data.user;
     } catch (error) {

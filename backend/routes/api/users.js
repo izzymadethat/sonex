@@ -108,6 +108,23 @@ router.get("/:userId/clients", validateQuery, async (req, res, next) => {
   }
 });
 
+// Update a user
+// Update a user data
+// PUT /api/users/:userId
+router.put("/:userId", async (req, res, next) => {
+  const { userId } = req.params; // will be used to compare with req.session.user.id
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.session.user.id,
+      req.body,
+      { new: true }
+    );
+    return res.json({ user: updatedUser });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Delete a user
 // Must also delete projects, clients, files, and comments
 // DELETE /api/users/:userId
