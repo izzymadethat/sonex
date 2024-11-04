@@ -17,6 +17,7 @@ import { useState } from "react";
 import { createProject, getProjects } from "@/features/projects/projectsSlice";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useEffect } from "react";
 
 const NewProjectFormPopup = ({ triggerElement }) => {
   const dispatch = useDispatch();
@@ -26,6 +27,20 @@ const NewProjectFormPopup = ({ triggerElement }) => {
   const [projectCost, setProjectCost] = useState("0");
   const [date, setDate] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+
+  // reset form fields when dialog is closed or form is submitted
+  const resetFormFields = () => {
+    setTitle("");
+    setDescription("");
+    setProjectCost("0");
+    setDate("");
+  };
+
+  useEffect(() => {
+    if (!isOpen) {
+      resetFormFields();
+    }
+  }, [isOpen]);
 
   const handleCreateNewProject = async () => {
     const projectInfo = {

@@ -25,6 +25,19 @@ import {
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import NewProjectFormPopup from "@/components/popups/NewProjectForm";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function ViewProjectsPage() {
   const dispatch = useDispatch();
@@ -46,10 +59,22 @@ export default function ViewProjectsPage() {
       };
     });
 
+  const [deleteInput, setDeleteInput] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
   useEffect(() => {
     dispatch(getProjects());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (!deleteDialogOpen) {
+      setDeleteInput("");
+    }
+  }, [deleteDialogOpen]);
+
+  const handleDeleteInput = (e) => {
+    setDeleteInput(e.target.value);
+  };
   const handleDeleteProject = async (projectId) => {
     await dispatch(deleteProject(projectId));
   };
@@ -106,12 +131,49 @@ export default function ViewProjectsPage() {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button
-                          variant="destructive"
-                          onClick={() => handleDeleteProject(project.id)}
+                        <AlertDialog
+                          open={deleteDialogOpen}
+                          onOpenChange={setDeleteDialogOpen}
                         >
-                          <Trash2 />
-                        </Button>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="destructive">
+                              <Trash2 />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Confirm Delete Project?
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This action cannot be undone. This will
+                                permanently delete your account and remove your
+                                data from our servers.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <div>
+                              <Label>
+                                Type <em>'{project.title}'</em> to confirm
+                              </Label>
+                              <Input
+                                type="text"
+                                value={deleteInput}
+                                onChange={handleDeleteInput}
+                              />
+                            </div>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>
+                                Take me back
+                              </AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDeleteProject(project.id)}
+                                disabled={deleteInput !== project.title}
+                              >
+                                Yes, delete this project
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>Delete project</p>
