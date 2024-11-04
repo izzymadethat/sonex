@@ -30,23 +30,6 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
   methods: ["GET", "POST", "PUT", "DELETE"]
 };
-// const csurfOptions = {
-//   secure: isProduction,
-//   sameSite: isProduction && "lax",
-//   httpOnly: true,
-// };
-const sessionOptions = {
-  name: sessionAuth.cookieKey,
-  secret: sessionAuth.accessSecret,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction && "lax",
-    maxAge: Number(sessionAuth.accessExpiresIn) * 1000 // 30 days
-  }
-};
 if (!isProduction) {
   app.use(cors(corsOptions)); // Allow cross-origin requests from localhost:5173
 }
@@ -63,12 +46,25 @@ app.use(
     policy: "cross-origin"
   })
 ); // Adds security in headers
-app.use(session(sessionOptions)); // Session auth middleware
-// app.use(
-//   csurf({
-//     cookie: true
-//   })
-// ); // CSRF protection
+app.use(
+  session({
+    name: sessionAuth.cookieKey,
+    secret: sessionAuth.accessSecret,
+    saveUninitialized: false,
+    resave: false,
+    cookie: {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction && "lax",
+      maxAge: 60 * 60 * 24 * 30 * 1000 // 30 days
+    }
+  })
+); // Session auth middleware
+app.use(
+  csurf({
+    cookie: false
+  })
+); // CSRF protection
 app.use(routes);
 
 module.exports = app;

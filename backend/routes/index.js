@@ -4,15 +4,12 @@ const apiRouter = require("./api");
 const multer = require("multer");
 const MongoServerError = require("mongoose");
 const { environment } = require("../config");
-const { restoreUser } = require("../utils/auth");
 const isProduction = environment === "production";
 
-router.use(restoreUser);
-
-router.get("/api/csrf/restore", (req, res) => {
-  // const csrfToken = req.csrfToken();
+router.use((req, res, next) => {
+  const csrfToken = req.csrfToken();
   res.cookie("XSRF-TOKEN", csrfToken);
-  return res.json({ token: csrfToken });
+  next();
 });
 
 router.use("/api", apiRouter);
@@ -20,9 +17,10 @@ router.use("/api", apiRouter);
 // Set backend to serve static assets in production
 if (isProduction) {
   const path = require("path");
+
   // Generate a csrf token api routes
   router.get("/", (req, res) => {
-    // res.cookie("XSRF-TOKEN", req.csrfToken());
+    res.cookie("XSRF-TOKEN", req.csrfToken());
     return res.sendFile(
       path.resolve(__dirname, "../../frontend", "dist", "index.html")
     );
@@ -33,22 +31,22 @@ if (isProduction) {
 
   // Generate a csrf token for non-API routes
   router.get(/^(?!\/?api).*/, (req, res) => {
-    // res.cookie("XSRF-TOKEN", req.csrfToken());
+    res.cookie("XSRF-TOKEN", req.csrfToken());
     return res.sendFile(
       path.resolve(__dirname, "../../frontend", "dist", "index.html")
     );
   });
+}
 
-  // If in development mode,
-  // everything works as normal,
-  // just automatically generate for each request
-  // but don't send as a response, only cookie
-  if (!isProduction) {
-    router.get("/api/csrf/restore", (req, res) => {
-      // res.cookie("XSRF-TOKEN", req.csrfToken());
-      return res.json({});
-    });
-  }
+// If in development mode,
+// everything works as normal,
+// just automatically generate for each request
+// but don't send as a response, only cookie
+if (!isProduction) {
+  router.get("/api/csrf/restore", (req, res) => {
+    res.cookie("XSRF-TOKEN", req.csrfToken());
+    return res.json({});
+  });
 }
 
 // ==== Error handling ==== //
@@ -64,6 +62,7 @@ router.use((_req, _res, next) => {
   return next(err);
 });
 
+// Platform specific errors
 router.use((err, _req, _res, next) => {
   // Check for multer errors
   if (err instanceof multer.MulterError) {

@@ -18,6 +18,9 @@ axiosInstance.interceptors.request.use(
 
       if (csrfToken) {
         config.headers["XSRF-TOKEN"] = csrfToken;
+      } else {
+        const res = await restoreCSRF();
+        config.headers["XSRF-TOKEN"] = res.token;
       }
       config.headers["Content-Type"] =
         config.headers["Content-Type"] || "application/json";
