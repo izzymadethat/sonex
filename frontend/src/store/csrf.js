@@ -7,37 +7,37 @@ import Cookies from "js-cookie";
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "/api",
-  withCredentials: true
+	baseURL: "/api",
+	withCredentials: true,
 });
 
 axiosInstance.interceptors.request.use(
-  async (config) => {
-    if (config.method.toUpperCase() !== "GET") {
-      const csrfToken = Cookies.get("XSRF-TOKEN");
+	async (config) => {
+		if (config.method.toUpperCase() !== "GET") {
+			const csrfToken = Cookies.get("XSRF-TOKEN");
 
-      if (csrfToken) {
-        config.headers["X-CSRF-Token"] = csrfToken;
-      } else {
-        const res = await restoreCSRF();
-        config.headers["X-CSRF-Token"] = res.token;
-      }
-      config.headers["Content-Type"] =
-        config.headers["Content-Type"] || "application/json";
-    }
+			if (csrfToken) {
+				config.headers["X-CSRF-Token"] = csrfToken;
+			} else {
+				const res = await restoreCSRF();
+				config.headers["X-CSRF-Token"] = res.token;
+			}
+			config.headers["Content-Type"] =
+				config.headers["Content-Type"] || "application/json";
+		}
 
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
+		return config;
+	},
+	(error) => {
+		return Promise.reject(error);
+	},
 );
 
 export default axiosInstance;
 
 export async function restoreCSRF() {
-  const res = await axiosInstance.get("/csrf/restore");
-  return res.data;
+	const res = await axiosInstance.get("/csrf/restore");
+	return res.data;
 }
 
 // Legacy code
