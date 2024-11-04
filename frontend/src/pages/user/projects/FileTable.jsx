@@ -128,7 +128,7 @@ const FileTable = ({ projectId }) => {
         <CardTitle>
           <div className="flex items-center justify-between">
             <h3 className="text-xl font-bold uppercase">Project Files</h3>
-            <UploadDropDownMenu onFileSelect={handleFileSelect} />
+            {/* TODO: <UploadDropDownMenu onFileSelect={handleFileSelect} /> */}
           </div>
         </CardTitle>
       </CardHeader>

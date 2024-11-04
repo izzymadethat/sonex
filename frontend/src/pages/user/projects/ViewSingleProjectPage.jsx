@@ -115,6 +115,7 @@ const ViewSingleProjectPage = () => {
           <div className="flex items-center gap-4">
             <EditProjectForm project={project} />
             <CopyProjectLink project={project} />
+            {/* TODO: implement delete project feature */}
           </div>
         </div>
       )}

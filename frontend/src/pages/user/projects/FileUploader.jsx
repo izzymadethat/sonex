@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { uploadFiles } from "@/features/files/filesSlice";
 import { convertFileSizeInBytestoMB } from "@/helper/equations";
+import { toast } from "@/hooks/use-toast";
 import { Inbox, Loader2, Trash2Icon, UploadCloud, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -34,10 +35,26 @@ const FileUploader = () => {
   }, []);
 
   //   Dropzone config
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const {
+    getRootProps,
+    getInputProps,
+    isDragActive,
+    isDragReject,
+    fileRejections
+  } = useDropzone({
     accept: { "audio/*": [] },
     onDrop
   });
+
+  useEffect(() => {
+    if (fileRejections.length > 0) {
+      toast({
+        title: "Error!",
+        description: "File type(s) not accepted",
+        variant: "destructive"
+      });
+    }
+  }, [fileRejections]);
 
   // remove specific file before uploading
   const handleRemoveFile = (fileIndex) => {
@@ -186,6 +203,12 @@ const FileUploader = () => {
                 </ul>
               </div>
             </>
+          )}
+
+          {isDragReject && (
+            <p className="text-xl italic font-bold text-red-500">
+              Only audio files are accepted!!!
+            </p>
           )}
         </div>
       </form>
