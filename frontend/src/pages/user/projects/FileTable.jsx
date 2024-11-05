@@ -39,7 +39,7 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { useEffect, useRef, useState } from "react";
-import { convertFileSizeInBytestoMB } from "@/helper/equations";
+import { convertFileSizeInBytesToMB } from "@/helper/equations";
 
 const UploadDropDownMenu = ({ onFileSelect }) => {
   const fileInputRef = useRef(null);
@@ -186,7 +186,7 @@ const FileTable = ({ projectId }) => {
                   {file.type === "wave" ? "wav" : file.type}
                 </TableCell>
                 <TableCell>
-                  {convertFileSizeInBytestoMB(file.size).toFixed(2)} Mb
+                  {convertFileSizeInBytesToMB(file.size).toFixed(2)} Mb
                 </TableCell>
                 <TableCell>{file.dateAdded}</TableCell>
                 <TableCell>

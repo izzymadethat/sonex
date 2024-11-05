@@ -36,6 +36,8 @@ import {
 } from "@/features/projects/projectsSlice";
 import Loader from "@/components/informational/Loader/Loader";
 import CustomAudioPlayer from "./components/AudioPlayer";
+import axiosInstance from "@/store/csrf";
+import { toast } from "@/hooks/use-toast";
 
 const ViewSingleFilePage = () => {
   const params = useParams();
@@ -50,6 +52,8 @@ const ViewSingleFilePage = () => {
   const [isATimeStampedComment, setIsATimeStampedComment] = useState(true);
   const [loading, setLoading] = useState(false);
   const [client, setClient] = useState("");
+  const [downloadLink, setDownloadLink] = useState("");
+  const [error, setError] = useState(null);
   const audioRef = useRef(null);
 
   useEffect(() => {
@@ -70,6 +74,7 @@ const ViewSingleFilePage = () => {
 
     const restoreAccountInfo = async () => {
       // Fetch the project files, comments, project details and files
+
       dispatch(getProjects());
       dispatch(getSingleProject(projectId));
       dispatch(fetchCommentsByProject(projectId));
@@ -77,7 +82,9 @@ const ViewSingleFilePage = () => {
     };
 
     fetchFile();
-    restoreAccountInfo();
+    if (user) {
+      restoreAccountInfo();
+    }
     setLoading(false);
   }, [dispatch, projectId, fileName]);
 
@@ -120,6 +127,31 @@ const ViewSingleFilePage = () => {
   const handleTimestampCommentCheckChange = () =>
     setIsATimeStampedComment(!isATimeStampedComment);
 
+  const handleDownload = async () => {
+    try {
+      const url = await axiosInstance.get(
+        `/projects/${projectId}/uploads/${file.name}/download`
+      );
+
+      if (url) {
+        setDownloadLink(url.data.downloadUrl);
+      }
+      // temporary link
+      const link = document.createElement("a");
+      link.href = downloadLink;
+      link.download = file.name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      toast({
+        title: "Error while downloading file",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+
   if (!file || loading || !user || !audioRef) {
     return (
       <div>
@@ -143,7 +175,9 @@ const ViewSingleFilePage = () => {
             <span>added on {file.createdAt}</span>
           </p>
         </div>
-        <CommentsSideBar />
+
+        {client && <Button onClick={handleDownload}>Download This File</Button>}
+        {user && !client && <CommentsSideBar />}
       </div>
       {/* Player and Comment Button */}
       <div className="flex flex-col justify-center gap-4">
@@ -162,68 +196,72 @@ const ViewSingleFilePage = () => {
       */}
       {/* Comment Form */}
       <div className="grid grid-cols-5 gap-4">
-        <div className="col-span-3">
-          <CommentForm
-            existingClient={client}
-            timestamp={file.currentTime}
-            isTimeStampedComment={isATimeStampedComment}
-            onCheckedChange={handleTimestampCommentCheckChange}
-            onClientEmailChange={setClient}
-            projectId={projectId}
-          />
-        </div>
-        <div className="flex flex-col items-center col-span-2 gap-4 p-8 text-center border-2 border-dashed rounded-md">
-          {currentProject && currentProject.length > 0 ? (
-            <>
-              {currentProject.map((comment) => (
-                <Dialog key={comment._id}>
-                  <DialogTrigger asChild>
-                    <Card
-                      key={comment._id}
-                      className="cursor-pointer hover:bg-primary hover:text-secondary"
-                    >
-                      <CardHeader>{comment.text}</CardHeader>
-                    </Card>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <h4 className="text-2xl font-bold text-center">
-                        {" "}
-                        Comment type: {comment.type.toUpperCase()}
-                      </h4>
-                    </DialogHeader>
-                    <div className="flex flex-col justify-center gap-4 text-center">
-                      <p className="text-lg">{comment.text}</p>
-                      {comment.type === "revision" && (
-                        <p className="text-lg text-primary">
-                          {" "}
-                          Comment made by {comment.email || "you"} @{" "}
-                          {comment.timestamp}
-                        </p>
-                      )}
-                    </div>
-                    <DialogFooter>
-                      <DialogClose asChild>
-                        <Button variant="outline">Close</Button>
-                      </DialogClose>
-                      <Button variant="destructive">Delete</Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              ))}
-            </>
-          ) : (
-            <>
-              <MessageSquare size={64} className="text-primary" />
-              <p className="max-w-sm text-lg font-bold">
-                You haven't made any comments yet.
-              </p>
-              <p className="italic max-w-52">
-                Use the form to add your revision or provide feedback.
-              </p>
-            </>
-          )}
-        </div>
+        {client && !user && (
+          <>
+            <div className="col-span-3">
+              <CommentForm
+                existingClient={client}
+                timestamp={file.currentTime}
+                isTimeStampedComment={isATimeStampedComment}
+                onCheckedChange={handleTimestampCommentCheckChange}
+                onClientEmailChange={setClient}
+                projectId={projectId}
+              />
+            </div>
+            <div className="flex flex-col items-center col-span-2 gap-4 p-8 text-center border-2 border-dashed rounded-md">
+              {currentProject && currentProject.length > 0 ? (
+                <>
+                  {currentProject.map((comment) => (
+                    <Dialog key={comment._id}>
+                      <DialogTrigger asChild>
+                        <Card
+                          key={comment._id}
+                          className="cursor-pointer hover:bg-primary hover:text-secondary"
+                        >
+                          <CardHeader>{comment.text}</CardHeader>
+                        </Card>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <h4 className="text-2xl font-bold text-center">
+                            {" "}
+                            Comment type: {comment.type.toUpperCase()}
+                          </h4>
+                        </DialogHeader>
+                        <div className="flex flex-col justify-center gap-4 text-center">
+                          <p className="text-lg">{comment.text}</p>
+                          {comment.type === "revision" && (
+                            <p className="text-lg text-primary">
+                              {" "}
+                              Comment made by {comment.email || "you"} @{" "}
+                              {comment.timestamp}
+                            </p>
+                          )}
+                        </div>
+                        <DialogFooter>
+                          <DialogClose asChild>
+                            <Button variant="outline">Close</Button>
+                          </DialogClose>
+                          <Button variant="destructive">Delete</Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  ))}
+                </>
+              ) : (
+                <>
+                  <MessageSquare size={64} className="text-primary" />
+                  <p className="max-w-sm text-lg font-bold">
+                    You haven't made any comments yet.
+                  </p>
+                  <p className="italic max-w-52">
+                    Use the form to add your revision or provide feedback.
+                  </p>
+                </>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -65,7 +65,7 @@ export const getSingleFile = createAsyncThunk(
   async ({ projectId, fileName }, thunkAPI) => {
     try {
       const response = await axiosInstance.get(
-        `/projects/${projectId}/uploads/${fileName}`
+        `/projects/${projectId}/uploads/${fileName}/stream`
       );
       return response.data;
     } catch (error) {
@@ -77,6 +77,23 @@ export const getSingleFile = createAsyncThunk(
     }
   }
 );
+
+// May not add this to global state
+// export const downloadFile = createAsyncThunk(
+//   "files/downloadFile",
+//   async ({ projectId, fileName }, thunkAPI) => {
+//     try {
+//       const response = await axiosInstance.get(
+//         `/projects/${projectId}/uploads/${fileName}/download`
+//       );
+//       return response.data.downloadUrl;
+//     } catch (error) {
+//       return thunkAPI.rejectWithValue(
+//         error.response?.data.errors?.server || "An unknown error occurred."
+//       );
+//     }
+//   }
+// );
 
 export const deleteFile = createAsyncThunk(
   "files/deleteFile",

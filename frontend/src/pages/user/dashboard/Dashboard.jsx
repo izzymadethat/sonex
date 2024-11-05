@@ -34,7 +34,7 @@ import {
   CardFooter,
   CardHeader
 } from "@/components/ui/card";
-import { convertStorageInMBtoGB } from "@/helper/equations";
+import { convertStorageInMBToGB } from "@/helper/equations";
 import { add, format, formatDistanceToNow } from "date-fns";
 
 function Dashboard() {
@@ -73,7 +73,7 @@ function Dashboard() {
       const calculatedTotalStorageUsed = projects.reduce((acc, curr) => {
         return (
           acc +
-          (curr.storageUsed ? convertStorageInMBtoGB(curr.storageUsed) : 0)
+          (curr.storageUsed ? convertStorageInMBToGB(curr.storageUsed) : 0)
         );
       }, 0);
 

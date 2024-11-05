@@ -107,8 +107,8 @@ router.get("/", async (req, res, next) => {
 });
 
 const distName = "https://d1v3tj0sy1kmbm.cloudfront.net";
-// Get a Single File
-router.get("/:fileName", async (req, res, next) => {
+// Get a Single File (stream link only)
+router.get("/:fileName/stream", async (req, res, next) => {
   const { projectId, fileName } = req.params;
   try {
     const file = await File.findOne({ name: fileName }, "-__v");
@@ -118,7 +118,6 @@ router.get("/:fileName", async (req, res, next) => {
     }
 
     const fileResponse = file.toObject();
-    // fileResponse.url = `${distName}/uploads/${projectId}/${fileName}`;
     fileResponse.streamUrl = getSignedUrl({
       url: `${distName}/projects/${projectId}/${fileName}`,
       dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expires in 1 day
@@ -127,6 +126,28 @@ router.get("/:fileName", async (req, res, next) => {
     });
 
     res.send(fileResponse);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Get a Single File (download link)
+router.get("/:fileName/download", async (req, res, next) => {
+  const { projectId, fileName } = req.params;
+  try {
+    const file = await File.findOne({ name: fileName }, "-__v");
+    if (!file) {
+      return res.status(404).json({ message: "File not found" });
+    }
+
+    const downloadUrl = getSignedUrl({
+      url: `${distName}/projects/${projectId}/${fileName}`,
+      dateLessThan: new Date(Date.now() + 1000 * 60 * 10), // expires in 10 minutes
+      privateKey: cloudFront.privateKey,
+      keyPairId: cloudFront.keyPairId
+    });
+
+    res.json({ downloadUrl });
   } catch (error) {
     next(error);
   }

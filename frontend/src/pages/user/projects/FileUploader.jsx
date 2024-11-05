@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { uploadFiles } from "@/features/files/filesSlice";
-import { convertFileSizeInBytestoMB } from "@/helper/equations";
+import { convertFileSizeInBytesToMB } from "@/helper/equations";
 import { toast } from "@/hooks/use-toast";
 import { Inbox, Loader2, Trash2Icon, UploadCloud, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
@@ -115,7 +115,7 @@ const FileUploader = () => {
                     {file.name.length > 12 && <span>...</span>}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {convertFileSizeInBytestoMB(file.size).toFixed(2)}MB
+                    {convertFileSizeInBytesToMB(file.size).toFixed(2)}MB
                   </p>
                 </div>
                 <Button

@@ -1,17 +1,17 @@
 // Convert GB to MB
-export const convertStorageInGBtoMB = (storageInGB) => {
+export const convertStorageInGBToMB = (storageInGB) => {
   return storageInGB * 1024;
 };
 
-export const convertStorageInMBtoGB = (storageInMB) => {
+export const convertStorageInMBToGB = (storageInMB) => {
   return storageInMB / 1024;
 };
 
-export const convertFileSizeInKBtoMB = (sizeInKb) => {
+export const convertFileSizeInKBToMB = (sizeInKb) => {
   return sizeInKb / 1024;
 };
 
-export const convertFileSizeInBytestoMB = (sizeInBytes) => {
+export const convertFileSizeInBytesToMB = (sizeInBytes) => {
   return sizeInBytes / 1024 / 1024;
 };
 

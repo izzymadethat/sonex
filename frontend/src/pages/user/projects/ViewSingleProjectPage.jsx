@@ -6,8 +6,8 @@ import {
   CardFooter
 } from "@/components/ui/card";
 import {
-  convertFileSizeInBytestoMB,
-  convertStorageInMBtoGB
+  convertFileSizeInBytesToMB,
+  convertStorageInMBToGB
 } from "@/helper/equations";
 import FileTable from "./FileTable";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -63,7 +63,7 @@ const ViewSingleProjectPage = () => {
   // Every time a file is uploaded, recalculate the total storage used
   useEffect(() => {
     const totalSize = files.reduce((acc, file) => acc + file.size, 0);
-    setTotalStorageUsed(convertFileSizeInBytestoMB(totalSize));
+    setTotalStorageUsed(convertFileSizeInBytesToMB(totalSize));
   }, [files]);
 
   if (loading || !project) {
@@ -78,7 +78,9 @@ const ViewSingleProjectPage = () => {
   const isOwner = project.userId === user._id;
 
   return (
-    <section className="m-8 space-y-8">
+    <section
+      className={`m-8 space-y-8 ${isClientView ? "max-w-3xl mx-auto" : ""}`}
+    >
       {isClientView && (
         <div>
           <h1 className="text-2xl font-bold uppercase">{project.title}</h1>
@@ -144,7 +146,7 @@ const ViewSingleProjectPage = () => {
                   Storage Used
                 </CardTitle>
                 <CardDescription className="text-lg font-bold text-muted-foreground">
-                  {convertStorageInMBtoGB(totalStorageUsed).toFixed(2)}Gb /
+                  {convertStorageInMBToGB(totalStorageUsed).toFixed(2)}Gb /
                   256Gb
                 </CardDescription>
               </div>
