@@ -6,8 +6,10 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -25,35 +27,104 @@ import {
   setTrackDuration
 } from "@/features/files/filesSlice";
 import CommentForm from "./components/CommentForm";
-import { MessageSquare } from "lucide-react";
+import { Loader2, MessageSquare } from "lucide-react";
 import {
   fetchCommentsByProject,
   selectCommentsByProject
 } from "@/features/comments/commentsSlice";
 import {
   getProjects,
-  getSingleProject
+  getSingleProject,
+  selectCurrentProject
 } from "@/features/projects/projectsSlice";
 import Loader from "@/components/informational/Loader/Loader";
 import CustomAudioPlayer from "./components/AudioPlayer";
 import axiosInstance from "@/store/csrf";
 import { toast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+
+const ClientActionButton = ({
+  project,
+  onPaymentClick,
+  onDownloadClick,
+  paymentLoading
+}) => {
+  if (
+    project.paymentStatus === "paid" ||
+    project.paymentStatus === "no-charge"
+  ) {
+    return <Button onClick={onDownloadClick}>Download This File</Button>;
+  } else {
+    return (
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button disabled={paymentLoading}>
+            {paymentLoading ? (
+              <>
+                <Loader2 className="animate-spin" />{" "}
+                <span>Processing Payment</span>
+              </>
+            ) : (
+              <span>Pay Project Amount</span>
+            )}
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-3xl">
+              Total Amount: ${project.projectAmount}
+            </DialogTitle>
+            <DialogDescription>
+              Project must be paid in full in order to have download access
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-4">
+            <Input placeholder="1234 5678 9012 3456" />
+            <div className="flex">
+              <Input type="date" />
+              <Input type="number" placeholder="123" />
+              <Input type="number" placeholder="12345" />
+            </div>
+            <Input placeholder="Cardholder name" />
+          </div>
+          <DialogFooter>
+            <Button onClick={onPaymentClick} disabled={paymentLoading}>
+              {paymentLoading ? (
+                <>
+                  <Loader2 className="animate-spin" />{" "}
+                  <span>Processing payment...</span>
+                </>
+              ) : (
+                <>
+                  Pay
+                  <span className="font-bold">
+                    ${project.projectAmount.toFixed(2)}
+                  </span>
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+};
 
 const ViewSingleFilePage = () => {
   const params = useParams();
   const dispatch = useDispatch();
   const { currentUser: user } = useSelector(selectUser);
+  const currentProject = useSelector(selectCurrentProject);
   const projectComments = useSelector(selectCommentsByProject) || {};
   const file = useSelector(selectCurrentTrack);
   const { projectId, fileName } = params;
-  const currentProject = projectComments[projectId];
 
   // const [currentTime, setCurrentTime] = useState(0);
   const [isATimeStampedComment, setIsATimeStampedComment] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [paymentLoading, setPaymentLoading] = useState(false);
   const [client, setClient] = useState("");
   const [downloadLink, setDownloadLink] = useState("");
-  const [error, setError] = useState(null);
   const audioRef = useRef(null);
 
   useEffect(() => {
@@ -127,6 +198,25 @@ const ViewSingleFilePage = () => {
   const handleTimestampCommentCheckChange = () =>
     setIsATimeStampedComment(!isATimeStampedComment);
 
+  const handlePayment = async () => {
+    setPaymentLoading(true);
+    try {
+      await new Promise((_, reject) => {
+        setTimeout(() => {
+          reject(new Error("Could not process payment effectively."));
+        }, 3000);
+      });
+    } catch (error) {
+      toast({
+        title: "Error while making payment",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
+
   const handleDownload = async () => {
     try {
       const url = await axiosInstance.get(
@@ -176,7 +266,14 @@ const ViewSingleFilePage = () => {
           </p>
         </div>
 
-        {client && <Button onClick={handleDownload}>Download This File</Button>}
+        {client && (
+          <ClientActionButton
+            project={currentProject}
+            onPaymentClick={handlePayment}
+            onDownloadClick={handleDownload}
+            paymentLoading={paymentLoading}
+          />
+        )}
         {user && !client && <CommentsSideBar />}
       </div>
       {/* Player and Comment Button */}
