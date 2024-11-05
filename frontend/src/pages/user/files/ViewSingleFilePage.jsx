@@ -118,7 +118,6 @@ const ViewSingleFilePage = () => {
   const projectComments = useSelector(selectCommentsByProject) || {};
   const file = useSelector(selectCurrentTrack);
   const { projectId, fileName } = params;
-  const currentProject = projectComments[projectId];
 
   // const [currentTime, setCurrentTime] = useState(0);
   const [isATimeStampedComment, setIsATimeStampedComment] = useState(true);
