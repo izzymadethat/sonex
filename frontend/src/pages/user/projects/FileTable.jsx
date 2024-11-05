@@ -40,6 +40,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useEffect, useRef, useState } from "react";
 import { convertFileSizeInBytesToMB } from "@/helper/equations";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from "@/components/ui/alert-dialog";
+import { toast } from "@/hooks/use-toast";
 
 const UploadDropDownMenu = ({ onFileSelect }) => {
   const fileInputRef = useRef(null);
@@ -190,14 +202,39 @@ const FileTable = ({ projectId }) => {
                 </TableCell>
                 <TableCell>{file.dateAdded}</TableCell>
                 <TableCell>
-                  <Button
-                    variant="destructive"
-                    onClick={() =>
-                      dispatch(deleteFile({ projectId, fileName: file.name }))
-                    }
-                  >
-                    <Trash2 />
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive">
+                        <Trash2 />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to delete this file?
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Take Me Back</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => {
+                            dispatch(
+                              deleteFile({ projectId, fileName: file.name })
+                            ).then(() => {
+                              toast({
+                                title: "File Deleted",
+                                description: "File deleted successfully"
+                              });
+                            });
+                          }}
+                          className="text-white bg-red-600 hover:bg-red-700"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </TableCell>
               </TableRow>
             ))}

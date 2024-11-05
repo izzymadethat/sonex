@@ -81,6 +81,11 @@ const FileUploader = () => {
     };
 
     await dispatch(uploadFiles(data));
+    toast({
+      title: "Success!",
+      description: "Files uploaded successfully",
+      variant: "default"
+    });
     setFiles([]);
   };
 
