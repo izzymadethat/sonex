@@ -1,4 +1,4 @@
-import "../../styles/btn-secondary.css";
+import "./btn-secondary.css";
 
 const BtnSecondary = ({ icon, text }) => {
   return (

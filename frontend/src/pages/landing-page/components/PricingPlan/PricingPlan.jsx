@@ -1,5 +1,5 @@
-import { pricingPlans } from "../../../constants";
-import "../../../styles/pricing-plan.css";
+import { pricingPlans } from "@/constants";
+import "./pricing-plan.css";
 
 const PricingPlan = () => {
   return <p>Prices</p>;
@@ -44,10 +44,10 @@ export default PricingPlan;
 //     </div>
 //   ))}
 
-//   <div className="plan col-span-2 space-y-8">
+//   <div className="col-span-2 space-y-8 plan">
 //     <Divider className="bg-primary" />
 
-//     <h4 className="text-primary text-lg font-bold my-2">
+//     <h4 className="my-2 text-lg font-bold text-primary">
 //       Need more storage?
 //     </h4>
 //     <ul className="list">

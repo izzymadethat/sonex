@@ -14,10 +14,9 @@ const createNewUser = async (profile) => {
     avatar: profile.photos[0].value,
     firstName: profile.name.givenName || null,
     lastName: profile.name.familyName || null,
-    isVerified: true,
+    isVerified: true
   }).save();
 
-  console.log("New user created: ", newUser);
   return newUser;
 };
 
@@ -26,7 +25,7 @@ passport.use(
     {
       clientID: config.google.clientID,
       clientSecret: config.google.clientSecret,
-      callbackURL: config.google.callbackUrl,
+      callbackURL: config.google.callbackUrl
     },
     // callback for google strategy
     async (accessToken, refreshToken, profile, done) => {

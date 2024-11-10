@@ -10,14 +10,13 @@ const { ObjectId } = require("mongoose").Types;
 const validateCommentInput = [
   check("text")
     .exists({ checkFalsy: true })
-    .withMessage("Please enter a comment")
-    .isLength({ min: 1, max: 250 })
-    .withMessage("Comment must be between 1 and 250 characters"),
+    .withMessage("Please enter a comment"),
+  // .isLength({ gt: 6, lte: 250 })
+  // .withMessage("Comment must be between 6 and 250 characters"),
   check("type")
-    .exists({ checkFalsy: true })
-    .withMessage("Please enter a comment type")
-    .isIn(["revision", "general feedback"])
-    .withMessage("Comment type must be 'revision' or 'general feedback'"),
+    .optional()
+    .isIn(["revision", "feedback"])
+    .withMessage("Comment type must be 'revision' or 'feedback'"),
   check("timestamp")
     .optional()
     .matches(/^(\d{2}:)?\d{2}:\d{2}$/)
@@ -25,7 +24,7 @@ const validateCommentInput = [
       "Please enter a valid timestamp in the format MM:SS or HH:MM:SS"
     ),
 
-  handleValidationErrors,
+  handleValidationErrors
 ];
 
 // Client creates a comment
@@ -40,16 +39,16 @@ router.post("/", validateCommentInput, async (req, res, next) => {
 
     if (!project) {
       return res.status(404).json({
-        message: "Project not found",
+        message: "Project not found"
       });
     }
 
     const comment = await new Comment({
       text,
-      type,
-      timestamp: timestamp || null,
+      type: type ?? "revision",
+      timestamp: timestamp ?? null,
       projectId,
-      clientId,
+      email
     }).save();
 
     project.comments.push(comment._id); // TODO: also add comment to client
@@ -77,7 +76,7 @@ router.get("/", async (req, res, next) => {
     // Fetch comments for these projects and populate client details
     const comments = await Comment.find(
       {
-        projectId: { $in: projectIds },
+        projectId: { $in: projectIds }
       },
       "-clientId -__v"
     );
@@ -106,7 +105,7 @@ router.get("/", async (req, res, next) => {
     // Verify the project is owned by the current user
     if (project.userId.toString() !== userId) {
       return res.status(403).json({
-        message: "You do not have permission to view comments for this project",
+        message: "You do not have permission to view comments for this project"
       });
     }
 
@@ -120,9 +119,9 @@ router.get("/", async (req, res, next) => {
 
 // Update a comment
 // Only the client that created the comment can update it
-router.put("/:commentId", validateCommentInput, async (req, res, next) => {
+router.put("/:commentId", async (req, res, next) => {
   const { commentId } = req.params;
-  const { text, type, timestamp, email } = req.body;
+  const { text, type, timestamp, email, isCompleted } = req.body;
   // const clientId = (req.client && req.client.id) || req.user.id;
   const clientId = req.body.email; // for testing purposes
   try {
@@ -141,6 +140,8 @@ router.put("/:commentId", validateCommentInput, async (req, res, next) => {
     comment.text = text || comment.text;
     comment.type = type || comment.type;
     comment.timestamp = timestamp || comment.timestamp;
+    comment.isCompleted =
+      isCompleted !== undefined ? isCompleted : comment.isCompleted;
 
     await comment.save();
 

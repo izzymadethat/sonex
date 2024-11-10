@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { FancyFeature, FeatureCard } from "../../../components/customs";
-import { features } from "../../../constants";
-import "../../../styles/feature-animate.css";
+import FancyFeature from "../FeatureCard/FancyFeature";
+import FeatureCard from "../FeatureCard/FeatureCard";
+import { features } from "../../../../constants";
+import "./feature-animate.css";
 
 const Features = () => {
   useEffect(() => {
@@ -35,13 +36,13 @@ const Features = () => {
   return (
     <div className="scroller ">
       <div className="scroller__inner">
-        <div className="hover:scale-105 transition-transform duration-300">
+        <div className="transition-transform duration-300 hover:scale-105">
           <FancyFeature />
         </div>
         {features.map((feature) => (
           <div
             key={feature.id}
-            className="hover:scale-105 transition-transform duration-300"
+            className="transition-transform duration-300 hover:scale-105"
           >
             <FeatureCard feature={feature} />
           </div>

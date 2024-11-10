@@ -16,96 +16,91 @@ import { createBrowserRouter } from "react-router-dom";
 import Billing from "@/pages/user/billing/Billing.jsx";
 import Notifications from "@/pages/user/notifications/Notifications.jsx";
 import { ViewSingleFilePage } from "@/pages/user/files";
+import RootLayout from "@/components/global/RootLayout";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Home />
-  },
-  {
-    path: "/login",
-    element: <Login />
-  },
-  {
-    path: "/register",
-    element: <Signup />
-  },
-  {
-    path: "/logout",
-    element: <Logout />
-  },
-  {
-    path: "/user",
+    element: <RootLayout />,
     children: [
       {
         index: true,
-        element: <NotFoundError />
+        element: <Home />
       },
       {
-        path: "me",
-        element: <UserLayout />,
+        path: "/user",
         children: [
           {
             index: true,
-            element: <Dashboard />
+            element: <NotFoundError />
           },
           {
-            path: "projects",
+            path: "me",
+            element: <UserLayout />,
             children: [
               {
                 index: true,
-                element: <ViewProjectsPage />
+                element: <Dashboard />
               },
               {
-                path: ":projectId",
-                element: <ViewSingleProjectPage />
-              }
-            ]
-          },
-          {
-            path: "clients",
-            children: [
-              {
-                index: true,
-                element: <ViewClientsPage />
+                path: "projects",
+                children: [
+                  {
+                    index: true,
+                    element: <ViewProjectsPage />
+                  },
+                  {
+                    path: ":projectId",
+                    element: <ViewSingleProjectPage />
+                  }
+                ]
               },
               {
-                path: ":clientId",
-                element: <ViewSingleClientPage />
+                path: "clients",
+                children: [
+                  {
+                    index: true,
+                    element: <ViewClientsPage />
+                  },
+                  {
+                    path: ":clientId",
+                    element: <ViewSingleClientPage />
+                  }
+                ]
+              },
+              {
+                path: "profile",
+                element: <Profile />
+              },
+              {
+                path: "notifications",
+                element: <Notifications />
+              },
+              {
+                path: "billing",
+                element: <Billing />
               }
             ]
-          },
-          {
-            path: "profile",
-            element: <Profile />
-          },
-          {
-            path: "notifications",
-            element: <Notifications />
-          },
-          {
-            path: "billing",
-            element: <Billing />
           }
         ]
-      }
-    ]
-  },
-  {
-    path: "/project/:projectId",
-    children: [
-      {
-        index: true,
-        element: <ViewSingleProjectPage />
       },
       {
-        path: "track/:trackId",
-        element: <ViewSingleFilePage />
+        path: "/project/:projectId",
+        children: [
+          {
+            index: true,
+            element: <ViewSingleProjectPage />
+          },
+          {
+            path: "track/:fileName",
+            element: <ViewSingleFilePage />
+          }
+        ]
+      },
+      {
+        path: "*",
+        element: <NotFoundError />
       }
     ]
-  },
-  {
-    path: "*",
-    element: <NotFoundError />
   }
 ]);

@@ -1,7 +1,7 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import Loader from "../../components/misc/Loader";
+import Loader from "../../components/informational/Loader/Loader";
 import axios from "axios";
 
 const API_URL = "http://localhost:4000/api/auth/session/register";

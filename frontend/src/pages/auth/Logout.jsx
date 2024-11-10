@@ -1,6 +1,8 @@
 import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
+// TODO: DEPRECATE THIS PAGE
 const Logout = () => {
   const navigate = useNavigate();
 
@@ -9,7 +11,7 @@ const Logout = () => {
       try {
         const response = await fetch("http://localhost:8000/api/auth/session", {
           credentials: "include",
-          method: "DELETE",
+          method: "DELETE"
         });
 
         if (response.ok) {
@@ -26,7 +28,7 @@ const Logout = () => {
   }, []);
 
   return (
-    <main className="w-full mx-auto translate-y-1/2 flex flex-col justify-center items-center">
+    <main className="flex flex-col items-center justify-center w-full mx-auto translate-y-1/2">
       <div className="flex gap-2">
         <h1 className="text-3xl">MySonex</h1>
         <span>Logout</span>

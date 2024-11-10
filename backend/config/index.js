@@ -18,6 +18,10 @@ module.exports = {
     bucketName: process.env.AWS_BUCKET_NAME,
     region: process.env.AWS_REGION
   },
+  cloudFront: {
+    privateKey: process.env.CLOUDFRONT_PRIVATE_KEY,
+    keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID
+  },
   sessionAuth: {
     accessSecret: process.env.JWT_ACCESS_TOKEN_SECRET,
     accessExpiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION,

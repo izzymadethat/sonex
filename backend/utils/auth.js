@@ -11,13 +11,8 @@
  *
  */
 
+// TODO: This may not be needed when passport arrives
 exports.restoreUser = (req, res, next) => {
-  console.log("RESTORING USER:");
-  console.log(req.cookies);
-
-  console.log("SESSION USER:");
-  console.log(req.session.user);
-
   next();
 };
 
@@ -26,7 +21,7 @@ exports.checkIfAuthenticated = (req, _res, next) => {
     const error = new Error("Authentication required");
     error.status = 401;
     error.errors = {
-      message: "You must be logged in to access this route",
+      message: "You must be logged in to access this route"
     };
 
     return next(error);

@@ -1,4 +1,4 @@
-import { NotificationCard } from "@/components/customs";
+import NotificationCard from "@/components/informational/NotificationCard/NotificationCard";
 import { Button } from "@/components/ui/button";
 const notification = {
   title: "New message from John Doe",

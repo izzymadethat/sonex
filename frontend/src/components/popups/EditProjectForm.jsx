@@ -22,6 +22,7 @@ import {
 import { Archive, Ban, CheckCircle2, Circle, Loader2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateProject } from "@/features/projects/projectsSlice";
+import { toast } from "@/hooks/use-toast";
 
 const formGroupStyles = "flex flex-col gap-3 w-full mb-4";
 
@@ -69,7 +70,6 @@ const EditProjectForm = ({ project }) => {
   };
 
   const handleUpdateProject = async () => {
-    console.log("Updating project...");
     const updatedForm = {
       id: project._id,
       title: titleInput,
@@ -78,9 +78,12 @@ const EditProjectForm = ({ project }) => {
       paymentStatus: paymentStatus,
       projectAmount: parseFloat(Number(projectAmount).toFixed(2))
     };
-    console.log(updatedForm);
     await dispatch(updateProject(updatedForm));
     setIsOpen(false);
+    toast({
+      title: "Project Updated!",
+      description: "Your project has been updated"
+    });
   };
   // TODO: Set functionality to reset to original values when cancel button is clicked
 

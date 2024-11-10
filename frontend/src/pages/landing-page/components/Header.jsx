@@ -4,16 +4,32 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginUser, selectUser } from "@/features/user/userSlice";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-
-const Header = ({ user }) => {
+import { useToast } from "@/hooks/use-toast";
+const Header = () => {
+  const { toast } = useToast();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleDemoLogin = async () => {
-    await dispatch(
-      loginUser({ credential: "demo@user.com", password: "password" })
-    ); //for demo purpose only
-    return navigate("/user/me");
+    const userCred = {
+      credential: "demo@user.com",
+      password: "password"
+    };
+    const result = await dispatch(loginUser(userCred)); //for demo purpose only
+
+    if (loginUser.rejected.match(result)) {
+      toast({
+        title: "Uh Oh. Login failed!",
+        description: result.payload,
+        variant: "destructive"
+      });
+      return;
+    } else {
+      toast({
+        title: `Welcome back!`
+      });
+      return navigate("/user/me");
+    }
   };
 
   return (

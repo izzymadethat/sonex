@@ -1,7 +1,5 @@
 import axiosInstance from "@/store/csrf";
-import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
-import { data } from "autoprefixer";
-import { sub } from "date-fns";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 const BASE_URL = "/projects";
 
 /* 
@@ -16,7 +14,6 @@ Redux Map (in progress...)
       paymentStatus: enum ("unpaid" | "paid" | "no-charge"),
       projectAmount: number,
       amountPaid: number,
-      storageUsed: number,
       createdAt: date,
       updatedAt: date,
     },
@@ -39,43 +36,45 @@ Redux Map (in progress...)
 
 export const getProjects = createAsyncThunk(
   "project/fetchCurrentUserProjects",
-  async (_, { rejectWithValue }) => {
+  async (_, thunkAPI) => {
     try {
       const response = await axiosInstance.get(BASE_URL);
-      return response.data; // Directly return the data
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || error.message); // Use response data for error messages
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message
+      ); // Use response data for error messages
     }
   }
 );
 
 export const getSingleProject = createAsyncThunk(
   "projects/getSingleProject",
-  async (projectId, { rejectWithValue }) => {
+  async (projectId, thunkAPI) => {
     try {
       const response = await axiosInstance.get(`${BASE_URL}/${projectId}`);
-      return response.data; // Return the project data directly
+      return response.data.project; // Return the project data directly
     } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
   }
 );
 
 export const createProject = createAsyncThunk(
   "projects/createProject",
-  async (project, { rejectWithValue }) => {
+  async (project, thunkAPI) => {
     try {
       const response = await axiosInstance.post(BASE_URL, project); // Pass project directly
       return response.data; // Return the created project data
     } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
   }
 );
 
 export const updateProject = createAsyncThunk(
   "projects/updateProject",
-  async (project, { rejectWithValue }) => {
+  async (project, thunkAPI) => {
     try {
       const response = await axiosInstance.put(
         `${BASE_URL}/${project.id}`,
@@ -83,19 +82,19 @@ export const updateProject = createAsyncThunk(
       ); // Pass project directly
       return response.data; // Return the updated project data
     } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
   }
 );
 
 export const deleteProject = createAsyncThunk(
   "projects/deleteProject",
-  async (projectId, { rejectWithValue }) => {
+  async (projectId, thunkAPI) => {
     try {
       await axiosInstance.delete(`${BASE_URL}/${projectId}`); // No need to capture response for delete
       return projectId; // Return the ID of the deleted project
     } catch (error) {
-      return rejectWithValue(error.response?.data || error.message);
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
   }
 );
@@ -103,7 +102,7 @@ export const deleteProject = createAsyncThunk(
 const initialState = {
   allProjects: [],
   currentProject: null,
-  status: "idle",
+  status: "idle"
 };
 
 const projectsSlice = createSlice({
@@ -115,6 +114,13 @@ const projectsSlice = createSlice({
       state.currentProject = null;
       state.status = "idle";
     },
+    findProjectById: (state, action) => {
+      const { projectId } = action.payload;
+      const project = state.allProjects.find((p) => p._id === projectId);
+      if (project) {
+        return project;
+      }
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -162,10 +168,12 @@ const projectsSlice = createSlice({
           state.currentProject = null;
         }
       });
-  },
+  }
 });
 
-export const { unloadProjects } = projectsSlice.actions;
+export const { unloadProjects, findProjectById } = projectsSlice.actions;
 export const selectAllProjects = (state) => state.projects.allProjects;
+export const selectProjectById = (state, projectId) =>
+  state.projects.allProjects.find((p) => p._id === projectId);
 export const selectCurrentProject = (state) => state.projects.currentProject;
 export default projectsSlice.reducer;

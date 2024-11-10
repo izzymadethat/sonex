@@ -8,7 +8,7 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
   baseURL: "/api",
-  withCredentials: true,
+  withCredentials: true
 });
 
 axiosInstance.interceptors.request.use(
@@ -17,9 +17,13 @@ axiosInstance.interceptors.request.use(
       const csrfToken = Cookies.get("XSRF-TOKEN");
 
       if (csrfToken) {
-        config.headers["XSRF-TOKEN"] = csrfToken;
+        config.headers["X-CSRF-Token"] = csrfToken;
+      } else {
+        const res = await restoreCSRF();
+        config.headers["X-CSRF-Token"] = res.token;
       }
-      config.headers["Content-Type"] = "application/json";
+      config.headers["Content-Type"] =
+        config.headers["Content-Type"] || "application/json";
     }
 
     return config;

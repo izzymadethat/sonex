@@ -60,7 +60,7 @@ export const fetchComments = createAsyncThunk(
       const response = await axiosInstance.get("/comments");
       return response.data.Comments;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return thunkAPI.rejectWithValue("An error occurred");
     }
   }
@@ -71,11 +71,11 @@ export const fetchCommentsByProject = createAsyncThunk(
   async (projectId, thunkAPI) => {
     try {
       const response = await axiosInstance.get(
-        `/projects/${projectId}/comments}`
+        `/projects/${projectId}/comments`
       );
       return response.data.Comments;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return thunkAPI.rejectWithValue("An error occurred");
     }
   }
@@ -83,12 +83,15 @@ export const fetchCommentsByProject = createAsyncThunk(
 
 export const addComment = createAsyncThunk(
   "comments/addComment",
-  async (comment, thunkAPI) => {
+  async ({ projectId, comment }, thunkAPI) => {
     try {
-      const response = await axiosInstance.post("/comments", comment);
+      const response = await axiosInstance.post(
+        `projects/${projectId}/comments`,
+        comment
+      );
       return response.data;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return thunkAPI.rejectWithValue("An error occurred");
     }
   }
@@ -97,7 +100,7 @@ export const addComment = createAsyncThunk(
 export const updateComment = createAsyncThunk(
   "comments/updateComment",
   async (updatedCommentInfo, thunkAPI) => {
-    const commentId = updatedCommentInfo.id;
+    const commentId = updatedCommentInfo._id;
     try {
       const response = await axiosInstance.put(
         `/comments/${commentId}`,
@@ -105,7 +108,7 @@ export const updateComment = createAsyncThunk(
       );
       return response.data.comment;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return thunkAPI.rejectWithValue("An error occurred");
     }
   }
@@ -128,7 +131,7 @@ const initialState = {
   commentsByProject: null,
   currentComment: null,
   status: "idle",
-  error: null,
+  error: null
 };
 
 const commentsSlice = createSlice({
@@ -144,7 +147,7 @@ const commentsSlice = createSlice({
     },
     setCurrentComment: (state, action) => {
       state.currentComment = action.payload;
-    },
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -184,8 +187,9 @@ const commentsSlice = createSlice({
       .addCase(addComment.fulfilled, (state, action) => {
         const comment = action.payload;
         state.status = "succeeded";
-        state.allComments.push(comment);
-        state.commentsByProject[comment.projectId] = comment;
+        state.commentsByProject[comment.projectId] =
+          state.commentsByProject[comment.projectId] || [];
+        state.commentsByProject[comment.projectId].push(comment);
       })
       .addCase(addComment.rejected, (state, action) => {
         state.status = "failed";
@@ -193,14 +197,16 @@ const commentsSlice = createSlice({
       })
       .addCase(updateComment.fulfilled, (state, action) => {
         const updatedComment = action.payload;
-        state.status = "succeeded";
-        state.allComments.map((comment) => {
-          if (comment.id === updatedComment.id) {
-            return updatedComment;
-          }
-          return comment;
-        });
-        state.commentsByProject[updatedComment.projectId] = updatedComment;
+        const index = state.allComments.findIndex(
+          (comment) => comment._id === updatedComment._id
+        );
+        if (index !== -1) {
+          state.allComments[index] = updatedComment;
+        }
+        state.commentsByProject[updatedComment.projectId] =
+          state.commentsByProject[updatedComment.projectId].map((comment) =>
+            comment._id === updatedComment._id ? updatedComment : comment
+          );
         state.currentComment = updatedComment;
       })
       .addCase(deleteComment.fulfilled, (state, action) => {
@@ -208,13 +214,24 @@ const commentsSlice = createSlice({
         state.allComments = state.allComments.filter(
           (comment) => comment.id !== action.payload.commentId
         );
-        // delete the comment from the commentsByProject object
-        delete state.commentsByProject[action.payload.projectId];
-        state.currentComment = null;
+
+        // Remove the deleted comment from commentsByProject
+        const projectComments =
+          state.commentsByProject[action.payload.projectId];
+        if (projectComments) {
+          state.commentsByProject[action.payload.projectId] =
+            projectComments.filter(
+              (comment) => comment.id !== action.payload.commentId
+            );
+        }
+
+        state.currentComment = null; // Optionally reset currentComment
       });
-  },
+  }
 });
 
 export const { unloadComments, setCurrentComment } = commentsSlice.actions;
 export const selectAllComments = (state) => state.comments.allComments;
+export const selectCommentsByProject = (state) =>
+  state.comments.commentsByProject;
 export default commentsSlice.reducer;

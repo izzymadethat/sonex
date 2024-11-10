@@ -9,6 +9,9 @@ import { useDispatch } from "react-redux";
 import { logoutUser } from "@/features/user/userSlice";
 import { useNavigate } from "react-router-dom";
 import { unloadProjects } from "@/features/projects/projectsSlice";
+import { unloadComments } from "@/features/comments/commentsSlice";
+import { unloadFiles } from "@/features/files/filesSlice";
+import { toast } from "@/hooks/use-toast";
 // import { SidebarTrigger } from "../ui/sidebar";
 
 // Custom sidebar trigger
@@ -26,18 +29,27 @@ const Topbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleLogout = async () => {
-    dispatch(logoutUser());
     dispatch(unloadProjects());
-    return navigate("/");
+    dispatch(unloadComments());
+    dispatch(unloadFiles());
+    dispatch(logoutUser());
+
+    toast({
+      title: "Logged Out Sucessfully!",
+      description: "You have been logged out."
+    });
+    if (logoutUser.fulfilled) {
+      return navigate("/");
+    }
   };
   return (
-    <header className="flex items-center justify-between my-4 rounded-lg">
+    <header className="sticky flex items-center justify-between my-4 rounded-lg top-4">
       <SidebarTrigger />
       <div className="flex gap-2 rounded-full cursor-pointer ">
         <ModeToggle />
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger asChild>
               <Button onClick={handleLogout}>
                 <LogOut />
               </Button>

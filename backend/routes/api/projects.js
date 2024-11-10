@@ -1,17 +1,28 @@
 // All project CRUD operations require USER Auth not CLIENT auth
 // Routes start with /api/projects
 const express = require("express");
-const { check } = require("express-validator");
 const router = express.Router();
+const { check } = require("express-validator");
 const Client = require("../../models/client");
 const Project = require("../../models/project");
+const Comment = require("../../models/comment");
 const { authenticatedUsersOnly } = require("../../utils/auth");
 const handleValidationErrors = require("../../utils/validation");
 const commentRoutes = require("./comments");
+const fileRoutes = require("./files");
+const File = require("../../models/file");
+const { s3Client } = require("../../config/aws-s3.config");
+const {
+  ListObjectsV2Command,
+  DeleteObjectsCommand
+} = require("@aws-sdk/client-s3");
+const { awsS3 } = require("../../config");
 const { ObjectId } = require("mongoose").Types;
 
 // Comment routes
 router.use("/:projectId/comments", commentRoutes);
+// File routes
+router.use("/:projectId/uploads", fileRoutes);
 
 // Validation middleware
 const validateProjectInput = [
@@ -28,7 +39,7 @@ const validateProjectInput = [
     .optional()
     .isFloat({ min: 0 })
     .withMessage("Please enter a valid amount"),
-  handleValidationErrors,
+  handleValidationErrors
 ];
 const validateProjectQuery = [
   check("status")
@@ -63,14 +74,27 @@ const validateProjectQuery = [
     .withMessage(
       "Payment status must be 'unpaid', 'no-charge', 'paid', 'partially-paid', or 'overpaid'"
     ),
-  handleValidationErrors,
+  handleValidationErrors
 ];
 // Get projects for user
 // GET /api/projects
 router.get("/", validateProjectQuery, async (req, res, next) => {
   try {
     const userId = new ObjectId(req.session.user.id);
-    const projects = await Project.find({ userId }, "-clients -comments -__v");
+    const projects = await Project.find(
+      { userId },
+      "-clients -comments -__v"
+    ).populate("files");
+    const projectResults = projects.map((project) => {
+      const projectSize = project.files.reduce(
+        (acc, file) => acc + file.size / 1024 / 1024,
+        0
+      );
+      return {
+        ...project._doc,
+        storageUsed: projectSize
+      };
+    });
 
     // format the response
     // const projectsData = projects.map((project) => {
@@ -81,7 +105,7 @@ router.get("/", validateProjectQuery, async (req, res, next) => {
     //   };
     // });
 
-    res.json({ Projects: projects, User: req.user });
+    res.json({ Projects: projectResults, User: req.user });
   } catch (error) {
     next(error);
   }
@@ -100,7 +124,7 @@ router.post("/", validateProjectInput, async (req, res, next) => {
       description: description || null,
       userId,
       projectAmount: projectAmount || 0,
-      paymentStatus: projectAmount ? "unpaid" : "no-charge",
+      paymentStatus: projectAmount ? "unpaid" : "no-charge"
     }).save();
     res.status(201).json(newProject);
   } catch (error) {
@@ -122,18 +146,29 @@ router.get("/:projectId", async (req, res, next) => {
 
     if (!project) {
       return res.status(404).json({
-        message: "Project not found",
+        message: "Project not found"
       });
     }
 
     // check if project belongs to user
     if (project.userId.toString() !== userId) {
       return res.status(403).json({
-        message: "You do not have permission to view this project",
+        message: "You do not have permission to view this project"
       });
     }
 
-    res.status(200).json(project);
+    const files = await File.find({ projectId });
+    const storageUsed = files.reduce(
+      (acc, file) => acc + file.size / 1024 / 1024,
+      0
+    );
+
+    const projectResult = {
+      ...project._doc,
+      storageUsed
+    };
+
+    res.status(200).json({ project: projectResult });
   } catch (error) {
     next(error);
   }
@@ -152,12 +187,12 @@ router.get(
       const project = await Project.findById(projectId);
       if (!project) {
         return res.status(404).json({
-          message: "Project not found",
+          message: "Project not found"
         });
       }
       if (project.userId.toString() !== userId) {
         return res.status(403).json({
-          message: "You do not have permission to view this project",
+          message: "You do not have permission to view this project"
         });
       }
       const clients = await Client.find({ projectId });
@@ -185,7 +220,7 @@ router.put(
       status,
       projectAmount,
       amountPaid,
-      paymentStatus, // This comes from the frontend
+      paymentStatus // This comes from the frontend
     } = req.body;
 
     try {
@@ -193,14 +228,14 @@ router.put(
 
       if (!existingProject) {
         return res.status(404).json({
-          message: "Project not found",
+          message: "Project not found"
         });
       }
 
       // Ensure the user owns the project before updating
       if (existingProject.userId.toString() !== userId) {
         return res.status(403).json({
-          message: "You do not have permission to update this project",
+          message: "You do not have permission to update this project"
         });
       }
 
@@ -263,7 +298,7 @@ router.put(
       // Send the updated project data back to the frontend
       const results = {
         ...updatedProject._doc,
-        messages,
+        messages
       };
 
       res.status(200).json(results);
@@ -289,25 +324,25 @@ router.put(
       const existingProject = await Project.findById(projectId);
       if (!existingProject) {
         return res.status(404).json({
-          message: "Project not found",
+          message: "Project not found"
         });
       }
       if (existingProject.userId.toString() !== userId) {
         return res.status(403).json({
-          message: "You do not have permission to add clients to this project",
+          message: "You do not have permission to add clients to this project"
         });
       }
       const existingClient = await Client.findById(clientId);
       if (!existingClient) {
         return res.status(404).json({
-          message: "Client not found",
+          message: "Client not found"
         });
       }
 
       // Check if the user is in the client's users array
       if (!existingClient.users.includes(userId)) {
         return res.status(403).json({
-          message: "This client is not associated with your account",
+          message: "This client is not associated with your account"
         });
       }
 
@@ -327,28 +362,49 @@ router.put(
 router.delete("/:projectId", async (req, res, next) => {
   const projectId = req.params.projectId;
   const userId = req.session.user.id.toString();
-
+  const projectFolderKey = `projects/${projectId}`;
   try {
     const existingProject = await Project.findById(projectId);
 
     if (!existingProject) {
       return res.status(404).json({
-        message: "Project not found",
+        message: "Project not found"
       });
     }
 
     // check if project belongs to user
     if (existingProject.userId.toString() !== userId) {
       return res.status(403).json({
-        message: "You do not have permission to delete this project",
+        message: "You do not have permission to delete this project"
       });
     }
 
+    // const deletedProject = await Project.findByIdAndDelete(projectId);
+    // Delete all comments and files associated with the project
+    const listedProjects = await s3Client.send(
+      new ListObjectsV2Command({
+        Bucket: awsS3.bucketName,
+        Prefix: projectFolderKey
+      })
+    );
+
+    if (listedProjects.Contents && listedProjects.Contents.length > 0) {
+      await s3Client.send(
+        new DeleteObjectsCommand({
+          Bucket: awsS3.bucketName,
+          Delete: {
+            Objects: listedProjects.Contents.map((item) => ({ Key: item.Key }))
+          }
+        })
+      );
+    }
+    await File.deleteMany({ projectId });
+    await Comment.deleteMany({ projectId });
     const deletedProject = await Project.findByIdAndDelete(projectId);
 
     res.status(200).json({
       message: "Successfully deleted project",
-      Project: deletedProject,
+      Project: deletedProject
     });
   } catch (error) {
     next(error);

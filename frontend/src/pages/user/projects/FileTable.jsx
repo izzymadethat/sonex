@@ -24,8 +24,8 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { useSelector } from "react-redux";
-import { selectProjectFiles } from "@/features/files/filesSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteFile, selectProjectFiles } from "@/features/files/filesSlice";
 import { Link } from "react-router-dom";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -38,7 +38,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { convertFileSizeInBytesToMB } from "@/helper/equations";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from "@/components/ui/alert-dialog";
+import { toast } from "@/hooks/use-toast";
 
 const UploadDropDownMenu = ({ onFileSelect }) => {
   const fileInputRef = useRef(null);
@@ -101,12 +114,13 @@ const UploadDropDownMenu = ({ onFileSelect }) => {
 };
 
 const FileTable = ({ projectId }) => {
+  const dispatch = useDispatch();
   const allFiles = useSelector(selectProjectFiles);
   const files = allFiles
     .slice()
     .filter((file) => String(file.projectId) === String(projectId))
     .map((f) => {
-      const date = parseISO(f.dateAdded);
+      const date = parseISO(f.createdAt);
       const timePeriod = formatDistanceToNow(date);
       const timeAgo = `${timePeriod} ago`;
 
@@ -126,7 +140,7 @@ const FileTable = ({ projectId }) => {
         <CardTitle>
           <div className="flex items-center justify-between">
             <h3 className="text-xl font-bold uppercase">Project Files</h3>
-            <UploadDropDownMenu onFileSelect={handleFileSelect} />
+            {/* TODO: <UploadDropDownMenu onFileSelect={handleFileSelect} /> */}
           </div>
         </CardTitle>
       </CardHeader>
@@ -143,6 +157,11 @@ const FileTable = ({ projectId }) => {
               <TableHead>
                 <div className="flex items-center gap-2">
                   <Label>File Type</Label>
+                </div>
+              </TableHead>
+              <TableHead>
+                <div className="flex items-center gap-2">
+                  <Label>File Size (in Mb)</Label>
                 </div>
               </TableHead>
               <TableHead>
@@ -169,18 +188,53 @@ const FileTable = ({ projectId }) => {
             </TableRow>
             {/* All files from project */}
             {files.map((file) => (
-              <TableRow key={file.id}>
+              <TableRow key={file._id}>
                 <TableCell>
-                  <Link to={`/project/${projectId}/track/${file.id}`}>
+                  <Link to={`/project/${projectId}/track/${file.name}`}>
                     {file.name}
                   </Link>
                 </TableCell>
-                <TableCell>{file.type}</TableCell>
+                <TableCell>
+                  {file.type === "wave" ? "wav" : file.type}
+                </TableCell>
+                <TableCell>
+                  {convertFileSizeInBytesToMB(file.size).toFixed(2)} Mb
+                </TableCell>
                 <TableCell>{file.dateAdded}</TableCell>
                 <TableCell>
-                  <Button variant="destructive">
-                    <Trash2 />
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive">
+                        <Trash2 />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to delete this file?
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Take Me Back</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => {
+                            dispatch(
+                              deleteFile({ projectId, fileName: file.name })
+                            ).then(() => {
+                              toast({
+                                title: "File Deleted",
+                                description: "File deleted successfully"
+                              });
+                            });
+                          }}
+                          className="text-white bg-red-600 hover:bg-red-700"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </TableCell>
               </TableRow>
             ))}
