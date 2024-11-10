@@ -27,7 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
   origin: "http://localhost:5173",
   credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
   methods: ["GET", "POST", "PUT", "DELETE"]
 };
 if (!isProduction) {
@@ -52,6 +52,10 @@ app.use(
     secret: sessionAuth.accessSecret,
     saveUninitialized: false,
     resave: false,
+    store: MongoStore.create({
+      mongoUrl: mongodb.dbURI,
+      ttl: 60 * 60 * 24 * 30 * 1000 // 30 days
+    }),
     cookie: {
       httpOnly: true,
       secure: isProduction,
@@ -62,7 +66,10 @@ app.use(
 ); // Session auth middleware
 app.use(
   csurf({
-    cookie: false
+    cookie: {
+      secure: isProduction,
+      sameSite: isProduction && "lax"
+    }
   })
 ); // CSRF protection
 app.use(routes);

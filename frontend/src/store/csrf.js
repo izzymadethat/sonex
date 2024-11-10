@@ -17,10 +17,10 @@ axiosInstance.interceptors.request.use(
       const csrfToken = Cookies.get("XSRF-TOKEN");
 
       if (csrfToken) {
-        config.headers["XSRF-TOKEN"] = csrfToken;
+        config.headers["X-CSRF-Token"] = csrfToken;
       } else {
         const res = await restoreCSRF();
-        config.headers["XSRF-TOKEN"] = res.token;
+        config.headers["X-CSRF-Token"] = res.token;
       }
       config.headers["Content-Type"] =
         config.headers["Content-Type"] || "application/json";
