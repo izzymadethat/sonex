@@ -4,13 +4,27 @@
   "description": "### Tech Stack:",
   "main": "index.js",
   "scripts": {
-    "install": "npm --prefix backend install",
-    "build": "npm run build --prefix frontend",
-    "start": "npm start --prefix backend",
-    "start:backend": "npm start --prefix backend",
-    "start:frontend": "npm run dev --prefix frontend"
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "turbo": "^2.2.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "packageManager": "bun@1.1.34",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "engines": {
+    "bun": ">=1.0.0"
+  }
 }
