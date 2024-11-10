@@ -28,3 +28,4 @@ dist-ssr
 *.sw?
 *.pem
 seed_data.txt
+*.turbo
