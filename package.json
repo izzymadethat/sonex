@@ -1,7 +1,7 @@
 {
   "name": "sonex",
   "version": "1.0.0",
-  "description": "### Tech Stack:",
+  "description": "Sonex Audio Solutions",
   "main": "index.js",
   "scripts": {
     "build": "turbo run build",
@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "@types/bun": "latest",
     "turbo": "^2.2.3"
   },
