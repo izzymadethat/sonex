@@ -9,7 +9,7 @@ import {
   SheetTrigger
 } from "@/components/ui/sheet";
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCommentsByProject, selectCommentsByProject, updateComment, deleteComment } from '@/features/comments/commentsSlice';
+import { fetchCommentsByProject, updateComment, deleteComment } from '@/features/comments/commentsSlice';
 import { useEffect } from 'react';
 import { Trash2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
@@ -58,7 +58,7 @@ const CommentsSideBar = ({ user, projectId }) => {
 
   const handleDeleteComment = async (commentId) => {
     try {
-      const resultAction = await dispatch(deleteComment({ projectId, commentId })).unwrap();
+      await dispatch(deleteComment({ projectId, commentId })).unwrap();
       toast({
         title: "Comment deleted",
         description: "Your comment has been deleted successfully"
@@ -66,7 +66,7 @@ const CommentsSideBar = ({ user, projectId }) => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to delete comment. Please try again.",
+        description: `Failed to delete comment. Please try again. ${error.message}`,
         variant: "destructive"
       });
     }

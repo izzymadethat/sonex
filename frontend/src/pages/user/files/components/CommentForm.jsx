@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { addComment } from "@/features/comments/commentsSlice";
 import { toast } from "@/hooks/use-toast";
-import { formatTime } from "@/helper/formatters";
+// import { formatTime } from "@/helper/formatters";
 
 const CommentForm = ({
   existingClient,
@@ -92,7 +92,7 @@ const CommentForm = ({
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to submit comment. Please try again.",
+        description: `Failed to submit comment. Please try again. (${error.message})`,
         variant: "destructive"
       });
     }
