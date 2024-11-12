@@ -112,52 +112,52 @@ const ClientActionButton = ({
 
 const ViewSingleFilePage = () => {
   const params = useParams();
+  const { projectId, fileName } = params;
   const dispatch = useDispatch();
   const { currentUser: user } = useSelector(selectUser);
   const currentProject = useSelector(selectCurrentProject);
-  const projectComments = useSelector(selectCommentsByProject) || {};
   const file = useSelector(selectCurrentTrack);
-  const { projectId, fileName } = params;
-
-  // const [currentTime, setCurrentTime] = useState(0);
-  const [isATimeStampedComment, setIsATimeStampedComment] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [paymentLoading, setPaymentLoading] = useState(false);
   const [client, setClient] = useState("");
-  const [downloadLink, setDownloadLink] = useState("");
+  const [isATimeStampedComment, setIsATimeStampedComment] = useState(false);
+  const [paymentLoading, setPaymentLoading] = useState(false);
   const audioRef = useRef(null);
 
   useEffect(() => {
-    const existingClient = localStorage.getItem("clientEmail");
-    if (existingClient) {
-      setClient(existingClient);
-    } else {
-      setClient("");
-      dispatch(restoreUser());
-    }
-  }, [dispatch]);
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        // Always fetch the file
+        await dispatch(getSingleFile({ projectId, fileName }));
+        await dispatch(fetchCommentsByProject(projectId));
+
+        // Only fetch additional data if user is authenticated
+        if (user) {
+          await dispatch(getSingleProject(projectId));
+          await dispatch(fetchProjectFiles(projectId));
+        }
+      } catch (error) {
+        console.error('Error loading file:', error);
+        toast({
+          title: "Error",
+          description: "Could not load the file",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [dispatch, projectId, fileName, user]);
 
   useEffect(() => {
-    setLoading(true);
-    const fetchFile = async () => {
-      await dispatch(getSingleFile({ projectId, fileName }));
-    };
-
-    const restoreAccountInfo = async () => {
-      // Fetch the project files, comments, project details and files
-
-      dispatch(getProjects());
-      dispatch(getSingleProject(projectId));
-      dispatch(fetchCommentsByProject(projectId));
-      dispatch(fetchProjectFiles(projectId));
-    };
-
-    fetchFile();
     if (user) {
-      restoreAccountInfo();
+      setClient("");
+    } else {
+      setClient(localStorage.getItem("clientEmail") || "");
     }
-    setLoading(false);
-  }, [dispatch, projectId, fileName]);
+  }, [user]);
 
   // Keep track of song time while making comments
   useEffect(() => {
@@ -242,31 +242,32 @@ const ViewSingleFilePage = () => {
     }
   };
 
-  if (!file || loading || !user || !audioRef) {
-    return (
-      <div>
-        <Loader />
-      </div>
-    );
+  if (!file || loading) {
+    return <Loader />;
   }
 
   return (
     <div className="max-w-2xl p-8 mx-auto space-y-8 lg:max-w-4xl">
-      <NavigateBackTo
-        route={`/user/me/projects/${params.projectId}`}
-        pageName="this project details"
-      />
+      {user && (
+        <NavigateBackTo
+          route={`/user/me/projects/${params.projectId}`}
+          pageName="this project details"
+        />
+      )}
+
       {/* Track Information */}
       <div className="flex justify-between">
         <div>
           <h2 className="text-4xl font-bold ">{file.name}</h2>
-          <p>
-            uploaded by {user.firstName} /{" "}
-            <span>added on {file.createdAt}</span>
-          </p>
+          {user && (
+            <p>
+              uploaded by {user.firstName} /{" "}
+              <span>added on {file.createdAt}</span>
+            </p>
+          )}
         </div>
 
-        {client && (
+        {user && (
           <ClientActionButton
             project={currentProject}
             onPaymentClick={handlePayment}
@@ -274,9 +275,11 @@ const ViewSingleFilePage = () => {
             paymentLoading={paymentLoading}
           />
         )}
-        {user && !client && <CommentsSideBar />}
+
+        {user && <CommentsSideBar user={user} projectId={projectId} />}
       </div>
-      {/* Player and Comment Button */}
+
+      {/* Player */}
       <div className="flex flex-col justify-center gap-4">
         <audio
           src={file.streamUrl}
@@ -286,80 +289,21 @@ const ViewSingleFilePage = () => {
         />
       </div>
 
-      {/*
-      *** Future Update
-      FIXME: Add a custom audio player 
-      <CustomAudioPlayer audioSrc={file.streamUrl} /> 
-      */}
-      {/* Comment Form */}
-      <div className="grid grid-cols-5 gap-4">
-        {client && !user && (
-          <>
-            <div className="col-span-3">
-              <CommentForm
-                existingClient={client}
-                timestamp={file.currentTime}
-                isTimeStampedComment={isATimeStampedComment}
-                onCheckedChange={handleTimestampCommentCheckChange}
-                onClientEmailChange={setClient}
-                projectId={projectId}
-              />
-            </div>
-            <div className="flex flex-col items-center col-span-2 gap-4 p-8 text-center border-2 border-dashed rounded-md">
-              {currentProject && currentProject.length > 0 ? (
-                <>
-                  {currentProject.map((comment) => (
-                    <Dialog key={comment._id}>
-                      <DialogTrigger asChild>
-                        <Card
-                          key={comment._id}
-                          className="cursor-pointer hover:bg-primary hover:text-secondary"
-                        >
-                          <CardHeader>{comment.text}</CardHeader>
-                        </Card>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <h4 className="text-2xl font-bold text-center">
-                            {" "}
-                            Comment type: {comment.type.toUpperCase()}
-                          </h4>
-                        </DialogHeader>
-                        <div className="flex flex-col justify-center gap-4 text-center">
-                          <p className="text-lg">{comment.text}</p>
-                          {comment.type === "revision" && (
-                            <p className="text-lg text-primary">
-                              {" "}
-                              Comment made by {comment.email || "you"} @{" "}
-                              {comment.timestamp}
-                            </p>
-                          )}
-                        </div>
-                        <DialogFooter>
-                          <DialogClose asChild>
-                            <Button variant="outline">Close</Button>
-                          </DialogClose>
-                          <Button variant="destructive">Delete</Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                  ))}
-                </>
-              ) : (
-                <>
-                  <MessageSquare size={64} className="text-primary" />
-                  <p className="max-w-sm text-lg font-bold">
-                    You haven't made any comments yet.
-                  </p>
-                  <p className="italic max-w-52">
-                    Use the form to add your revision or provide feedback.
-                  </p>
-                </>
-              )}
-            </div>
-          </>
-        )}
-      </div>
+      {/* Comment Form - Only show if user is authenticated */}
+      {!user && (
+        <div className="grid grid-cols-5 gap-4">
+          <div className="col-span-3">
+            <CommentForm
+              existingClient={client}
+              timestamp={file.currentTime}
+              isTimeStampedComment={isATimeStampedComment}
+              onCheckedChange={handleTimestampCommentCheckChange}
+              onClientEmailChange={setClient}
+              projectId={projectId}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
