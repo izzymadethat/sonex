@@ -1,10 +1,10 @@
-import { restoreUser, selectUser } from "@/features/user/userSlice";
+import { selectUser } from "@/features/user/userSlice";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
   Dialog,
-  DialogClose,
+  // DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { formatTime } from "@/helper/formatters";
-import { Card, CardHeader } from "@/components/ui/card";
+// import { Card, CardHeader } from "@/components/ui/card";
 import NavigateBackTo from "@/components/global/NavigateBackTo";
 import CommentsSideBar from "./components/CommentsSideBar";
 import {
@@ -27,18 +27,18 @@ import {
   setTrackDuration
 } from "@/features/files/filesSlice";
 import CommentForm from "./components/CommentForm";
-import { Loader2, MessageSquare } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import {
   fetchCommentsByProject,
-  selectCommentsByProject
+  // selectCommentsByProject
 } from "@/features/comments/commentsSlice";
 import {
-  getProjects,
+  // getProjects,
   getSingleProject,
   selectCurrentProject
 } from "@/features/projects/projectsSlice";
 import Loader from "@/components/informational/Loader/Loader";
-import CustomAudioPlayer from "./components/AudioPlayer";
+// import CustomAudioPlayer from "./components/AudioPlayer";
 import axiosInstance from "@/store/csrf";
 import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
@@ -54,60 +54,60 @@ const ClientActionButton = ({
     project.paymentStatus === "no-charge"
   ) {
     return <Button onClick={onDownloadClick}>Download This File</Button>;
-  } else {
-    return (
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button disabled={paymentLoading}>
+  }
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button disabled={paymentLoading}>
+          {paymentLoading ? (
+            <>
+              <Loader2 className="animate-spin" />{" "}
+              <span>Processing Payment</span>
+            </>
+          ) : (
+            <span>Pay Project Amount</span>
+          )}
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="text-3xl">
+            Total Amount: ${project.projectAmount}
+          </DialogTitle>
+          <DialogDescription>
+            Project must be paid in full in order to have download access
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
+          <Input placeholder="1234 5678 9012 3456" />
+          <div className="flex">
+            <Input type="date" />
+            <Input type="number" placeholder="123" />
+            <Input type="number" placeholder="12345" />
+          </div>
+          <Input placeholder="Cardholder name" />
+        </div>
+        <DialogFooter>
+          <Button onClick={onPaymentClick} disabled={paymentLoading}>
             {paymentLoading ? (
               <>
                 <Loader2 className="animate-spin" />{" "}
-                <span>Processing Payment</span>
+                <span>Processing payment...</span>
               </>
             ) : (
-              <span>Pay Project Amount</span>
+              <>
+                Pay
+                <span className="font-bold">
+                  ${project.projectAmount.toFixed(2)}
+                </span>
+              </>
             )}
           </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="text-3xl">
-              Total Amount: ${project.projectAmount}
-            </DialogTitle>
-            <DialogDescription>
-              Project must be paid in full in order to have download access
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col gap-4">
-            <Input placeholder="1234 5678 9012 3456" />
-            <div className="flex">
-              <Input type="date" />
-              <Input type="number" placeholder="123" />
-              <Input type="number" placeholder="12345" />
-            </div>
-            <Input placeholder="Cardholder name" />
-          </div>
-          <DialogFooter>
-            <Button onClick={onPaymentClick} disabled={paymentLoading}>
-              {paymentLoading ? (
-                <>
-                  <Loader2 className="animate-spin" />{" "}
-                  <span>Processing payment...</span>
-                </>
-              ) : (
-                <>
-                  Pay
-                  <span className="font-bold">
-                    ${project.projectAmount.toFixed(2)}
-                  </span>
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    );
-  }
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
 };
 
 const ViewSingleFilePage = () => {
@@ -119,7 +119,8 @@ const ViewSingleFilePage = () => {
   const file = useSelector(selectCurrentTrack);
   const [loading, setLoading] = useState(false);
   const [client, setClient] = useState("");
-  const [isATimeStampedComment, setIsATimeStampedComment] = useState(false);
+  const [downloadLink, setDownloadLink] = useState("");
+  const [isTimestampedComment, setIsTimestampedComment] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const audioRef = useRef(null);
 
@@ -137,10 +138,9 @@ const ViewSingleFilePage = () => {
           await dispatch(fetchProjectFiles(projectId));
         }
       } catch (error) {
-        console.error('Error loading file:', error);
         toast({
           title: "Error",
-          description: "Could not load the file",
+          description: `Could not load the file. (${error.message})`,
           variant: "destructive"
         });
       } finally {
@@ -196,7 +196,7 @@ const ViewSingleFilePage = () => {
   }, [dispatch, audioRef]);
 
   const handleTimestampCommentCheckChange = () =>
-    setIsATimeStampedComment(!isATimeStampedComment);
+    setIsTimestampedComment(!isTimestampedComment);
 
   const handlePayment = async () => {
     setPaymentLoading(true);
@@ -258,7 +258,7 @@ const ViewSingleFilePage = () => {
       {/* Track Information */}
       <div className="flex justify-between">
         <div>
-          <h2 className="text-4xl font-bold ">{file.name}</h2>
+          <h2 className="text-4xl font-bold">{file.name}</h2>
           {user && (
             <p>
               uploaded by {user.firstName} /{" "}
@@ -284,9 +284,12 @@ const ViewSingleFilePage = () => {
         <audio
           src={file.streamUrl}
           ref={audioRef}
-          controls
+          controls={true}
           className="rounded-sm"
-        />
+        >
+          <track kind="captions" />
+          Your browser does not support the audio element.
+        </audio>
       </div>
 
       {/* Comment Form - Only show if user is authenticated */}
@@ -296,7 +299,7 @@ const ViewSingleFilePage = () => {
             <CommentForm
               existingClient={client}
               timestamp={file.currentTime}
-              isTimeStampedComment={isATimeStampedComment}
+              isTimeStampedComment={isTimestampedComment}
               onCheckedChange={handleTimestampCommentCheckChange}
               onClientEmailChange={setClient}
               projectId={projectId}

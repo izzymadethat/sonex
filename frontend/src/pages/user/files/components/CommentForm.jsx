@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { addComment } from "@/features/comments/commentsSlice";
+import { toast } from "@/hooks/use-toast";
 
 const CommentForm = ({
   existingClient,
@@ -23,6 +24,7 @@ const CommentForm = ({
   projectId
 }) => {
   const dispatch = useDispatch();
+
   const [emailInput, setEmailInput] = useState("");
   const [commentInput, setCommentInput] = useState("");
   const requiredInfoEntered = emailInput && commentInput;
@@ -50,6 +52,10 @@ const CommentForm = ({
     if (onClientEmailChange) {
       onClientEmailChange(emailInput);
     }
+    toast({
+      title: "Comment submitted",
+      description: "Your comment has been submitted successfully"
+    });
     setCommentInput("");
   };
 
