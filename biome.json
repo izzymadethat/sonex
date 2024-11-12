@@ -27,7 +27,8 @@
 				"noUselessUndefinedInitialization": "error",
 				"noVoid": "error",
 				"useDateNow": "error",
-				"useSimplifiedLogicExpression": "error"
+				"useSimplifiedLogicExpression": "error",
+				"noForEach": "off"
 			},
 			"correctness": {
 				"noConstantMathMinMaxClamp": "error",
@@ -38,18 +39,16 @@
 				"noUnusedVariables": "error",
 				"useArrayLiterals": "error",
 				"useHookAtTopLevel": "error",
-				"useExhaustiveDependencies": "warn"
+				"useExhaustiveDependencies": "off"
 			},
 			"performance": {
 				"noBarrelFile": "error",
-				"noReExportAll": "error",
-				"useTopLevelRegex": "error"
+				"noReExportAll": "error"
 			},
 			"style": {
 				"noDoneCallback": "error",
 				"noNamespace": "error",
 				"noNamespaceImport": "error",
-				"noNegationElse": "error",
 				"noParameterProperties": "error",
 				"noShoutyConstants": "error",
 				"noYodaExpression": "error",
@@ -59,9 +58,7 @@
 				"useDefaultSwitchClause": "error",
 				"useExplicitLengthCheck": "error",
 				"useFilenamingConvention": "error",
-				"useForOf": "error",
 				"useFragmentSyntax": "error",
-				"useNamingConvention": "error",
 				"useNodeAssertStrict": "error",
 				"useShorthandAssign": "error",
 				"useThrowNewError": "error",

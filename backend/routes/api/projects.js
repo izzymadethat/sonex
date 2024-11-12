@@ -6,7 +6,6 @@ const { check } = require("express-validator");
 const Client = require("../../models/client");
 const Project = require("../../models/project");
 const Comment = require("../../models/comment");
-const { authenticatedUsersOnly } = require("../../utils/auth");
 const handleValidationErrors = require("../../utils/validation");
 const commentRoutes = require("./comments");
 const fileRoutes = require("./files");
@@ -70,15 +69,6 @@ router.get("/", validateProjectQuery, async (req, res, next) => {
 				storageUsed: projectSize,
 			};
 		});
-
-		// format the response
-		// const projectsData = projects.map((project) => {
-		//   return {
-		//     ...project._doc,
-		//     _id: project._id.toString(),
-		//     userId: project.userId.toString(),
-		//   };
-		// });
 
 		res.json({ Projects: projectResults, User: req.user });
 	} catch (error) {
@@ -172,103 +162,59 @@ router.get(
 	}
 );
 
+// Helper function to determine payment status
+const determinePaymentStatus = (projectAmount, amountPaid, manualStatus = null) => {
+	if (manualStatus) return manualStatus;
+	if (projectAmount === 0) return "no-charge";
+	if (amountPaid > projectAmount) return "overpaid";
+	if (amountPaid === projectAmount) return "paid";
+	if (amountPaid > 0) return "partially-paid";
+	return "unpaid";
+};
+
 // Update project details
 // PUT /api/projects/:projectId
 // user must be logged in
 // project must be owned by user
-router.put(
-	"/:projectId",
-	validateProjectInput, // Assuming this middleware is already validating inputs
-	async (req, res, next) => {
-		const projectId = req.params.projectId;
-		const userId = req.session.user.id.toString();
-
-		const {
-			title,
-			description,
-			status,
-			projectAmount,
-			amountPaid,
-			paymentStatus, // This comes from the frontend
-		} = req.body;
-
-		try {
-			const existingProject = await Project.findById(projectId);
-
-			if (!existingProject) {
-				return res.status(404).json({
-					message: "Project not found",
-				});
-			}
-
-			// Ensure the user owns the project before updating
-			if (existingProject.userId.toString() !== userId) {
-				return res.status(403).json({
-					message: "You do not have permission to update this project",
-				});
-			}
-
-			// Update basic fields
-			existingProject.title = title || existingProject.title;
-			existingProject.description = description || existingProject.description;
-			existingProject.status = status || existingProject.status;
-			existingProject.projectAmount =
-				projectAmount === 0 || projectAmount ? projectAmount : existingProject.projectAmount;
-
-			// Handle paymentStatus updates (manual or automatic)
-			if (!paymentStatus) {
-				// Automatically update paymentStatus based on projectAmount and amountPaid
-				if (projectAmount === 0) {
-					existingProject.paymentStatus = "no-charge";
-				} else if (existingProject.amountPaid > existingProject.projectAmount) {
-					existingProject.paymentStatus = "overpaid";
-				} else if (existingProject.amountPaid === existingProject.projectAmount) {
-					existingProject.paymentStatus = "paid";
-				} else if (existingProject.amountPaid > 0) {
-					existingProject.paymentStatus = "partially-paid";
-				} else {
-					existingProject.paymentStatus = "unpaid";
-				}
-			} else {
-				// Use the paymentStatus provided from the frontend
-				existingProject.paymentStatus = paymentStatus;
-			}
-
-			// Process amountPaid if provided
-			if (amountPaid && amountPaid > 0) {
-				existingProject.amountPaid = Number(amountPaid);
-
-				// Reevaluate payment status based on new amountPaid
-				if (existingProject.amountPaid > existingProject.projectAmount) {
-					existingProject.paymentStatus = "overpaid";
-				} else if (existingProject.amountPaid === existingProject.projectAmount) {
-					existingProject.paymentStatus = "paid";
-				} else {
-					existingProject.paymentStatus = "partially-paid";
-				}
-			}
-
-			// Check for overpayment warning
-			let messages = {};
-			if (existingProject.amountPaid > existingProject.projectAmount) {
-				messages["Overpayment warning"] = "Total amount paid is greater than project amount.";
-			}
-
-			// Save updated project
-			const updatedProject = await existingProject.save();
-
-			// Send the updated project data back to the frontend
-			const results = {
-				...updatedProject._doc,
-				messages,
-			};
-
-			res.status(200).json(results);
-		} catch (error) {
-			next(error);
+router.put("/:projectId", validateProjectInput, async (req, res, next) => {
+	try {
+		const existingProject = await Project.findById(req.params.projectId);
+		if (!existingProject || existingProject.userId.toString() !== req.session.user.id.toString()) {
+			return res.status(!existingProject ? 404 : 403).json({
+				message: !existingProject ? "Project not found" : "You do not have permission to update this project",
+			});
 		}
+
+		const { title, description, status, projectAmount, amountPaid, paymentStatus } = req.body;
+
+		// Update basic fields
+		Object.assign(existingProject, {
+			title: title || existingProject.title,
+			description: description || existingProject.description,
+			status: status || existingProject.status,
+			projectAmount: projectAmount === 0 || projectAmount ? projectAmount : existingProject.projectAmount,
+			amountPaid: amountPaid > 0 ? Number(amountPaid) : existingProject.amountPaid,
+		});
+
+		// Update payment status
+		existingProject.paymentStatus = determinePaymentStatus(
+			existingProject.projectAmount,
+			existingProject.amountPaid,
+			paymentStatus
+		);
+
+		const updatedProject = await existingProject.save();
+		res.status(200).json({
+			...updatedProject._doc,
+			messages:
+				existingProject.amountPaid > existingProject.projectAmount
+					? { "Overpayment warning": "Total amount paid is greater than project amount." }
+					: {},
+		});
+	} catch (error) {
+		next(error);
 	}
-);
+});
 
 // Add a client to a project
 // PUT /api/projects/:projectId/clients
