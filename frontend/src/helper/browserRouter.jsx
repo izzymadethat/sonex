@@ -28,6 +28,10 @@ export const router = createBrowserRouter([
         element: <Home />
       },
       {
+        path: "projects/:projectId/files/:fileName",
+        element: <ViewSingleFilePage />
+      },
+      {
         path: "/user",
         children: [
           {
