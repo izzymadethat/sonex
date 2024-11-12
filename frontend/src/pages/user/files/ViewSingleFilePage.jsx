@@ -49,10 +49,10 @@ const ClientActionButton = ({
   onDownloadClick,
   paymentLoading
 }) => {
-  if (
-    project.paymentStatus === "paid" ||
-    project.paymentStatus === "no-charge"
-  ) {
+  // Default to "error" if paymentStatus is null/undefined
+  const paymentStatus = project?.paymentStatus || "unpaid";
+
+  if (paymentStatus === "paid" || paymentStatus === "no-charge") {
     return <Button onClick={onDownloadClick}>Download This File</Button>;
   }
 
@@ -66,14 +66,14 @@ const ClientActionButton = ({
               <span>Processing Payment</span>
             </>
           ) : (
-            <span>Pay Project Amount</span>
+            <span className="uppercase">Pay Project Amount</span>
           )}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-3xl">
-            Total Amount: ${project.projectAmount}
+            Total Amount: ${project?.projectAmount || 0}
           </DialogTitle>
           <DialogDescription>
             Project must be paid in full in order to have download access
@@ -99,7 +99,7 @@ const ClientActionButton = ({
               <>
                 Pay
                 <span className="font-bold">
-                  ${project.projectAmount.toFixed(2)}
+                  ${project?.projectAmount.toFixed(2) || 0}
                 </span>
               </>
             )}
@@ -128,14 +128,13 @@ const ViewSingleFilePage = () => {
     const loadData = async () => {
       setLoading(true);
       try {
-        // Always fetch the file
-        await dispatch(getSingleFile({ projectId, fileName }));
-        await dispatch(fetchCommentsByProject(projectId));
+        // For public access, we need to fetch the project first
+        const projectResponse = await dispatch(getSingleProject(projectId)).unwrap();
 
-        // Only fetch additional data if user is authenticated
-        if (user) {
-          await dispatch(getSingleProject(projectId));
-          await dispatch(fetchProjectFiles(projectId));
+        if (projectResponse) {
+          // Only if we have the project, fetch the file
+          await dispatch(getSingleFile({ projectId, fileName }));
+          await dispatch(fetchCommentsByProject(projectId));
         }
       } catch (error) {
         toast({
@@ -164,7 +163,9 @@ const ViewSingleFilePage = () => {
     const audioElement = audioRef.current;
     if (audioElement) {
       const handleTimeUpdate = () => {
-        dispatch(setCurrentTime(formatTime(audioElement.currentTime)));
+        const currentTime = audioElement.currentTime;
+        const formattedTime = formatTime(currentTime);
+        dispatch(setCurrentTime(formattedTime));
       };
 
       const handlePlay = () => {
@@ -267,16 +268,11 @@ const ViewSingleFilePage = () => {
           )}
         </div>
 
-        {user && (
-          <ClientActionButton
-            project={currentProject}
-            onPaymentClick={handlePayment}
-            onDownloadClick={handleDownload}
-            paymentLoading={paymentLoading}
-          />
-        )}
 
-        {user && <CommentsSideBar user={user} projectId={projectId} />}
+
+
+
+
       </div>
 
       {/* Player */}
@@ -292,6 +288,20 @@ const ViewSingleFilePage = () => {
         </audio>
       </div>
 
+      <h3 className="text-2xl font-bold">File/Project Actions</h3>
+      <div className="flex gap-8">
+        <CommentsSideBar user={user} projectId={projectId} />
+        {!user && currentProject ? (
+          <ClientActionButton
+            project={currentProject}
+            onPaymentClick={handlePayment}
+            onDownloadClick={handleDownload}
+            paymentLoading={paymentLoading}
+          />
+        ) : (
+          <Button onClick={handleDownload}>Download This File</Button>
+        )}
+      </div>
       {/* Comment Form - Only show if user is authenticated */}
       {!user && (
         <div className="grid grid-cols-5 gap-4">

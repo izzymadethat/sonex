@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { addComment } from "@/features/comments/commentsSlice";
 import { toast } from "@/hooks/use-toast";
+import { formatTime } from "@/helper/formatters";
 
 const CommentForm = ({
   existingClient,
@@ -28,6 +29,23 @@ const CommentForm = ({
   const [emailInput, setEmailInput] = useState("");
   const [commentInput, setCommentInput] = useState("");
   const requiredInfoEntered = emailInput && commentInput;
+  const [currentTimestamp, setCurrentTimestamp] = useState(timestamp || "00:00");
+
+  // Generate a persistent client ID if it doesn't exist
+  useEffect(() => {
+    const clientId = localStorage.getItem('clientId');
+    if (!clientId) {
+      const newClientId = `client_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      localStorage.setItem('clientId', newClientId);
+    }
+  }, []);
+
+  // Update the timestamp when it changes from props
+  useEffect(() => {
+    if (timestamp) {
+      setCurrentTimestamp(timestamp);
+    }
+  }, [timestamp]);
 
   useEffect(() => {
     if (existingClient) {
@@ -38,25 +56,46 @@ const CommentForm = ({
   // Submit comment
   const handleSubmitComment = async (e) => {
     e.preventDefault();
+
+    const clientId = localStorage.getItem('clientId');
     const formData = {
       email: emailInput,
       text: commentInput,
-      type: isTimeStampedComment ? "revision" : "feedback"
+      type: isTimeStampedComment ? "revision" : "feedback",
+      timestamp: isTimeStampedComment ? currentTimestamp : null,
+      clientId, // Add persistent client ID
+      userAgent: window.navigator.userAgent // Keep as backup identifier
     };
-    if (isTimeStampedComment) {
-      formData.timestamp = timestamp;
-    }
 
-    await dispatch(addComment({ projectId, comment: formData }));
-    localStorage.setItem("clientEmail", emailInput);
-    if (onClientEmailChange) {
-      onClientEmailChange(emailInput);
+    try {
+      await dispatch(addComment({ projectId, comment: formData }));
+
+      // Store the email mapping to the client ID
+      const emailMappings = JSON.parse(localStorage.getItem('emailMappings') || '{}');
+      emailMappings[emailInput] = clientId;
+      localStorage.setItem('emailMappings', JSON.stringify(emailMappings));
+
+      // Store current email
+      localStorage.setItem('clientEmail', emailInput);
+
+      if (onClientEmailChange) {
+        onClientEmailChange(emailInput);
+      }
+
+      toast({
+        title: "Comment submitted",
+        description: "Your comment has been submitted successfully"
+      });
+
+      setCommentInput("");
+
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to submit comment. Please try again.",
+        variant: "destructive"
+      });
     }
-    toast({
-      title: "Comment submitted",
-      description: "Your comment has been submitted successfully"
-    });
-    setCommentInput("");
   };
 
   return (
@@ -95,7 +134,7 @@ const CommentForm = ({
                 checked={isTimeStampedComment}
                 onCheckedChange={onCheckedChange}
               />
-              <Label>Leave a comment @ {timestamp} </Label>
+              <Label>Leave a comment @ {currentTimestamp}</Label>
             </div>
           </div>
         </form>
