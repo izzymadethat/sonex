@@ -58,8 +58,7 @@ export const fetchComments = createAsyncThunk("comments/fetchProjectComments", a
 		const response = await axiosInstance.get("/comments/all");
 		return response.data.Comments;
 	} catch (error) {
-		console.error(error.response.data);
-		return thunkAPI.rejectWithValue("An error occurred");
+		return thunkAPI.rejectWithValue(`An error occurred: ${error.response.data.message}`);
 	}
 });
 
@@ -70,8 +69,7 @@ export const fetchCommentsByProject = createAsyncThunk(
 			const response = await axiosInstance.get(`/comments/project/${projectId}`);
 			return response.data.Comments;
 		} catch (error) {
-			console.error(error);
-			return thunkAPI.rejectWithValue("An error occurred");
+			return thunkAPI.rejectWithValue(`An error occurred: ${error.response.data.message}`);
 		}
 	}
 );
@@ -81,8 +79,7 @@ export const addComment = createAsyncThunk("comments/addComment", async ({ proje
 		const response = await axiosInstance.post(`projects/${projectId}/comments`, comment);
 		return response.data;
 	} catch (error) {
-		console.error(error);
-		return thunkAPI.rejectWithValue("An error occurred");
+		return thunkAPI.rejectWithValue(`An error occurred: ${error.response.data.message}`);
 	}
 });
 
@@ -92,8 +89,7 @@ export const updateComment = createAsyncThunk("comments/updateComment", async (u
 		const response = await axiosInstance.put(`/comments/${commentId}`, updatedCommentInfo);
 		return response.data.comment;
 	} catch (error) {
-		console.error(error);
-		return thunkAPI.rejectWithValue("An error occurred");
+		return thunkAPI.rejectWithValue(`An error occurred: ${error.response.data.message}`);
 	}
 });
 
@@ -102,7 +98,7 @@ export const deleteComment = createAsyncThunk("comments/deleteComment", async ({
 		await axiosInstance.delete(`/projects/${projectId}/comments/${commentId}`);
 		return { projectId, commentId };
 	} catch (error) {
-		return thunkAPI.rejectWithValue(error.response.data);
+		return thunkAPI.rejectWithValue(`An error occurred: ${error.response.data.message}`);
 	}
 });
 

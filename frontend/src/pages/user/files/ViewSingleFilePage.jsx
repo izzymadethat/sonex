@@ -18,7 +18,6 @@ import { formatTime } from "@/helper/formatters";
 import NavigateBackTo from "@/components/global/NavigateBackTo";
 import CommentsSideBar from "./components/CommentsSideBar";
 import {
-  fetchProjectFiles,
   getSingleFile,
   selectCurrentTrack,
   setCurrentTime,

@@ -1,5 +1,6 @@
 import axiosInstance from "@/store/csrf";
-import { createSlice, createAsyncThunk, isPlain } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { fetchCommentsByProject } from "../comments/commentsSlice";
 
 /* 
 REDUX MAP (in progress...)
@@ -29,8 +30,7 @@ export const fetchProjectFiles = createAsyncThunk("files/fetchProjectFiles", asy
 		const response = await axiosInstance.get(`/projects/${projectId}/uploads`);
 		return response.data;
 	} catch (error) {
-		console.error(error);
-		return thunkAPI.rejectWithValue(error.message);
+		return thunkAPI.rejectWithValue(error.response.data.message);
 	}
 });
 
@@ -43,8 +43,7 @@ export const uploadFiles = createAsyncThunk("files/uploadFiles", async ({ fileDa
 		});
 		return response.data.Files;
 	} catch (error) {
-		console.error(error);
-		return thunkAPI.rejectWithValue(error.message);
+		return thunkAPI.rejectWithValue(`An error occurred: ${error.response.data.message}`);
 	}
 });
 
@@ -53,9 +52,7 @@ export const getSingleFile = createAsyncThunk("files/getSingleFile", async ({ pr
 		const response = await axiosInstance.get(`/projects/${projectId}/uploads/${fileName}/stream`);
 		return response.data;
 	} catch (error) {
-		return thunkAPI.rejectWithValue(
-			error.response?.data.errors?.server || error.response?.data.message || "An unknown error occurred."
-		);
+		return thunkAPI.rejectWithValue(`An error occurred: ${error.response.data.message}`);
 	}
 });
 
@@ -81,10 +78,9 @@ export const deleteFile = createAsyncThunk("files/deleteFile", async ({ projectI
 		const response = await axiosInstance.delete(`/projects/${projectId}/uploads/${fileName}`);
 		thunkAPI.dispatch(fetchProjectFiles(projectId));
 		thunkAPI.dispatch(fetchCommentsByProject(projectId));
-		thunkAPI.dispatch(fetchProjectFiles(projectId));
 		return response.data.fileId;
 	} catch (error) {
-		return thunkAPI.rejectWithValue(error.response.data?.errors?.server || "An unknown error occurred.");
+		return thunkAPI.rejectWithValue(`An error occurred: ${error.response.data.message}`);
 	}
 });
 

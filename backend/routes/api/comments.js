@@ -84,21 +84,13 @@ router.get("/project/:projectId", async (req, res, next) => {
 // Only the client that created the comment can update it
 router.put("/:commentId", async (req, res, next) => {
 	const { commentId } = req.params;
-	const { text, type, timestamp, email, isCompleted } = req.body;
-	// const clientId = (req.client && req.client.id) || req.user.id;
-	const clientId = req.body.email; // for testing purposes
+	const { text, type, timestamp, isCompleted } = req.body;
 	try {
 		const comment = await Comment.findById(commentId);
 
 		if (!comment) {
 			return res.status(404).json({ message: "Comment not found" });
 		}
-
-		// if (comment.clientId.toString() !== clientId) {
-		//   return res.status(403).json({
-		//     message: "You do not have permission to update this comment",
-		//   });
-		// }
 
 		comment.text = text || comment.text;
 		comment.type = type || comment.type;
