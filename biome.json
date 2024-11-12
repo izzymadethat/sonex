@@ -32,14 +32,13 @@
 			"correctness": {
 				"noConstantMathMinMaxClamp": "error",
 				"noNodejsModules": "error",
-				"noUndeclaredDependencies": "error",
 				"noUndeclaredVariables": "error",
 				"noUnusedImports": "error",
 				"noUnusedPrivateClassMembers": "error",
 				"noUnusedVariables": "error",
 				"useArrayLiterals": "error",
 				"useHookAtTopLevel": "error",
-				"useImportExtensions": "error"
+				"useExhaustiveDependencies": "warn"
 			},
 			"performance": {
 				"noBarrelFile": "error",
@@ -47,9 +46,7 @@
 				"useTopLevelRegex": "error"
 			},
 			"style": {
-				"noDefaultExport": "error",
 				"noDoneCallback": "error",
-				"noImplicitBoolean": "error",
 				"noNamespace": "error",
 				"noNamespaceImport": "error",
 				"noNegationElse": "error",
@@ -79,12 +76,6 @@
 				"useAwait": "warn",
 				"useErrorMessage": "error",
 				"useNumberToFixedDigitsArgument": "error"
-			},
-			"nursery": {
-				"useSortedClasses": {
-					"level": "info",
-					"options": {}
-				}
 			}
 		}
 	},

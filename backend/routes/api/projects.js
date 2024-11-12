@@ -411,4 +411,21 @@ router.delete("/:projectId", async (req, res, next) => {
 	}
 });
 
+// Public route to get project details
+router.get("/:projectId/public", async (req, res) => {
+	try {
+		const project = await Project.findById(req.params.projectId)
+			.select("title description paymentStatus projectAmount")
+			.lean();
+
+		if (!project) {
+			return res.status(404).json({ message: "Project not found" });
+		}
+
+		res.json({ project });
+	} catch (error) {
+		res.status(400).json({ message: error.message });
+	}
+});
+
 module.exports = router;

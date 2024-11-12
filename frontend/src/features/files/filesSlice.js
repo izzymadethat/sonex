@@ -24,59 +24,40 @@ const initialState = {
 }
 */
 
-export const fetchProjectFiles = createAsyncThunk(
-	"files/fetchProjectFiles",
-	async (projectId, thunkAPI) => {
-		try {
-			const response = await axiosInstance.get(
-				`/projects/${projectId}/uploads`,
-			);
-			return response.data;
-		} catch (error) {
-			console.error(error);
-			return thunkAPI.rejectWithValue(error.message);
-		}
-	},
-);
+export const fetchProjectFiles = createAsyncThunk("files/fetchProjectFiles", async (projectId, thunkAPI) => {
+	try {
+		const response = await axiosInstance.get(`/projects/${projectId}/uploads`);
+		return response.data;
+	} catch (error) {
+		console.error(error);
+		return thunkAPI.rejectWithValue(error.message);
+	}
+});
 
-export const uploadFiles = createAsyncThunk(
-	"files/uploadFiles",
-	async ({ fileData, projectId }, thunkAPI) => {
-		try {
-			const response = await axiosInstance.post(
-				`/projects/${projectId}/uploads`,
-				fileData,
-				{
-					headers: {
-						"Content-Type": "multipart/form-data",
-					},
-				},
-			);
-			return response.data.Files;
-		} catch (error) {
-			console.error(error);
-			return thunkAPI.rejectWithValue(error.message);
-		}
-	},
-);
+export const uploadFiles = createAsyncThunk("files/uploadFiles", async ({ fileData, projectId }, thunkAPI) => {
+	try {
+		const response = await axiosInstance.post(`/projects/${projectId}/uploads`, fileData, {
+			headers: {
+				"Content-Type": "multipart/form-data",
+			},
+		});
+		return response.data.Files;
+	} catch (error) {
+		console.error(error);
+		return thunkAPI.rejectWithValue(error.message);
+	}
+});
 
-export const getSingleFile = createAsyncThunk(
-	"files/getSingleFile",
-	async ({ projectId, fileName }, thunkAPI) => {
-		try {
-			const response = await axiosInstance.get(
-				`/projects/${projectId}/uploads/${fileName}/stream`,
-			);
-			return response.data;
-		} catch (error) {
-			return thunkAPI.rejectWithValue(
-				error.response?.data.errors?.server ||
-					error.response?.data.message ||
-					"An unknown error occurred.",
-			);
-		}
-	},
-);
+export const getSingleFile = createAsyncThunk("files/getSingleFile", async ({ projectId, fileName }, thunkAPI) => {
+	try {
+		const response = await axiosInstance.get(`/projects/${projectId}/uploads/${fileName}/stream`);
+		return response.data;
+	} catch (error) {
+		return thunkAPI.rejectWithValue(
+			error.response?.data.errors?.server || error.response?.data.message || "An unknown error occurred."
+		);
+	}
+});
 
 // May not add this to global state
 // export const downloadFile = createAsyncThunk(
@@ -95,24 +76,17 @@ export const getSingleFile = createAsyncThunk(
 //   }
 // );
 
-export const deleteFile = createAsyncThunk(
-	"files/deleteFile",
-	async ({ projectId, fileName }, thunkAPI) => {
-		try {
-			const response = await axiosInstance.delete(
-				`/projects/${projectId}/uploads/${fileName}`,
-			);
-			thunkAPI.dispatch(fetchProjectFiles(projectId));
-			thunkAPI.dispatch(fetchCommentsByProject(projectId));
-			thunkAPI.dispatch(fetchProjectFiles(projectId));
-			return response.data.fileId;
-		} catch (error) {
-			return thunkAPI.rejectWithValue(
-				error.response.data?.errors?.server || "An unknown error occurred.",
-			);
-		}
-	},
-);
+export const deleteFile = createAsyncThunk("files/deleteFile", async ({ projectId, fileName }, thunkAPI) => {
+	try {
+		const response = await axiosInstance.delete(`/projects/${projectId}/uploads/${fileName}`);
+		thunkAPI.dispatch(fetchProjectFiles(projectId));
+		thunkAPI.dispatch(fetchCommentsByProject(projectId));
+		thunkAPI.dispatch(fetchProjectFiles(projectId));
+		return response.data.fileId;
+	} catch (error) {
+		return thunkAPI.rejectWithValue(error.response.data?.errors?.server || "An unknown error occurred.");
+	}
+});
 
 const initialState = {
 	projectFiles: [],
@@ -187,9 +161,7 @@ const filesSlice = createSlice({
 				state.error = action.payload;
 			})
 			.addCase(deleteFile.fulfilled, (state, action) => {
-				state.projectFiles = state.projectFiles.filter(
-					(file) => file._id !== action.payload,
-				);
+				state.projectFiles = state.projectFiles.filter((file) => file._id !== action.payload);
 			})
 			.addCase(getSingleFile.fulfilled, (state, action) => {
 				state.currentTrack = {
@@ -202,14 +174,7 @@ const filesSlice = createSlice({
 	},
 });
 
-export const {
-	unloadFiles,
-	setPlaying,
-	setPaused,
-	loadTrack,
-	setCurrentTime,
-	setTrackDuration,
-} = filesSlice.actions;
+export const { unloadFiles, setPlaying, setPaused, loadTrack, setCurrentTime, setTrackDuration } = filesSlice.actions;
 export const selectProjectFiles = (state) => state.files.projectFiles;
 export const selectCurrentTrack = (state) => state.files.currentTrack;
 

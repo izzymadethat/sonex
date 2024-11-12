@@ -8,9 +8,7 @@ const { ObjectId } = require("mongoose").Types;
 // Routes either start with /api/comments or /api/projects/:projectId/comments
 
 const validateCommentInput = [
-	check("text")
-		.exists({ checkFalsy: true })
-		.withMessage("Please enter a comment"),
+	check("text").exists({ checkFalsy: true }).withMessage("Please enter a comment"),
 	// .isLength({ gt: 6, lte: 250 })
 	// .withMessage("Comment must be between 6 and 250 characters"),
 	check("type")
@@ -20,9 +18,7 @@ const validateCommentInput = [
 	check("timestamp")
 		.optional()
 		.matches(/^(\d{2}:)?\d{2}:\d{2}$/)
-		.withMessage(
-			"Please enter a valid timestamp in the format MM:SS or HH:MM:SS",
-		),
+		.withMessage("Please enter a valid timestamp in the format MM:SS or HH:MM:SS"),
 
 	handleValidationErrors,
 ];
@@ -78,7 +74,7 @@ router.get("/", async (req, res, next) => {
 			{
 				projectId: { $in: projectIds },
 			},
-			"-clientId -__v",
+			"-clientId -__v"
 		);
 
 		res.json({ Comments: comments });
@@ -140,8 +136,7 @@ router.put("/:commentId", async (req, res, next) => {
 		comment.text = text || comment.text;
 		comment.type = type || comment.type;
 		comment.timestamp = timestamp || comment.timestamp;
-		comment.isCompleted =
-			isCompleted !== undefined ? isCompleted : comment.isCompleted;
+		comment.isCompleted = isCompleted !== undefined ? isCompleted : comment.isCompleted;
 
 		await comment.save();
 

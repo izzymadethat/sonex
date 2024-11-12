@@ -21,9 +21,7 @@ if (isProduction) {
 	// Generate a csrf token api routes
 	router.get("/", (req, res) => {
 		// res.cookie("XSRF-TOKEN", req.csrfToken());
-		return res.sendFile(
-			path.resolve(__dirname, "../../frontend", "dist", "index.html"),
-		);
+		return res.sendFile(path.resolve(__dirname, "../../frontend", "dist", "index.html"));
 	});
 
 	// Serve static assets
@@ -32,9 +30,7 @@ if (isProduction) {
 	// Generate a csrf token for non-API routes
 	router.get(/^(?!\/?api).*/, (req, res) => {
 		// res.cookie("XSRF-TOKEN", req.csrfToken());
-		return res.sendFile(
-			path.resolve(__dirname, "../../frontend", "dist", "index.html"),
-		);
+		return res.sendFile(path.resolve(__dirname, "../../frontend", "dist", "index.html"));
 	});
 }
 
