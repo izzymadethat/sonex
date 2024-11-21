@@ -1,44 +1,35 @@
-import { useState } from "react";
-import { users } from "../../../constants";
+import { users } from "@/constants";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const MarketedUsers = () => {
-  const [selected, setSelected] = useState("engineer");
-
-  return <p>Users</p>;
+  return <Tabs defaultValue="engineer">
+    <TabsList className="bg-[#212121]">
+      {users.map((user) => (
+        <TabsTrigger
+          key={user.id}
+          value={user.id}
+          className="text-background"
+        >
+          {user.tabTitle}
+        </TabsTrigger>
+      ))}
+    </TabsList>
+    {
+      users.map((user) => (
+        <TabsContent key={user.id} value={user.id}>
+          <div className="flex gap-4 mt-12">
+            <div>
+              <h2 className="mb-4 text-2xl font-bold">{user.tabTitle}</h2>
+              <p>{user.content}</p>
+            </div>
+            <div>
+              <img src={user.images[0]} alt={user.tabTitle} />
+            </div>
+          </div>
+        </TabsContent>
+      ))
+    }
+  </Tabs >;
 };
 
 export default MarketedUsers;
-
-// const users = (
-// <Tabs items={users} variant="bordered" isVertical>
-// {(usr) => (
-//   <Tab key={usr.id} title={usr.tabTitle}>
-//     <div className="ml-10">
-//       <h2 className="text-3xl font-extrabold">
-//         Built for{" "}
-//         <span className="underline text-primary">{usr.header}</span>
-//       </h2>
-//       <div className="grid grid-cols-5 gap-4 place-items-center">
-//         <div className="max-w-lg col-span-2 space-y-4">
-//           <h4 className="text-3xl">{usr.contentTitle}</h4>
-//           <p>{usr.content}</p>
-//           <Button disabled fullWidth>
-//             Sign up to use Sonex
-//           </Button>
-//         </div>
-//         <div className="col-span-3">
-//           {usr.images.map((imgLink) => (
-//             <Image
-//               isZoomed
-//               width
-//               src={imgLink}
-//               alt={`Sonex works for ${usr.header}`}
-//             />
-//           ))}
-//         </div>
-//       </div>
-//     </div>
-//   </Tab>
-// )}
-// </Tabs>
-// )

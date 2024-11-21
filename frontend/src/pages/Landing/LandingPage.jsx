@@ -17,6 +17,7 @@ import { getProjects } from "@/store/projectSlice";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { LoginPopup, SignupPopup } from "../auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -44,25 +45,28 @@ const Home = () => {
           share, and manage audio projects with clients, while handling payments
           and revisions all in one place.
         </p>
-        <Dialog>
-          <DialogTrigger asChild>
-            <FancyButton />
-          </DialogTrigger>
-          <DialogContent>
-            <Tabs defaultValue="register">
-              <TabsList>
-                <TabsTrigger value="register">Signup</TabsTrigger>
-                <TabsTrigger value="login">Login</TabsTrigger>
-              </TabsList>
-              <TabsContent value="register">
-                <SignupPopup />
-              </TabsContent>
-              <TabsContent value="login">
-                <LoginPopup />
-              </TabsContent>
-            </Tabs>
-          </DialogContent>
-        </Dialog>
+        <div className="flex items-center gap-4">
+          <Dialog>
+            <DialogTrigger asChild>
+              <FancyButton />
+            </DialogTrigger>
+            <DialogContent>
+              <Tabs defaultValue="register">
+                <TabsList>
+                  <TabsTrigger value="register">Signup</TabsTrigger>
+                  <TabsTrigger value="login">Login</TabsTrigger>
+                </TabsList>
+                <TabsContent value="register">
+                  <SignupPopup />
+                </TabsContent>
+                <TabsContent value="login">
+                  <LoginPopup />
+                </TabsContent>
+              </Tabs>
+            </DialogContent>
+          </Dialog>
+          <Button asChild><a href="#whats-included"> Learn More</a></Button>
+        </div>
       </section>
 
       {/* What's Included */}
@@ -75,9 +79,9 @@ const Home = () => {
       </section>
 
       {/* Ways to use sonex */}
-      <section className="h-screen px-6 py-10 my-20">
+      <section className="px-48 my-20 ">
         <HeaderChip text="How can I use Sonex?" />
-        <div className="my-8">
+        <div className="flex flex-col items-center justify-center my-8">
           <p className="italic">Use Sonex as:</p>
           <MarketedUsers />
         </div>
