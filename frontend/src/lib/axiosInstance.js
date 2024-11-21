@@ -1,5 +1,5 @@
 /* 
-This file is used to handle generating and retrieving CSRF token for the application. The csrfFetch function fetches as normal, except it also adds the CSRF token to the headers of the request.
+This file is used to create an axios instance with the baseURL set to /api. This way, we can use the axios instance to make requests to the backend without having to specify the baseURL in each request.
 
 All state actions will be fetched using this file.
 */
