@@ -91,7 +91,10 @@ const Home = () => {
       <section className="px-6 py-12 my-20 space-y-4">
         <HeaderChip text="Pricing" />
         <div className="max-w-4xl mx-auto space-y-8">
-          <h3 className="text-4xl text-center">Choose your Sonex</h3>
+          <div>
+            <h3 className="text-5xl font-bold text-center uppercase">Choose your <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">Sonex</span></h3>
+            <p className="text-sm italic text-center text-muted-foreground">Pay only for the storage you use!</p>
+          </div>
           <PricingPlan />
         </div>
       </section>
