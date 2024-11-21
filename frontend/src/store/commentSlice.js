@@ -1,4 +1,4 @@
-import axiosInstance from "@/store/csrf";
+import axiosInstance from "@/lib/axiosInstance";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 /*

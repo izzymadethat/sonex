@@ -10,7 +10,6 @@ const { sessionAuth, environment, mongodb } = require("./config");
 const isProduction = environment === "production";
 const routes = require("./routes");
 const cors = require("cors");
-const csurf = require("csurf");
 const helmet = require("helmet");
 const session = require("express-session");
 
@@ -39,12 +38,12 @@ app.use(
 			defaultSrc: ["'self'"],
 			mediaSrc: ["'self'", "https://*.cloudfront.net"],
 		},
-	}),
+	})
 );
 app.use(
 	helmet.crossOriginResourcePolicy({
 		policy: "cross-origin",
-	}),
+	})
 ); // Adds security in headers
 app.use(
 	session({
@@ -62,7 +61,7 @@ app.use(
 			sameSite: isProduction && "lax",
 			maxAge: 60 * 60 * 24 * 30 * 1000, // 30 days
 		},
-	}),
+	})
 ); // Session auth middleware
 app.use(
 	csurf({
@@ -70,7 +69,7 @@ app.use(
 			secure: isProduction,
 			sameSite: isProduction && "lax",
 		},
-	}),
+	})
 ); // CSRF protection
 app.use(routes);
 

@@ -6,32 +6,21 @@ const User = require("../../../models/user");
 const router = express.Router();
 
 const validateLogin = [
-	check("credential")
-		.exists({ checkFalsy: true })
-		.notEmpty()
-		.withMessage("Valid username or email is required"),
-	check("password")
-		.exists({ checkFalsy: true })
-		.withMessage("Password is required"),
+	check("credential").exists({ checkFalsy: true }).notEmpty().withMessage("Valid username or email is required"),
+	check("password").exists({ checkFalsy: true }).withMessage("Password is required"),
 	handleValidationErrors,
 ];
 
 const validateSignup = [
-	check("firstName")
-		.exists({ checkFalsy: true })
-		.withMessage("First name is required"),
-	check("lastName")
-		.exists({ checkFalsy: true })
-		.withMessage("Last name is required"),
+	check("firstName").exists({ checkFalsy: true }).withMessage("First name is required"),
+	check("lastName").exists({ checkFalsy: true }).withMessage("Last name is required"),
 	check("username")
 		.exists({ checkFalsy: true })
 		.withMessage("Username is required")
 		.isLength({ min: 6, max: 20 })
 		.withMessage("Username must be between 6 and 20 characters long"),
 	check("email").exists({ checkFalsy: true }).withMessage("Email is required"),
-	check("password")
-		.exists({ checkFalsy: true })
-		.withMessage("Password is required"),
+	check("password").exists({ checkFalsy: true }).withMessage("Password is required"),
 	handleValidationErrors,
 ];
 
@@ -40,12 +29,7 @@ const validateSignup = [
 router.get("/", async (req, res) => {
 	if (!req.session.user) return res.json({ user: null });
 
-	const user = await User.findById(req.session.user.id).select([
-		"-hashedPassword",
-		"-__v",
-		"-projects",
-		"-clients",
-	]);
+	const user = await User.findById(req.session.user.id).select(["-hashedPassword", "-__v", "-projects", "-clients"]);
 
 	return res.json({ user });
 });
@@ -74,10 +58,7 @@ router.post("/", validateLogin, async (req, res, next) => {
 		// check if password is correct
 		// If so, login the user and generate session token
 		// If not, return error message
-		const isMatch = bcrypt.compareSync(
-			password,
-			user.hashedPassword.toString(),
-		);
+		const isMatch = bcrypt.compareSync(password, user.hashedPassword.toString());
 
 		// Password is incorrect
 		if (!isMatch) {
@@ -127,9 +108,7 @@ router.post("/register", validateSignup, async (req, res, next) => {
 
 		const newUser = new User(newUserInfo);
 		await newUser.save();
-		return res
-			.status(201)
-			.json({ message: "User created successfully", user: newUser });
+		return res.status(201).json({ message: "User created successfully", user: newUser });
 	} catch (error) {
 		next(error);
 	}

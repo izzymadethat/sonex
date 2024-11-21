@@ -9,7 +9,7 @@ import {
   SheetTrigger
 } from "@/components/ui/sheet";
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCommentsByProject, updateComment, deleteComment } from '@/features/comments/commentsSlice';
+import { fetchCommentsByProject, updateComment, deleteComment } from '@/store/commentSlice';
 import { useEffect } from 'react';
 import { Trash2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
@@ -111,7 +111,7 @@ const CommentsSideBar = ({ user, projectId }) => {
                       className="text-destructive hover:text-destructive"
                       onClick={() => handleDeleteComment(comment._id)}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="w-4 h-4" />
                     </Button>
                   )}
                 </div>

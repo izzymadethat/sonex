@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { navLinks } from "../../../constants";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser, selectUser } from "@/features/user/userSlice";
+import { loginUser, selectUser } from "@/store/userSlice";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -12,7 +12,7 @@ const Header = () => {
 
   const handleDemoLogin = async () => {
     const userCred = {
-      credential: "demo@user.com",
+      credential: "demo@sonexaudio.app",
       password: "password"
     };
     const result = await dispatch(loginUser(userCred)); //for demo purpose only
@@ -24,12 +24,12 @@ const Header = () => {
         variant: "destructive"
       });
       return;
-    } else {
-      toast({
-        title: `Welcome back!`
-      });
-      return navigate("/user/me");
     }
+    toast({
+      title: "Welcome back!"
+    });
+    return navigate("/user/me");
+
   };
 
   return (

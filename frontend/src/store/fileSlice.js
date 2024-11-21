@@ -1,6 +1,6 @@
-import axiosInstance from "@/store/csrf";
+import axiosInstance from "@/lib/axiosInstance";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchCommentsByProject } from "../comments/commentsSlice";
+import { fetchCommentsByProject } from "@/store/commentSlice";
 
 /* 
 REDUX MAP (in progress...)

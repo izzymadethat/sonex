@@ -12,6 +12,20 @@ const { awsS3 } = require("../../config");
 const { DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const Project = require("../../models/project");
 const Comment = require("../../models/comment");
+const bcrypt = require("bcryptjs");
+
+const validateSignup = [
+	check("firstName").exists({ checkFalsy: true }).withMessage("First name is required"),
+	check("lastName").exists({ checkFalsy: true }).withMessage("Last name is required"),
+	check("username")
+		.exists({ checkFalsy: true })
+		.withMessage("Username is required")
+		.isLength({ min: 6, max: 20 })
+		.withMessage("Username must be between 6 and 20 characters long"),
+	check("email").exists({ checkFalsy: true }).withMessage("Email is required"),
+	check("password").exists({ checkFalsy: true }).withMessage("Password is required"),
+	handleValidationErrors,
+];
 
 // Validation middleware
 const validateClientInput = [
@@ -25,6 +39,32 @@ const validateClientInput = [
 		.withMessage("Please enter a valid email address"),
 	handleValidationErrors,
 ];
+
+// Signup a user
+// POST /api/users
+router.post("/", validateSignup, async (req, res, next) => {
+	const incomingUser = req.body;
+
+	try {
+		const salt = bcrypt.genSaltSync(10);
+		// Hash password with salt then create new user
+		const hashedPassword = await bcrypt.hash(incomingUser.password, salt);
+
+		const newUserInfo = {
+			firstName: incomingUser.firstName,
+			lastName: incomingUser.lastName,
+			username: incomingUser.username,
+			email: incomingUser.email,
+			hashedPassword,
+		};
+
+		const newUser = new User(newUserInfo);
+		await newUser.save();
+		return res.status(201).json({ message: "User created successfully", user: newUser });
+	} catch (error) {
+		next(error);
+	}
+});
 
 // Add a new client to user
 router.post("/:userId/clients", validateClientInput, async (req, res, next) => {
@@ -140,6 +180,19 @@ router.put("/:userId", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+});
+
+// Update a user
+// Update a user data
+// PUT /api/users/:userId
+router.put("/:userId", async (req, res, next) => {
+	const { userId } = req.params; // will be used to compare with req.session.user.id
+	try {
+		const updatedUser = await User.findByIdAndUpdate(req.session.user.id, req.body, { new: true });
+		return res.json({ user: updatedUser });
+	} catch (error) {
+		next(error);
+	}
 });
 
 // Delete a user

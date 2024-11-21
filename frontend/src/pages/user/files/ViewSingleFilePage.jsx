@@ -1,4 +1,4 @@
-import { selectUser } from "@/features/user/userSlice";
+import { selectUser } from "@/store/userSlice";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -24,21 +24,21 @@ import {
   setPaused,
   setPlaying,
   setTrackDuration
-} from "@/features/files/filesSlice";
+} from "@/store/fileSlice";
 import CommentForm from "./components/CommentForm";
 import { Loader2 } from "lucide-react";
 import {
   fetchCommentsByProject,
   // selectCommentsByProject
-} from "@/features/comments/commentsSlice";
+} from "@/store/commentSlice";
 import {
   // getProjects,
   getSingleProject,
   selectCurrentProject
-} from "@/features/projects/projectsSlice";
+} from "@/store/projectSlice";
 import Loader from "@/components/informational/Loader/Loader";
 // import CustomAudioPlayer from "./components/AudioPlayer";
-import axiosInstance from "@/store/csrf";
+import axiosInstance from "@/lib/axiosInstance";
 import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 
