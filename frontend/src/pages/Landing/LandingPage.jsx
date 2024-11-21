@@ -19,6 +19,8 @@ import { LoginPopup, SignupPopup } from "../auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 
+import "./landing-page.css";
+
 const Home = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -31,7 +33,7 @@ const Home = () => {
       <Header />
 
       {/* Hero */}
-      <section className="flex flex-col items-center justify-center h-screen space-y-8">
+      <section className="relative flex flex-col items-center justify-center h-screen space-y-8 hero">
         <h1 className="max-w-5xl font-bold text-center text-7xl">
           Audio{" "}
           <span className="text-transparent underline bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text">
@@ -67,6 +69,9 @@ const Home = () => {
           </Dialog>
           <Button asChild><a href="#whats-included"> Learn More</a></Button>
         </div>
+        {/* <div className="absolute right-0 h-auto w-3xl -z-10 opacity-20">
+          <img src={heroImg} alt="sonex-demo for hero section" />
+        </div> */}
       </section>
 
       {/* What's Included */}
