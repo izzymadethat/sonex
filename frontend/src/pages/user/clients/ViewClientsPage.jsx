@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import { formatDistanceToNow, parseISO } from "date-fns";
-import { selectAllClients } from "@/features/clients/clientsSlice";
+import { selectAllClients } from "@/store/clientSlice";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import NewClientFormPopup from "@/components/popups/NewClientForm";
 

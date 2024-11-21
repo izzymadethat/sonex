@@ -1,6 +1,5 @@
-import axiosInstance from "@/store/csrf";
+import axiosInstance from "@/lib/axiosInstance";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-const BASE_URL = "/projects";
 
 /* 
 Redux Map (in progress...)
