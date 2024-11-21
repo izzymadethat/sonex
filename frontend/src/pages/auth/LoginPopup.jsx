@@ -7,52 +7,83 @@ import { DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/co
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useDispatch } from "react-redux";
-import { loginUser } from "@/store/userSlice";
+import { loginUser, selectUser } from "@/store/userSlice";
 import { toast } from "@/hooks/use-toast";
-
-const API_URL = "http://localhost:4000/api/auth/session";
+import { useSelector } from "react-redux";
 
 const LoginPopup = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [formData, setFormData] = useState({ credential: "", password: "" });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formError, setFormError] = useState(null);
+  const { currentUser } = useSelector(selectUser);
+  const [credential, setCredential] = useState("");
+  const [password, setPassword] = useState("");
 
-  function handleInputChange(e) {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  }
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
+
 
   async function handleSubmitLogin(e) {
     e.preventDefault();
     setIsSubmitting(true);
-    setFormError(null);
+    setErrors({});
 
-    axios
-      .post(API_URL, formData)
-      .then((response) => {
-        if (response.data.error) {
-          alert(response.data.error);
-        } else {
-          localStorage.setItem("accessToken", response.data.accessToken);
-          window.alert(
-            `Login successful! Welcome back, ${response.data.user.firstName}!`
-          );
-          navigate("/user/@me");
-        }
-      })
-      .catch((error) => {
-        window.alert("Login failed. Please try again.");
-      })
-      .finally(() => setIsSubmitting(false));
+    if (!credential && !password) {
+      setErrors({
+        credential: "Please enter your username or email",
+        password: "Please enter your password",
+      });
+      return;
+    }
+
+    if (!credential) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        credential: "Please enter your username or email",
+      }));
+      return;
+    }
+
+    if (!password) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        password: "Please enter your password",
+      }));
+      return;
+    }
+    try {
+      const result = await dispatch(loginUser({ credential, password }));
+
+      if (loginUser.rejected.match(result)) {
+        toast({
+          title: "Uh Oh. Login failed!",
+          description: result.payload,
+          variant: "destructive"
+        });
+        return;
+      }
+      toast({
+        title: "Login successful",
+        description: `Welcome back, ${result.payload.user.firstName}!`,
+      });
+      return navigate("/user/me");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   const handleDemoLogin = async () => {
+    //for demo purposes only
     const userCred = {
       credential: "demo@sonexaudio.app",
       password: "password"
     };
-    const result = await dispatch(loginUser(userCred)); //for demo purpose only
+    const result = await dispatch(loginUser(userCred));
 
     if (loginUser.rejected.match(result)) {
       toast({
@@ -63,7 +94,7 @@ const LoginPopup = () => {
       return;
     }
     toast({
-      title: "Welcome back!"
+      title: "Welcome back, Demo!"
     });
     return navigate("/user/me");
 
@@ -79,17 +110,30 @@ const LoginPopup = () => {
         <div className="my-4 space-y-4">
           <div className="flex flex-col gap-1">
             <label htmlFor="credential">Username or Email</label>
-            <Input />
+            <Input value={credential} onChange={(e) => setCredential(e.target.value)} />
+            {errors?.credential && <span className="text-sm text-red-500">{errors.credential}</span>}
           </div>
           <div className="flex flex-col gap-1">
             <label htmlFor="credential">Password</label>
-            <Input />
+            <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            {errors?.password && <span className="text-sm text-red-500">{errors.password}</span>}
           </div>
         </div>
       </DialogHeader>
       <DialogFooter>
         <Button type="button" onClick={handleDemoLogin}>Login as a Demo User</Button>
-        <Button type="submit" variant="outline">Login</Button>
+        <Button type="submit" variant="outline" onClick={handleSubmitLogin} disabled={isSubmitting}>
+          {
+            isSubmitting
+              ?
+              (
+                <>
+                  <Loader />
+                  <span>"Logging in..."</span>
+                </>
+              ) : <span>Login</span>
+          }
+        </Button>
       </DialogFooter>
     </>
   );

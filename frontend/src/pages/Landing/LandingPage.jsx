@@ -31,7 +31,6 @@ const Home = () => {
   return (
     <main>
       <Header />
-
       {/* Hero */}
       <section className="relative flex flex-col items-center justify-center h-screen space-y-8 hero">
         <h1 className="max-w-5xl font-bold text-center text-7xl">
