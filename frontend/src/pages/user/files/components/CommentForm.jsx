@@ -12,9 +12,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { addComment } from "@/features/comments/commentsSlice";
+import { addComment } from "@/store/commentSlice";
 import { toast } from "@/hooks/use-toast";
-// import { formatTime } from "@/helper/formatters";
+
 
 const CommentForm = ({
   existingClient,

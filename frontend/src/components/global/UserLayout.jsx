@@ -4,15 +4,16 @@ import SideBar from "./Sidebar";
 import Topbar from "./Topbar";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { logoutUser, restoreUser, selectUser } from "@/features/user/userSlice";
-import { getProjects, unloadProjects } from "@/features/projects/projectsSlice";
+import { logoutUser, restoreUser, selectUser } from "@/store/userSlice";
+import { getProjects, unloadProjects } from "@/store/projectSlice";
 import {
   fetchComments,
   unloadComments
-} from "@/features/comments/commentsSlice";
+} from "@/store/commentSlice";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { unloadFiles } from "@/features/files/filesSlice";
+import { unloadFiles } from "@/store/fileSlice";
+import { persistor } from "@/store/store";
 
 const UserLayout = () => {
   const dispatch = useDispatch();
@@ -29,6 +30,7 @@ const UserLayout = () => {
   }, [dispatch]);
 
   const handleLogout = async () => {
+    persistor.purge();
     await dispatch(unloadProjects());
     await dispatch(unloadComments());
     await dispatch(unloadFiles());
@@ -41,12 +43,6 @@ const UserLayout = () => {
       return navigate("/");
     }
   };
-
-  // if (!isLoaded && !currentUser) {
-  //   return <p>Loading...</p>;
-  // } else if (error) {
-  //   return <h1>Error: {error}</h1>;
-  // }
 
   if (error) {
     return (

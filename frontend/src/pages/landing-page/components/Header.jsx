@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { navLinks } from "../../../constants";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser, selectUser } from "@/features/user/userSlice";
+import { loginUser, selectUser } from "@/store/userSlice";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";

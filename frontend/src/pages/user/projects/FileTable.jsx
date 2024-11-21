@@ -25,7 +25,7 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteFile, selectProjectFiles } from "@/features/files/filesSlice";
+import { deleteFile, selectProjectFiles } from "@/store/fileSlice";
 import { Link } from "react-router-dom";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { Button } from "@/components/ui/button";

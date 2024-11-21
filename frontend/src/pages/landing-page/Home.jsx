@@ -11,9 +11,9 @@ import {
 import { faqs } from "@/constants";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { selectUser } from "@/features/user/userSlice";
+import { selectUser } from "@/store/userSlice";
 import { useEffect } from "react";
-import { getProjects } from "@/features/projects/projectsSlice";
+import { getProjects } from "@/store/projectSlice";
 
 const Home = () => {
   const navigate = useNavigate();
