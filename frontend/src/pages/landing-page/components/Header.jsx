@@ -12,7 +12,7 @@ const Header = () => {
 
   const handleDemoLogin = async () => {
     const userCred = {
-      credential: "demo@user.com",
+      credential: "demo@sonexaudio.app",
       password: "password"
     };
     const result = await dispatch(loginUser(userCred)); //for demo purpose only
@@ -24,12 +24,12 @@ const Header = () => {
         variant: "destructive"
       });
       return;
-    } else {
-      toast({
-        title: `Welcome back!`
-      });
-      return navigate("/user/me");
     }
+    toast({
+      title: "Welcome back!"
+    });
+    return navigate("/user/me");
+
   };
 
   return (
