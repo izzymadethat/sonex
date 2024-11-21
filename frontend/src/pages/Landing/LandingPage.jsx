@@ -14,6 +14,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "@/store/userSlice";
 import { useEffect } from "react";
 import { getProjects } from "@/store/projectSlice";
+import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { LoginPopup, SignupPopup } from "../auth";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -23,7 +26,7 @@ const Home = () => {
   // TODO: Navigate to user dashboard if user
 
   return (
-    <div>
+    <main>
       <Header />
 
       {/* Hero */}
@@ -41,8 +44,25 @@ const Home = () => {
           share, and manage audio projects with clients, while handling payments
           and revisions all in one place.
         </p>
-
-        <FancyButton />
+        <Dialog>
+          <DialogTrigger asChild>
+            <FancyButton />
+          </DialogTrigger>
+          <DialogContent>
+            <Tabs defaultValue="register">
+              <TabsList>
+                <TabsTrigger value="register">Signup</TabsTrigger>
+                <TabsTrigger value="login">Login</TabsTrigger>
+              </TabsList>
+              <TabsContent value="register">
+                <SignupPopup />
+              </TabsContent>
+              <TabsContent value="login">
+                <LoginPopup />
+              </TabsContent>
+            </Tabs>
+          </DialogContent>
+        </Dialog>
       </section>
 
       {/* What's Included */}
@@ -76,7 +96,7 @@ const Home = () => {
 
       {/* Footer */}
       <Footer />
-    </div>
+    </main>
   );
 };
 

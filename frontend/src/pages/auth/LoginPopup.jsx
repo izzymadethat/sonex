@@ -3,11 +3,18 @@ import { Mail, RectangleEllipsis } from "lucide-react";
 import { useState } from "react";
 import Loader from "../../components/informational/Loader/Loader";
 import axios from "axios";
+import { DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useDispatch } from "react-redux";
+import { loginUser } from "@/store/userSlice";
+import { toast } from "@/hooks/use-toast";
 
 const API_URL = "http://localhost:4000/api/auth/session";
 
-const Login = () => {
+const LoginPopup = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({ credential: "", password: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState(null);
@@ -40,10 +47,55 @@ const Login = () => {
       .finally(() => setIsSubmitting(false));
   }
 
-  return <p>Login</p>;
+  const handleDemoLogin = async () => {
+    const userCred = {
+      credential: "demo@sonexaudio.app",
+      password: "password"
+    };
+    const result = await dispatch(loginUser(userCred)); //for demo purpose only
+
+    if (loginUser.rejected.match(result)) {
+      toast({
+        title: "Uh Oh. Login failed!",
+        description: result.payload,
+        variant: "destructive"
+      });
+      return;
+    }
+    toast({
+      title: "Welcome back!"
+    });
+    return navigate("/user/me");
+
+  };
+
+  return (
+    <>
+      <DialogHeader>
+        <DialogTitle className="text-2xl font-semibold">Login to use Sonex</DialogTitle>
+        <DialogDescription>
+
+        </DialogDescription>
+        <div className="my-4 space-y-4">
+          <div className="flex flex-col gap-1">
+            <label htmlFor="credential">Username or Email</label>
+            <Input />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="credential">Password</label>
+            <Input />
+          </div>
+        </div>
+      </DialogHeader>
+      <DialogFooter>
+        <Button type="button" onClick={handleDemoLogin}>Login as a Demo User</Button>
+        <Button type="submit" variant="outline">Login</Button>
+      </DialogFooter>
+    </>
+  );
 };
 
-export default Login;
+export default LoginPopup;
 
 // (
 //   <main className="flex flex-col items-center justify-center w-full mx-auto translate-y-1/2">

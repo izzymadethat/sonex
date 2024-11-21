@@ -1,36 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { navLinks } from "../../../constants";
-import { useDispatch, useSelector } from "react-redux";
-import { loginUser, selectUser } from "@/store/userSlice";
-import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { LoginPopup, SignupPopup } from "@/pages/auth";
+
 const Header = () => {
-  const { toast } = useToast();
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const handleDemoLogin = async () => {
-    const userCred = {
-      credential: "demo@sonexaudio.app",
-      password: "password"
-    };
-    const result = await dispatch(loginUser(userCred)); //for demo purpose only
-
-    if (loginUser.rejected.match(result)) {
-      toast({
-        title: "Uh Oh. Login failed!",
-        description: result.payload,
-        variant: "destructive"
-      });
-      return;
-    }
-    toast({
-      title: "Welcome back!"
-    });
-    return navigate("/user/me");
-
-  };
 
   return (
     <header className="flex justify-between p-4">
@@ -38,47 +10,28 @@ const Header = () => {
         <p className="text-2xl font-bold text-inherit">Sonex</p>
       </div>
       <nav className="flex items-center gap-4">
-        <Button variant="outline" onClick={handleDemoLogin}>
-          Login
-        </Button>
-        <Button>Sign Up</Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline">
+              Login
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <LoginPopup />
+          </DialogContent>
+        </Dialog>
+
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>Sign Up</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <SignupPopup />
+          </DialogContent>
+        </Dialog>
       </nav>
     </header>
   );
 };
 
 export default Header;
-
-// const nav = (
-//   <Navbar
-//       shouldHideOnScroll
-//       isBlurred
-//       isBordered
-//       classNames={{
-//         base: ["bg-[#212121]"]
-//       }}
-//     >
-//       <NavbarBrand>
-//         <p className="font-bold text-inherit">Sonex</p>
-//       </NavbarBrand>
-//       <NavbarContent justify="center">
-//         <NavbarItem className="flex gap-2">
-//           {navLinks.map((link, index) => (
-//             <Link key={index} href={link.route} underline="hover">
-//               {link.title}
-//             </Link>
-//           ))}
-//         </NavbarItem>
-//       </NavbarContent>
-//       <NavbarContent justify="end">
-//         <NavbarItem>
-//           <Link href="/login">Login</Link>
-//         </NavbarItem>
-//         <NavbarItem>
-//           <Button as={Link} href="/register">
-//             Signup for Free
-//           </Button>
-//         </NavbarItem>
-//       </NavbarContent>
-//     </Navbar>
-// )

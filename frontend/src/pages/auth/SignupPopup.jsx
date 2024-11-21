@@ -2,6 +2,9 @@ import { Eye, EyeOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Loader from "../../components/informational/Loader/Loader";
+import { DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 
 const Signup = () => {
@@ -84,7 +87,41 @@ const Signup = () => {
       .finally(() => setIsSubmitting(false));
   }
 
-  return <p>Signup</p>;
+  return (
+    <>
+      <DialogHeader>
+        <DialogTitle className="text-2xl font-semibold">Create Account</DialogTitle>
+        <DialogDescription>
+          Sign in to use Sonex!
+        </DialogDescription>
+      </DialogHeader>
+      <div className="my-4 space-y-4">
+        <div className="flex flex-col gap-1 text-sm">
+          <label htmlFor="firstName">First Name</label>
+          <Input />
+        </div>
+        <div className="flex flex-col gap-1 text-sm">
+          <label htmlFor="lastName">Last Name</label>
+          <Input />
+        </div>
+        <div className="flex flex-col gap-1 text-sm">
+          <label htmlFor="email">Email</label>
+          <Input type="email" />
+        </div>
+        <div className="flex flex-col gap-1 text-sm">
+          <label htmlFor="username">Username</label>
+          <Input />
+        </div>
+        <div className="flex flex-col gap-1 text-sm">
+          <label htmlFor="password">Password</label>
+          <Input />
+        </div>
+      </div>
+      <DialogFooter>
+        <Button type="submit">Register</Button>
+      </DialogFooter>
+    </>
+  );
 };
 
 export default Signup;
