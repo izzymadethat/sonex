@@ -1,10 +1,10 @@
-import { restoreUser, selectUser } from "@/features/user/userSlice";
+import { selectUser } from "@/store/userSlice";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
   Dialog,
-  DialogClose,
+  // DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -14,32 +14,31 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { formatTime } from "@/helper/formatters";
-import { Card, CardHeader } from "@/components/ui/card";
+// import { Card, CardHeader } from "@/components/ui/card";
 import NavigateBackTo from "@/components/global/NavigateBackTo";
 import CommentsSideBar from "./components/CommentsSideBar";
 import {
-  fetchProjectFiles,
   getSingleFile,
   selectCurrentTrack,
   setCurrentTime,
   setPaused,
   setPlaying,
   setTrackDuration
-} from "@/features/files/filesSlice";
+} from "@/store/fileSlice";
 import CommentForm from "./components/CommentForm";
-import { Loader2, MessageSquare } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import {
   fetchCommentsByProject,
-  selectCommentsByProject
-} from "@/features/comments/commentsSlice";
+  // selectCommentsByProject
+} from "@/store/commentSlice";
 import {
-  getProjects,
+  // getProjects,
   getSingleProject,
   selectCurrentProject
-} from "@/features/projects/projectsSlice";
+} from "@/store/projectSlice";
 import Loader from "@/components/informational/Loader/Loader";
-import CustomAudioPlayer from "./components/AudioPlayer";
-import axiosInstance from "@/store/csrf";
+// import CustomAudioPlayer from "./components/AudioPlayer";
+import axiosInstance from "@/lib/axiosInstance";
 import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 
@@ -49,122 +48,123 @@ const ClientActionButton = ({
   onDownloadClick,
   paymentLoading
 }) => {
-  if (
-    project.paymentStatus === "paid" ||
-    project.paymentStatus === "no-charge"
-  ) {
+  // Default to "error" if paymentStatus is null/undefined
+  const paymentStatus = project?.paymentStatus || "unpaid";
+
+  if (paymentStatus === "paid" || paymentStatus === "no-charge") {
     return <Button onClick={onDownloadClick}>Download This File</Button>;
-  } else {
-    return (
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button disabled={paymentLoading}>
+  }
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button disabled={paymentLoading}>
+          {paymentLoading ? (
+            <>
+              <Loader2 className="animate-spin" />{" "}
+              <span>Processing Payment</span>
+            </>
+          ) : (
+            <span className="uppercase">Pay Project Amount</span>
+          )}
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="text-3xl">
+            Total Amount: ${project?.projectAmount || 0}
+          </DialogTitle>
+          <DialogDescription>
+            Project must be paid in full in order to have download access
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
+          <Input placeholder="1234 5678 9012 3456" />
+          <div className="flex">
+            <Input type="date" />
+            <Input type="number" placeholder="123" />
+            <Input type="number" placeholder="12345" />
+          </div>
+          <Input placeholder="Cardholder name" />
+        </div>
+        <DialogFooter>
+          <Button onClick={onPaymentClick} disabled={paymentLoading}>
             {paymentLoading ? (
               <>
                 <Loader2 className="animate-spin" />{" "}
-                <span>Processing Payment</span>
+                <span>Processing payment...</span>
               </>
             ) : (
-              <span>Pay Project Amount</span>
+              <>
+                Pay
+                <span className="font-bold">
+                  ${project?.projectAmount.toFixed(2) || 0}
+                </span>
+              </>
             )}
           </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="text-3xl">
-              Total Amount: ${project.projectAmount}
-            </DialogTitle>
-            <DialogDescription>
-              Project must be paid in full in order to have download access
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col gap-4">
-            <Input placeholder="1234 5678 9012 3456" />
-            <div className="flex">
-              <Input type="date" />
-              <Input type="number" placeholder="123" />
-              <Input type="number" placeholder="12345" />
-            </div>
-            <Input placeholder="Cardholder name" />
-          </div>
-          <DialogFooter>
-            <Button onClick={onPaymentClick} disabled={paymentLoading}>
-              {paymentLoading ? (
-                <>
-                  <Loader2 className="animate-spin" />{" "}
-                  <span>Processing payment...</span>
-                </>
-              ) : (
-                <>
-                  Pay
-                  <span className="font-bold">
-                    ${project.projectAmount.toFixed(2)}
-                  </span>
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    );
-  }
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
 };
 
 const ViewSingleFilePage = () => {
   const params = useParams();
+  const { projectId, fileName } = params;
   const dispatch = useDispatch();
   const { currentUser: user } = useSelector(selectUser);
   const currentProject = useSelector(selectCurrentProject);
-  const projectComments = useSelector(selectCommentsByProject) || {};
   const file = useSelector(selectCurrentTrack);
-  const { projectId, fileName } = params;
-
-  // const [currentTime, setCurrentTime] = useState(0);
-  const [isATimeStampedComment, setIsATimeStampedComment] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [paymentLoading, setPaymentLoading] = useState(false);
   const [client, setClient] = useState("");
   const [downloadLink, setDownloadLink] = useState("");
+  const [isTimestampedComment, setIsTimestampedComment] = useState(false);
+  const [paymentLoading, setPaymentLoading] = useState(false);
   const audioRef = useRef(null);
 
   useEffect(() => {
-    const existingClient = localStorage.getItem("clientEmail");
-    if (existingClient) {
-      setClient(existingClient);
-    } else {
-      setClient("");
-      dispatch(restoreUser());
-    }
-  }, [dispatch]);
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        // For public access, we need to fetch the project first
+        const projectResponse = await dispatch(getSingleProject(projectId)).unwrap();
+
+        if (projectResponse) {
+          // Only if we have the project, fetch the file
+          await dispatch(getSingleFile({ projectId, fileName }));
+          await dispatch(fetchCommentsByProject(projectId));
+        }
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: `Could not load the file. (${error.message})`,
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [dispatch, projectId, fileName, user]);
 
   useEffect(() => {
-    setLoading(true);
-    const fetchFile = async () => {
-      await dispatch(getSingleFile({ projectId, fileName }));
-    };
-
-    const restoreAccountInfo = async () => {
-      // Fetch the project files, comments, project details and files
-
-      dispatch(getProjects());
-      dispatch(getSingleProject(projectId));
-      dispatch(fetchCommentsByProject(projectId));
-      dispatch(fetchProjectFiles(projectId));
-    };
-
-    fetchFile();
     if (user) {
-      restoreAccountInfo();
+      setClient("");
+    } else {
+      setClient(localStorage.getItem("clientEmail") || "");
     }
-    setLoading(false);
-  }, [dispatch, projectId, fileName]);
+  }, [user]);
 
   // Keep track of song time while making comments
   useEffect(() => {
     const audioElement = audioRef.current;
     if (audioElement) {
       const handleTimeUpdate = () => {
-        dispatch(setCurrentTime(formatTime(audioElement.currentTime)));
+        const currentTime = audioElement.currentTime;
+        const formattedTime = formatTime(currentTime);
+        dispatch(setCurrentTime(formattedTime));
       };
 
       const handlePlay = () => {
@@ -196,7 +196,7 @@ const ViewSingleFilePage = () => {
   }, [dispatch, audioRef]);
 
   const handleTimestampCommentCheckChange = () =>
-    setIsATimeStampedComment(!isATimeStampedComment);
+    setIsTimestampedComment(!isTimestampedComment);
 
   const handlePayment = async () => {
     setPaymentLoading(true);
@@ -242,124 +242,80 @@ const ViewSingleFilePage = () => {
     }
   };
 
-  if (!file || loading || !user || !audioRef) {
-    return (
-      <div>
-        <Loader />
-      </div>
-    );
+  if (!file || loading) {
+    return <Loader />;
   }
 
   return (
     <div className="max-w-2xl p-8 mx-auto space-y-8 lg:max-w-4xl">
-      <NavigateBackTo
-        route={`/user/me/projects/${params.projectId}`}
-        pageName="this project details"
-      />
+      {user && (
+        <NavigateBackTo
+          route={`/user/me/projects/${params.projectId}`}
+          pageName="this project details"
+        />
+      )}
+
       {/* Track Information */}
       <div className="flex justify-between">
         <div>
-          <h2 className="text-4xl font-bold ">{file.name}</h2>
-          <p>
-            uploaded by {user.firstName} /{" "}
-            <span>added on {file.createdAt}</span>
-          </p>
+          <h2 className="text-4xl font-bold">{file.name}</h2>
+          {user && (
+            <p>
+              uploaded by {user.firstName} /{" "}
+              <span>added on {file.createdAt}</span>
+            </p>
+          )}
         </div>
 
-        {client && (
+
+
+
+
+
+      </div>
+
+      {/* Player */}
+      <div className="flex flex-col justify-center gap-4">
+        <audio
+          src={file.streamUrl}
+          ref={audioRef}
+          controls={true}
+          className="rounded-sm"
+        >
+          <track kind="captions" />
+          Your browser does not support the audio element.
+        </audio>
+      </div>
+
+      <h3 className="text-2xl font-bold">File/Project Actions</h3>
+      <div className="flex gap-8">
+        <CommentsSideBar user={user} projectId={projectId} />
+        {!user && currentProject ? (
           <ClientActionButton
             project={currentProject}
             onPaymentClick={handlePayment}
             onDownloadClick={handleDownload}
             paymentLoading={paymentLoading}
           />
-        )}
-        {user && !client && <CommentsSideBar />}
-      </div>
-      {/* Player and Comment Button */}
-      <div className="flex flex-col justify-center gap-4">
-        <audio
-          src={file.streamUrl}
-          ref={audioRef}
-          controls
-          className="rounded-sm"
-        />
-      </div>
-
-      {/*
-      *** Future Update
-      FIXME: Add a custom audio player 
-      <CustomAudioPlayer audioSrc={file.streamUrl} /> 
-      */}
-      {/* Comment Form */}
-      <div className="grid grid-cols-5 gap-4">
-        {client && !user && (
-          <>
-            <div className="col-span-3">
-              <CommentForm
-                existingClient={client}
-                timestamp={file.currentTime}
-                isTimeStampedComment={isATimeStampedComment}
-                onCheckedChange={handleTimestampCommentCheckChange}
-                onClientEmailChange={setClient}
-                projectId={projectId}
-              />
-            </div>
-            <div className="flex flex-col items-center col-span-2 gap-4 p-8 text-center border-2 border-dashed rounded-md">
-              {currentProject && currentProject.length > 0 ? (
-                <>
-                  {currentProject.map((comment) => (
-                    <Dialog key={comment._id}>
-                      <DialogTrigger asChild>
-                        <Card
-                          key={comment._id}
-                          className="cursor-pointer hover:bg-primary hover:text-secondary"
-                        >
-                          <CardHeader>{comment.text}</CardHeader>
-                        </Card>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <h4 className="text-2xl font-bold text-center">
-                            {" "}
-                            Comment type: {comment.type.toUpperCase()}
-                          </h4>
-                        </DialogHeader>
-                        <div className="flex flex-col justify-center gap-4 text-center">
-                          <p className="text-lg">{comment.text}</p>
-                          {comment.type === "revision" && (
-                            <p className="text-lg text-primary">
-                              {" "}
-                              Comment made by {comment.email || "you"} @{" "}
-                              {comment.timestamp}
-                            </p>
-                          )}
-                        </div>
-                        <DialogFooter>
-                          <DialogClose asChild>
-                            <Button variant="outline">Close</Button>
-                          </DialogClose>
-                          <Button variant="destructive">Delete</Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                  ))}
-                </>
-              ) : (
-                <>
-                  <MessageSquare size={64} className="text-primary" />
-                  <p className="max-w-sm text-lg font-bold">
-                    You haven't made any comments yet.
-                  </p>
-                  <p className="italic max-w-52">
-                    Use the form to add your revision or provide feedback.
-                  </p>
-                </>
-              )}
-            </div>
-          </>
+        ) : (
+          <Button onClick={handleDownload}>Download This File</Button>
         )}
       </div>
+      {/* Comment Form - Only show if user is authenticated */}
+      {!user && (
+        <div className="grid grid-cols-5 gap-4">
+          <div className="col-span-3">
+            <CommentForm
+              existingClient={client}
+              timestamp={file.currentTime}
+              isTimeStampedComment={isTimestampedComment}
+              onCheckedChange={handleTimestampCommentCheckChange}
+              onClientEmailChange={setClient}
+              projectId={projectId}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

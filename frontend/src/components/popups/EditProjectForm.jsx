@@ -21,7 +21,7 @@ import {
 } from "../ui/select";
 import { Archive, Ban, CheckCircle2, Circle, Loader2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateProject } from "@/features/projects/projectsSlice";
+import { updateProject } from "@/store/projectSlice";
 import { toast } from "@/hooks/use-toast";
 
 const formGroupStyles = "flex flex-col gap-3 w-full mb-4";
