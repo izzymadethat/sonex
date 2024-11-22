@@ -17,13 +17,13 @@ import { userExample } from "../../../constants/user";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
-import { restoreUser, selectUser } from "@/features/user/userSlice";
+import { selectUser } from "@/store/userSlice";
 import {
   getProjects,
   selectAllProjects
-} from "@/features/projects/projectsSlice";
+} from "@/store/projectSlice";
 import RecentProjects from "./components/RecentProjects";
-import { selectAllComments } from "@/features/comments/commentsSlice";
+import { selectAllComments } from "@/store/commentSlice";
 import UnfinishedComments from "./components/UnfinishedComments";
 import SupportForm from "./components/SupportForm";
 import NewProjectFormPopup from "@/components/popups/NewProjectForm";

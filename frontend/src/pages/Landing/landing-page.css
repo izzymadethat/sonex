@@ -1,0 +1,13 @@
+
+.hero::before {
+    background: no-repeat url("../../assets/hero-img.png") center right / 100%;
+    filter: blur(4px);
+    content: "";
+    position: absolute;
+    opacity: 0.45;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
