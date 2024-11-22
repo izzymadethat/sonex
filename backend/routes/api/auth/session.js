@@ -29,7 +29,7 @@ const validateSignup = [
 router.get("/", async (req, res) => {
 	if (!req.session.user) return res.json({ user: null });
 
-	const user = await User.findById(req.session.user.id).select(["-hashedPassword", "-__v", "-projects", "-clients"]);
+	const user = await User.findById(req.session.user.id).select("-hashedPassword-__v -projects -clients");
 
 	return res.json({ user });
 });
@@ -38,7 +38,6 @@ router.get("/", async (req, res) => {
 // POST /api/auth/session
 router.post("/", validateLogin, async (req, res, next) => {
 	const { credential, password } = req.body;
-
 	try {
 		// Try to find user by username or email
 		const user = await User.findOne({

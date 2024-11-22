@@ -1,8 +1,9 @@
 import "./fancy-button.css";
+import { forwardRef } from "react";
 
-const FancyButton = () => {
+const FancyButton = forwardRef((props, ref) => {
   return (
-    <button disabled className="styled-button">
+    <button ref={ref} type="button" className="styled-button" {...props}>
       Start now!
       <div className="inner-button">
         <svg
@@ -12,7 +13,9 @@ const FancyButton = () => {
           height="30px"
           width="30px"
           className="icon"
+
         >
+          <title>Arrow icon</title>
           <defs>
             <linearGradient
               y2="100%"
@@ -39,6 +42,6 @@ const FancyButton = () => {
       </div>
     </button>
   );
-};
+});
 
 export default FancyButton;

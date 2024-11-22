@@ -11,7 +11,6 @@ import { unloadProjects } from "@/store/projectSlice";
 import { unloadComments } from "@/store/commentSlice";
 import { unloadFiles } from "@/store/fileSlice";
 import { toast } from "@/hooks/use-toast";
-import { persistor } from "@/store/store";
 
 // Custom sidebar trigger
 const SidebarTrigger = () => {
@@ -28,7 +27,6 @@ const Topbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleLogout = () => {
-    persistor.purge();
     dispatch(unloadProjects());
     dispatch(unloadComments());
     dispatch(unloadFiles());
