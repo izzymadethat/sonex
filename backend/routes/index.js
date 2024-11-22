@@ -27,22 +27,19 @@ router.use("/api", apiRouter);
 if (isProduction) {
 	const path = require("path");
 
-	// Generate a csrf token api routes
+	// Serve static files (JS, CSS, images, etc.)
+	router.use(express.static(path.resolve(__dirname, "frontend", "dist")));
+
+	// Serve index.html for the homepage
 	router.get("/", (req, res) => {
-		// res.cookie("XSRF-TOKEN", req.csrfToken());
-		return res.sendFile(path.resolve(__dirname, "../../frontend", "dist", "index.html"));
+		return res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
 	});
 
-	// 	// Serve static assets
-	// 	router.use(express.static(path.resolve("../frontend/dist")));
-
-	// Generate a csrf token for non-API routes
+	// Catch-all route for non-API routes (client-side routing for SPA)
 	router.get(/^(?!\/?api).*/, (req, res) => {
-		// res.cookie("XSRF-TOKEN", req.csrfToken());
-		return res.sendFile(path.resolve(__dirname, "../../frontend", "dist", "index.html"));
+		return res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
 	});
 }
-
 // // If in development mode,
 // // everything works as normal,
 // // just automatically generate for each request
