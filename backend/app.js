@@ -63,14 +63,6 @@ app.use(
 		},
 	})
 ); // Session auth middleware
-app.use(
-	csurf({
-		cookie: {
-			secure: isProduction,
-			sameSite: isProduction && "lax",
-		},
-	})
-); // CSRF protection
 app.use(routes);
 
 module.exports = app;

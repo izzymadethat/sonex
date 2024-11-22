@@ -24,8 +24,8 @@ const isProduction = environment === "production";
 router.use("/api", apiRouter);
 
 // // Set backend to serve static assets in production
-// if (isProduction) {
-// 	const path = require("path");
+if (isProduction) {
+	const path = require("path");
 
 	// Generate a csrf token api routes
 	router.get("/", (req, res) => {
@@ -33,8 +33,8 @@ router.use("/api", apiRouter);
 		return res.sendFile(path.resolve(__dirname, "../../frontend", "dist", "index.html"));
 	});
 
-// 	// Serve static assets
-// 	router.use(express.static(path.resolve("../frontend/dist")));
+	// 	// Serve static assets
+	// 	router.use(express.static(path.resolve("../frontend/dist")));
 
 	// Generate a csrf token for non-API routes
 	router.get(/^(?!\/?api).*/, (req, res) => {
