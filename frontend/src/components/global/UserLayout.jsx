@@ -4,36 +4,29 @@ import SideBar from "./Sidebar";
 import Topbar from "./Topbar";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { logoutUser, restoreUser, selectUser } from "@/store/userSlice";
-import { getProjects, selectAllProjects, unloadProjects } from "@/store/projectSlice";
+import { logoutUser, restoreUser, selectUser } from "@/features/user/userSlice";
+import { getProjects, unloadProjects } from "@/features/projects/projectsSlice";
 import {
   fetchComments,
   unloadComments
-} from "@/store/commentSlice";
+} from "@/features/comments/commentsSlice";
+import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { unloadFiles } from "@/store/fileSlice";
-import Loader from "../informational/Loader/Loader";
+import { unloadFiles } from "@/features/files/filesSlice";
 
 const UserLayout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isLoaded, setIsLoaded] = useState(false);
   const { currentUser, error } = useSelector(selectUser);
-  const { projects } = useSelector(selectAllProjects);
 
   useEffect(() => {
-    if (currentUser) {
-      const fetchData = async () => {
-        if (!projects) await dispatch(getProjects());
-        await dispatch(fetchComments());
-        setIsLoaded(true);
-      };
-
-      fetchData();
-    } else {
-      navigate("/");
-    }
-  }, [dispatch, currentUser, projects, navigate]);
+    dispatch(restoreUser()).then(async () => {
+      await dispatch(getProjects());
+      await dispatch(fetchComments());
+      setIsLoaded(true);
+    });
+  }, [dispatch]);
 
   const handleLogout = async () => {
     await dispatch(unloadProjects());
@@ -49,16 +42,17 @@ const UserLayout = () => {
     }
   };
 
+  // if (!isLoaded && !currentUser) {
+  //   return <p>Loading...</p>;
+  // } else if (error) {
+  //   return <h1>Error: {error}</h1>;
+  // }
+
   if (error) {
-    toast({
-      title: "Error",
-      description: error
-    });
-    return navigate("/");
-  }
-  if (!isLoaded) {
     return (
-      <Loader />
+      <div className="flex items-center justify-center w-full h-screen">
+        <Loader2 className="animate-spin" />
+      </div>
     );
   }
 

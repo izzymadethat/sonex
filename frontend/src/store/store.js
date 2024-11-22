@@ -1,21 +1,16 @@
 import { configureStore } from "@reduxjs/toolkit";
-import userReducer from "./userSlice";
-import projectsReducer from "./projectSlice";
-import commentsReducer from "./commentSlice";
-import filesReducer from "./fileSlice";
-
-// Create root reducer
-const rootReducer = {
-	user: userReducer,
-	projects: projectsReducer,
-	comments: commentsReducer,
-	files: filesReducer,
-};
+import userReducer from "@/features/user/userSlice";
+import projectsReducer from "@/features/projects/projectsSlice";
+import commentsReducer from "@/features/comments/commentsSlice";
+// import clientsReducer from "@/features/clients/clientsSlice";
+import filesReducer from "@/features/files/filesSlice";
 
 export const store = configureStore({
-	reducer: rootReducer,
-	middleware: (getDefaultMiddleware) =>
-		getDefaultMiddleware({
-			serializableCheck: false,
-		}),
+  reducer: {
+    user: userReducer,
+    projects: projectsReducer,
+    comments: commentsReducer,
+    // clients: clientsReducer,
+    files: filesReducer,
+  },
 });

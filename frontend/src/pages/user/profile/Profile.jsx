@@ -10,15 +10,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { unloadComments } from "@/store/commentSlice";
-import { unloadFiles } from "@/store/fileSlice";
-import { unloadProjects } from "@/store/projectSlice";
+import { unloadComments } from "@/features/comments/commentsSlice";
+import { unloadFiles } from "@/features/files/filesSlice";
+import { unloadProjects } from "@/features/projects/projectsSlice";
 import {
   deleteUser,
   logoutUser,
   selectUser,
   updateUser
-} from "@/store/userSlice";
+} from "@/features/user/userSlice";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { useState } from "react";

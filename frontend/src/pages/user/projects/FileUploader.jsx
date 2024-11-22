@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { uploadFiles } from "@/store/fileSlice";
+import { uploadFiles } from "@/features/files/filesSlice";
 import { convertFileSizeInBytesToMB } from "@/helper/equations";
 import { toast } from "@/hooks/use-toast";
 import { Inbox, Loader2, Trash2Icon, UploadCloud, X } from "lucide-react";

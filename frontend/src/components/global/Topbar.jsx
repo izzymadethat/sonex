@@ -1,3 +1,4 @@
+import React from "react";
 import { ModeToggle } from "./mode-toggle";
 import { Button } from "../ui/button";
 import { ArrowLeftCircle, ArrowRightCircle, LogOut } from "lucide-react";
@@ -5,12 +6,13 @@ import { Tooltip, TooltipContent, TooltipProvider } from "../ui/tooltip";
 import { TooltipTrigger } from "@radix-ui/react-tooltip";
 import { useSidebar } from "../ui/sidebar";
 import { useDispatch } from "react-redux";
-import { logoutUser } from "@/store/userSlice";
+import { logoutUser } from "@/features/user/userSlice";
 import { useNavigate } from "react-router-dom";
-import { unloadProjects } from "@/store/projectSlice";
-import { unloadComments } from "@/store/commentSlice";
-import { unloadFiles } from "@/store/fileSlice";
+import { unloadProjects } from "@/features/projects/projectsSlice";
+import { unloadComments } from "@/features/comments/commentsSlice";
+import { unloadFiles } from "@/features/files/filesSlice";
 import { toast } from "@/hooks/use-toast";
+// import { SidebarTrigger } from "../ui/sidebar";
 
 // Custom sidebar trigger
 const SidebarTrigger = () => {
@@ -26,7 +28,7 @@ const SidebarTrigger = () => {
 const Topbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const handleLogout = () => {
+  const handleLogout = async () => {
     dispatch(unloadProjects());
     dispatch(unloadComments());
     dispatch(unloadFiles());

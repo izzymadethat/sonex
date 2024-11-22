@@ -1,5 +1,9 @@
 @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
 
+:root {
+  --clr-primary: #ffff00;
+}
+
 .icon::before {
   display: inline-block;
   text-rendering: auto;
@@ -30,30 +34,30 @@
 .pricing-plans .plan .content h3 {
   text-transform: capitalize;
   font-size: 1.3rem;
-  color: hsl(var(--primary));
+  color: var(--clr-primary);
 }
 
 .pricing-plans .plan .content .price {
-  font-size: 3.5rem;
+  font-size: 3rem;
   font-weight: 600;
 }
 
-.pricing-plans .list {
+.pricing-plans .plan .list {
   margin-bottom: 3rem;
 }
 
-.pricing-plans  .list p {
+.pricing-plans .plan .list p {
   font-weight: 500;
   margin-bottom: 1.5rem;
 }
 
-.pricing-plans  .list li {
+.pricing-plans .plan .list li {
   position: relative;
-  color: hsl(var(--muted-foreground));
+  color: #918c8c;
   padding-left: 1.5rem;
 }
 
-.pricing-plans .list li::before {
+.pricing-plans .plan .list li::before {
   content: "\f00c";
   font-family: "Font Awesome 6 Free";
   font-weight: 900;
@@ -61,10 +65,10 @@
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  color: hsl(var(--primary));
+  color: var(--clr-primary);
 }
 
-.pricing-plans .list li:not(:last-child) {
+.pricing-plans .plan .list li:not(:last-child) {
   margin-bottom: 0.7rem;
 }
 
@@ -72,7 +76,7 @@
   display: inline-block;
   text-decoration: none;
   width: 100%;
-  background-color: hsl(var(--primary));
+  background-color: var(--clr-primary);
   color: #212121;
   padding: 0.7rem 1.8rem;
   font-size: 1rem;
@@ -82,5 +86,5 @@
 }
 
 .active-1 {
-  border: 1px solid hsl(var(--primary));
+  border: 1px solid var(--clr-primary);
 }

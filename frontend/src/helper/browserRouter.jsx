@@ -1,4 +1,5 @@
-import { LandingPage } from "@/pages/Landing";
+import { Home } from "@/pages/landing-page/index.js";
+import { Login, Logout, Signup } from "@/pages/auth/index.js";
 import { NotFoundError } from "@/pages/errors/index.js";
 import UserLayout from "@/components/global/UserLayout.jsx";
 import { Dashboard, Profile } from "@/pages/user/dashboard/index.js";
@@ -24,11 +25,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <LandingPage />
-      },
-      {
-        path: "projects/:projectId/files/:fileName",
-        element: <ViewSingleFilePage />
+        element: <Home />
       },
       {
         path: "/user",

@@ -14,7 +14,7 @@ import {
 } from "../ui/dialog";
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
-import { createProject, getProjects } from "@/store/projectSlice";
+import { createProject, getProjects } from "@/features/projects/projectsSlice";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useEffect } from "react";

@@ -19,17 +19,17 @@ import {
   getProjects,
   getSingleProject,
   selectCurrentProject
-} from "@/store/projectSlice";
+} from "@/features/projects/projectsSlice";
 import { useEffect, useState } from "react";
 import PaymentStatusBadge from "./components/PaymentStatusBadge";
 import ProjectStatusBadge from "./components/ProjectStatusBadge";
 import {
   fetchProjectFiles,
   selectProjectFiles
-} from "@/store/fileSlice";
-import { fetchCommentsByProject } from "@/store/commentSlice";
+} from "@/features/files/filesSlice";
+import { fetchCommentsByProject } from "@/features/comments/commentsSlice";
 import Loader from "@/components/informational/Loader/Loader";
-import { restoreUser, selectUser } from "@/store/userSlice";
+import { restoreUser, selectUser } from "@/features/user/userSlice";
 import { Button } from "@/components/ui/button";
 
 const ViewSingleProjectPage = () => {

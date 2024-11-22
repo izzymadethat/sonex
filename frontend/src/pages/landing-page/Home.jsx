@@ -11,15 +11,9 @@ import {
 import { faqs } from "@/constants";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { selectUser } from "@/store/userSlice";
+import { selectUser } from "@/features/user/userSlice";
 import { useEffect } from "react";
-import { getProjects } from "@/store/projectSlice";
-import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { LoginPopup, SignupPopup } from "../auth";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-
-import "./landing-page.css";
+import { getProjects } from "@/features/projects/projectsSlice";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -29,10 +23,11 @@ const Home = () => {
   // TODO: Navigate to user dashboard if user
 
   return (
-    <main>
+    <div>
       <Header />
+
       {/* Hero */}
-      <section className="relative flex flex-col items-center justify-center h-screen space-y-8 hero">
+      <section className="flex flex-col items-center justify-center h-screen space-y-8">
         <h1 className="max-w-5xl font-bold text-center text-7xl">
           Audio{" "}
           <span className="text-transparent underline bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text">
@@ -46,31 +41,8 @@ const Home = () => {
           share, and manage audio projects with clients, while handling payments
           and revisions all in one place.
         </p>
-        <div className="flex items-center gap-4">
-          <Dialog>
-            <DialogTrigger asChild>
-              <FancyButton />
-            </DialogTrigger>
-            <DialogContent>
-              <Tabs defaultValue="register">
-                <TabsList>
-                  <TabsTrigger value="register">Signup</TabsTrigger>
-                  <TabsTrigger value="login">Login</TabsTrigger>
-                </TabsList>
-                <TabsContent value="register">
-                  <SignupPopup />
-                </TabsContent>
-                <TabsContent value="login">
-                  <LoginPopup />
-                </TabsContent>
-              </Tabs>
-            </DialogContent>
-          </Dialog>
-          <Button asChild><a href="#whats-included"> Learn More</a></Button>
-        </div>
-        {/* <div className="absolute right-0 h-auto w-3xl -z-10 opacity-20">
-          <img src={heroImg} alt="sonex-demo for hero section" />
-        </div> */}
+
+        <FancyButton />
       </section>
 
       {/* What's Included */}
@@ -83,9 +55,9 @@ const Home = () => {
       </section>
 
       {/* Ways to use sonex */}
-      <section className="px-48 my-20 ">
+      <section className="h-screen px-6 py-10 my-20">
         <HeaderChip text="How can I use Sonex?" />
-        <div className="flex flex-col items-center justify-center my-8">
+        <div className="my-8">
           <p className="italic">Use Sonex as:</p>
           <MarketedUsers />
         </div>
@@ -95,10 +67,7 @@ const Home = () => {
       <section className="px-6 py-12 my-20 space-y-4">
         <HeaderChip text="Pricing" />
         <div className="max-w-4xl mx-auto space-y-8">
-          <div>
-            <h3 className="text-5xl font-bold text-center uppercase">Choose your <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600">Sonex</span></h3>
-            <p className="text-sm italic text-center text-muted-foreground">Pay only for the storage you use!</p>
-          </div>
+          <h3 className="text-4xl text-center">Choose your Sonex</h3>
           <PricingPlan />
         </div>
       </section>
@@ -107,7 +76,7 @@ const Home = () => {
 
       {/* Footer */}
       <Footer />
-    </main>
+    </div>
   );
 };
 

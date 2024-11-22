@@ -21,7 +21,7 @@ import {
   deleteProject,
   getProjects,
   selectAllProjects
-} from "@/store/projectSlice";
+} from "@/features/projects/projectsSlice";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import NewProjectFormPopup from "@/components/popups/NewProjectForm";

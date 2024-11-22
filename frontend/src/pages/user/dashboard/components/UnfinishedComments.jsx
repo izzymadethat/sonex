@@ -1,11 +1,11 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
-import { updateComment } from "@/store/commentSlice";
+import { updateComment } from "@/features/comments/commentsSlice";
 import {
   findProjectById,
   selectAllProjects
-} from "@/store/projectSlice";
+} from "@/features/projects/projectsSlice";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
