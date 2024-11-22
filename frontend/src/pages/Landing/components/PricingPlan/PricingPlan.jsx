@@ -23,7 +23,6 @@ const PricingPlan = () => {
             </ul>
             <Button
               type="button"
-              fullWidth
               className="mt-2 bg-primary text-background"
             >
               Coming Soon
@@ -73,7 +72,6 @@ const PricingPlan = () => {
             </ul>
             <Button
               type="button"
-              fullWidth
               className="mt-2 bg-primary text-background"
             >
               Coming Soon
@@ -114,40 +112,3 @@ const PricingPlan = () => {
 
 export default PricingPlan;
 
-// (
-// <div className="pricing-plans">
-//       {pricingPlans.plans.((plan) => (
-//         <div key={plan.id} className={`plan active-${plan.id}`}>
-//           <div className="content">
-//             <h3>{plan.name}</h3>
-//             {plan.id === 1 ? (
-//               <p className="italic">Pay for the storage you use!*</p>
-//             ) : (
-//               <p className="italic">Build from our current source code!</p>
-//             )}
-//             <div className="flex flex-col">
-//               <span className="price">${plan.price}/mo </span>
-//               {plan.id === 1 && (
-//                 <span className="text-sm">
-//                   + 3.5% payment processing per transaction **
-//                 </span>
-//               )}
-//             </div>
-//           </div>
-
-//           <ul className="list">
-//             <p>Includes:</p>
-//             {plan.features.map((feature, index) => (
-//               <li key={index}>{feature}</li>
-//             ))}
-//           </ul>
-//           <Button
-//             disabled
-//             fullWidth
-//             className="mt-2 bg-primary text-background"
-//           >
-//             Coming Soon
-//           </Button>
-//         </div>
-//       ))}
-//     </div>

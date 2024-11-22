@@ -17,7 +17,7 @@ import { userExample } from "../../../constants/user";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
-import { restoreUser, selectUser } from "@/store/userSlice";
+import { selectUser } from "@/store/userSlice";
 import {
   getProjects,
   selectAllProjects

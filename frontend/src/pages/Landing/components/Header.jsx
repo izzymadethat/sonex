@@ -3,12 +3,19 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { LoginPopup, SignupPopup } from "@/pages/auth";
 import { selectUser } from "@/store/userSlice";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const navigate = useNavigate();
   const { currentUser: user } = useSelector(selectUser);
+
+  useEffect(() => {
+    // No action needed. Just a place holder to remount the
+    // component on user sign in/sign up/restore
+  }, [user]);
+
   return (
     <header className="flex justify-between p-4">
       <div className="w-full">

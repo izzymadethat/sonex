@@ -5,32 +5,37 @@ import Topbar from "./Topbar";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser, restoreUser, selectUser } from "@/store/userSlice";
-import { getProjects, unloadProjects } from "@/store/projectSlice";
+import { getProjects, selectAllProjects, unloadProjects } from "@/store/projectSlice";
 import {
   fetchComments,
   unloadComments
 } from "@/store/commentSlice";
-import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { unloadFiles } from "@/store/fileSlice";
-import { persistor } from "@/store/store";
+import Loader from "../informational/Loader/Loader";
 
 const UserLayout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isLoaded, setIsLoaded] = useState(false);
   const { currentUser, error } = useSelector(selectUser);
+  const { projects } = useSelector(selectAllProjects);
 
   useEffect(() => {
-    dispatch(restoreUser()).then(async () => {
-      await dispatch(getProjects());
-      await dispatch(fetchComments());
-      setIsLoaded(true);
-    });
-  }, [dispatch]);
+    if (currentUser) {
+      const fetchData = async () => {
+        if (!projects) await dispatch(getProjects());
+        await dispatch(fetchComments());
+        setIsLoaded(true);
+      };
+
+      fetchData();
+    } else {
+      navigate("/");
+    }
+  }, [dispatch, currentUser, projects, navigate]);
 
   const handleLogout = async () => {
-    persistor.purge();
     await dispatch(unloadProjects());
     await dispatch(unloadComments());
     await dispatch(unloadFiles());
@@ -45,10 +50,15 @@ const UserLayout = () => {
   };
 
   if (error) {
+    toast({
+      title: "Error",
+      description: error
+    });
+    return navigate("/");
+  }
+  if (!isLoaded) {
     return (
-      <div className="flex items-center justify-center w-full h-screen">
-        <Loader2 className="animate-spin" />
-      </div>
+      <Loader />
     );
   }
 
