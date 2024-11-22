@@ -246,6 +246,58 @@ const ViewSingleFilePage = () => {
     return <Loader />;
   }
 
+  const handlePayment = async () => {
+    setPaymentLoading(true);
+    try {
+      await new Promise((_, reject) => {
+        setTimeout(() => {
+          reject(new Error("Could not process payment effectively."));
+        }, 3000);
+      });
+    } catch (error) {
+      toast({
+        title: "Error while making payment",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
+
+  const handleDownload = async () => {
+    try {
+      const url = await axiosInstance.get(
+        `/projects/${projectId}/uploads/${file.name}/download`
+      );
+
+      if (url) {
+        setDownloadLink(url.data.downloadUrl);
+      }
+      // temporary link
+      const link = document.createElement("a");
+      link.href = downloadLink;
+      link.download = file.name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      toast({
+        title: "Error while downloading file",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+
+  if (!file || loading || !user || !audioRef) {
+    return (
+      <div>
+        <Loader />
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-2xl p-8 mx-auto space-y-8 lg:max-w-4xl">
       {user && (
