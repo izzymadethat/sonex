@@ -1,7 +1,6 @@
 import axiosInstance from "@/lib/axiosInstance";
 import { extractStateError, handlePending, handleRejected } from "@/lib/stateFunctions";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { error } from "console";
 
 /* 
 Redux Map (in progress...)
@@ -40,7 +39,7 @@ export const getProjects = createAsyncThunk("project/fetchCurrentUserProjects", 
 		const response = await axiosInstance.get("/projects");
 		return response.data;
 	} catch (error) {
-		return thunkAPI.rejectWithValue(extractStateError(error)); // Use response data for error messages
+		return thunkAPI.rejectWithValue(extractStateError(error));
 	}
 });
 
@@ -55,8 +54,8 @@ export const getSingleProject = createAsyncThunk("projects/getSingleProject", as
 
 export const createProject = createAsyncThunk("projects/createProject", async (project, thunkAPI) => {
 	try {
-		const response = await axiosInstance.post("/projects", project); // Pass project directly
-		return response.data; // Return the created project data
+		const response = await axiosInstance.post("/projects", project);
+		return response.data;
 	} catch (error) {
 		return thunkAPI.rejectWithValue(extractStateError(error));
 	}
@@ -64,8 +63,8 @@ export const createProject = createAsyncThunk("projects/createProject", async (p
 
 export const updateProject = createAsyncThunk("projects/updateProject", async (project, thunkAPI) => {
 	try {
-		const response = await axiosInstance.put(`/projects/${project.id}`, project); // Pass project directly
-		return response.data; // Return the updated project data
+		const response = await axiosInstance.put(`/projects/${project.id}`, project);
+		return response.data;
 	} catch (error) {
 		return thunkAPI.rejectWithValue(extractStateError(error));
 	}
@@ -73,8 +72,8 @@ export const updateProject = createAsyncThunk("projects/updateProject", async (p
 
 export const deleteProject = createAsyncThunk("projects/deleteProject", async (projectId, thunkAPI) => {
 	try {
-		await axiosInstance.delete(`/projects/${projectId}`); // No need to capture response for delete
-		return projectId; // Return the ID of the deleted project
+		await axiosInstance.delete(`/projects/${projectId}`);
+		return projectId;
 	} catch (error) {
 		return thunkAPI.rejectWithValue(extractStateError(error));
 	}
@@ -114,7 +113,7 @@ const projectsSlice = createSlice({
 			.addCase(getSingleProject.fulfilled, (state, action) => {
 				state.currentProject = action.payload;
 			})
-			
+
 			// when new spot has been added to the database
 			.addCase(createProject.fulfilled, (state, action) => {
 				state.status = "succeeded";
@@ -140,7 +139,7 @@ const projectsSlice = createSlice({
 			.addCase(createProject.pending, handlePending)
 			.addCase(updateProject.pending, handlePending)
 			.addCase(deleteProject.pending, handlePending)
-			.addCase(createProject.rejected, handleRejected)
+			.addCase(createProject.rejected, handleRejected);
 	},
 });
 
