@@ -1,32 +1,14 @@
 import {
-  Bug,
-  ChevronDown,
-  ChevronUpIcon,
-  CircleUserRound,
   Cog,
-  CreditCard,
   Home,
   LogOut,
-  LogOutIcon,
-  MailIcon,
-  Menu,
-  MenuSquare,
   MessageSquareDot,
   SquareLibrary,
-  User,
-  X
 } from "lucide-react";
-import { useState } from "react";
-import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
-// import { GoPremiumButton } from "../buttons";
+
+import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
-} from "@/components/ui/tooltip";
 import {
   Sidebar,
   SidebarContent,
@@ -36,11 +18,8 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
   SidebarSeparator
 } from "../ui/sidebar";
 import {
@@ -51,8 +30,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "../ui/dropdown-menu";
-import { Collapsible, CollapsibleTrigger } from "../ui/collapsible";
-import { CollapsibleContent } from "@radix-ui/react-collapsible";
 
 // import "../../styles/sidebar.css";
 
@@ -62,36 +39,11 @@ const navLinks = [
     route: "/user/me",
     icon: <Home size={24} />
   },
-  // {
-  //   name: "Notifications",
-  //   route: "notifications",
-  //   icon: (
-  //     <Badge size="sm" color="warning" variant="shadow" content={5}>
-  //       <MailIcon size={18} />
-  //     </Badge>
-  //   )
-  // },
-
   {
     name: "Projects",
     route: "projects",
     icon: <SquareLibrary size={24} />
   }
-  // {
-  //   name: "Clients",
-  //   route: "clients",
-  //   icon: <CircleUserRound size={24} />
-  // }
-  // {
-  //   name: "Payments",
-  //   route: "payments",
-  //   icon: <CreditCard size={18} />
-  // },
-  // {
-  //   name: "Support",
-  //   route: "support",
-  //   icon: <Bug size={18} />
-  // }
 ];
 
 const menu1 = [
@@ -105,11 +57,11 @@ const menu1 = [
     route: "profile",
     icon: <Cog size={24} />
   },
-  {
-    name: "Billing",
-    route: "billing",
-    icon: <CreditCard size={24} />
-  }
+  // {
+  //   name: "Billing",
+  //   route: "billing",
+  //   icon: <CreditCard size={24} />
+  // }
 ];
 
 const SideBar = ({ user, onLogoutClick }) => {
@@ -123,8 +75,8 @@ const SideBar = ({ user, onLogoutClick }) => {
         <SidebarGroup className="mt-16">
           <SidebarGroupContent>
             <SidebarMenu>
-              {navLinks.map((link, index) => (
-                <SidebarMenuItem key={index}>
+              {navLinks.map((link) => (
+                <SidebarMenuItem key={link.name}>
                   <SidebarMenuButton asChild>
                     <Link
                       to={link.route}
@@ -146,8 +98,8 @@ const SideBar = ({ user, onLogoutClick }) => {
           <SidebarSeparator />
           <SidebarGroupContent>
             <SidebarMenu>
-              {menu1.map((link, index) => (
-                <SidebarMenuItem key={index}>
+              {menu1.map((link) => (
+                <SidebarMenuItem key={link.name}>
                   <SidebarMenuButton asChild>
                     <Link
                       to={link.route}
@@ -163,18 +115,20 @@ const SideBar = ({ user, onLogoutClick }) => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      {/* Footer Section */}
       <SidebarFooter>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild className="cursor-pointer">
-            <div className="flex items-center gap-2 mx-4">
+          <DropdownMenuTrigger asChild className="mx-auto mb-4 cursor-pointer">
+            <div className="flex items-center gap-2 ">
               <Avatar>
-                <AvatarImage src={user?.avatar} alt="@shadcn" />
+                <AvatarImage src={user?.avatar} alt={user?.firstName} />
                 <AvatarFallback>
                   {user?.firstName[0].toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <span className="ml-2">{user?.email}</span>
+              <span className="text-sm font-bold">{user?.firstName} {user?.lastName}</span>
             </div>
+
           </DropdownMenuTrigger>
           <DropdownMenuContent className="flex flex-col items-center w-56 gap-2">
             <DropdownMenuLabel className="text-lg uppercase ">

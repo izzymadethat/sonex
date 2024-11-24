@@ -21,12 +21,12 @@ const PricingPlan = () => {
                 <li key={feature}>{feature}</li>
               ))}
             </ul>
-            <Button
+            {/* <Button
               type="button"
               className="mt-2 bg-primary text-background"
             >
               Coming Soon
-            </Button>
+            </Button> */}
           </div>
         </section>
 
@@ -62,7 +62,7 @@ const PricingPlan = () => {
         <section className="content">
           <div className="plan">
             <h3>Yearly</h3>
-            <h2 className="price">${yearly.price.toFixed(2)}/mo</h2>
+            <h2 className="price">${yearly.price.toFixed(2)}/yr</h2>
             <span className="text-sm">+ 3.5% payment processing per transaction **</span>
             <ul className="mt-4 list">
               <p>Includes:</p>
@@ -70,12 +70,12 @@ const PricingPlan = () => {
                 <li key={feature}>{feature}</li>
               ))}
             </ul>
-            <Button
+            {/* <Button
               type="button"
               className="mt-2 bg-primary text-background"
             >
               Coming Soon
-            </Button>
+            </Button> */}
           </div>
         </section>
 

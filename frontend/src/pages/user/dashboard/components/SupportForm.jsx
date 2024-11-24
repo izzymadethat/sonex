@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 
 const SupportForm = () => {
@@ -11,6 +12,15 @@ const SupportForm = () => {
   const [messageInput, setMessageInput] = useState("");
 
   const allInfoEntered = nameInput && emailInput && messageInput;
+
+  const handleFormSubmit = () => {
+    toast({
+      title: "Message sent",
+      description: `Thanks ${nameInput}! We'll get back to you as soon as possible.`
+    });
+
+    setMessageInput("");
+  };
 
   return (
     <div className="w-full p-6 border rounded-md shadow-md ">
@@ -50,10 +60,10 @@ const SupportForm = () => {
           placeholder="Enter your message"
           value={messageInput}
           onChange={(e) => setMessageInput(e.target.value)}
-        ></Textarea>
+        />
         <Button
           className="w-full p-2 rounded-lg hover:bg-primary hover:text-background text-secondary-foreground bg-secondary"
-          onClick={() => alert("Feature coming soon")}
+          onClick={() => handleFormSubmit()}
           disabled={!allInfoEntered}
         >
           Submit your message

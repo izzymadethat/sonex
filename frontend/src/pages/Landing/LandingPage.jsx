@@ -8,13 +8,8 @@ import {
   WhatsIncluded,
   HeaderChip
 } from "./components";
-import { faqs } from "@/constants";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { selectUser } from "@/store/userSlice";
-import { useEffect } from "react";
-import { getProjects } from "@/store/projectSlice";
-import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+// import { faqs } from "@/constants";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { LoginPopup, SignupPopup } from "../auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -22,12 +17,6 @@ import { Button } from "@/components/ui/button";
 import "./landing-page.css";
 
 const Home = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { currentUser: user, status, error } = useSelector(selectUser);
-
-  // TODO: Navigate to user dashboard if user
-
   return (
     <main>
       <Header />
@@ -68,9 +57,6 @@ const Home = () => {
           </Dialog>
           <Button asChild><a href="#whats-included"> Learn More</a></Button>
         </div>
-        {/* <div className="absolute right-0 h-auto w-3xl -z-10 opacity-20">
-          <img src={heroImg} alt="sonex-demo for hero section" />
-        </div> */}
       </section>
 
       {/* What's Included */}
