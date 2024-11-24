@@ -1,7 +1,5 @@
-import { Button } from "@/components/ui/button";
 import { Music2 } from "lucide-react";
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const RecentProjects = ({ projects }) => {
   const navigate = useNavigate();
@@ -27,7 +25,7 @@ const RecentProjects = ({ projects }) => {
         <h3 className="text-lg font-bold uppercase">Recent Projects:</h3>
         <p className="italic">Get back to it...</p>
       </div>
-      <div className="grid grid-cols-1 gap-2 lg:grid-cols-2 max-h-[225px] lg:max-h-[300px] overflow-scroll px-6 lg:px-0">
+      <div className="grid grid-cols-1 gap-2 lg:grid-cols-2 max-h-[225px] lg:max-h-[300px] overflow-y-auto px-6 lg:px-0">
         {renderRecentProjects}
       </div>
       {/* <Button asChild>

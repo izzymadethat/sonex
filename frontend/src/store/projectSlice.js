@@ -45,7 +45,7 @@ export const getProjects = createAsyncThunk("project/fetchCurrentUserProjects", 
 
 export const getSingleProject = createAsyncThunk("projects/getSingleProject", async (projectId, thunkAPI) => {
 	try {
-		const response = await axiosInstance.get(`/projects/${projectId}/public`);
+		const response = await axiosInstance.get(`/projects/${projectId}`);
 		return response.data.project;
 	} catch (error) {
 		return thunkAPI.rejectWithValue(extractStateError(error));
