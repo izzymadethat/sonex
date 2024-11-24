@@ -36,7 +36,7 @@ app.use(
 	helmet.contentSecurityPolicy({
 		directives: {
 			defaultSrc: ["'self'"],
-			mediaSrc: ["'self'", "https://*.cloudfront.net"],
+			mediaSrc: ["*", "https://*.cloudfront.net"],
 		},
 	})
 );
