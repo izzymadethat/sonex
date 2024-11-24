@@ -7,7 +7,7 @@ RUN bun install
 COPY . .
 COPY /frontend ./frontend/
 COPY /backend ./backend/
-RUN bun --cwd frontend build
+# RUN bun --cwd frontend build
 
 
 FROM node:18.20.4-alpine AS runner
