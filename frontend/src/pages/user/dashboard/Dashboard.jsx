@@ -155,9 +155,9 @@ function Dashboard() {
               </h3>
             </div>
           </CardHeader>
-          <CardFooter className="flex justify-end md:justify-center lg:justify-end">
+          {/* <CardFooter className="flex justify-end md:justify-center lg:justify-end">
             <Button>Upgrade Storage</Button>
-          </CardFooter>
+          </CardFooter> */}
         </Card>
         <Card className="w-full h-full">
           <CardHeader className="flex flex-col items-end md:items-center md:gap-4 md:my-6 lg:text-center lg:items-end lg:my-0 lg:gap-0">
@@ -167,9 +167,11 @@ function Dashboard() {
             </h3>
           </CardHeader>
           <CardFooter className="flex justify-center lg:justify-end">
-            <Button onClick={() => navigate("/user/me/projects")}>
-              View Projects
-            </Button>
+            {projects.length > 0 && (
+              <Button onClick={() => navigate("/user/me/projects")}>
+                View Projects
+              </Button>
+            )}
           </CardFooter>
         </Card>
         <Card className="w-full h-full">
@@ -200,7 +202,7 @@ function Dashboard() {
         <NewProjectFormPopup
           triggerElement={
             <div className="flex items-center justify-center p-4 my-8 rounded-md shadow-md cursor-pointer bg-secondary hover:bg-primary hover:text-secondary">
-              No projects found. Click to create a new one.
+              No projects! Click to create a new one.
             </div>
           }
         />
