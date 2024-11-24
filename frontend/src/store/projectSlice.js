@@ -1,5 +1,7 @@
 import axiosInstance from "@/lib/axiosInstance";
+import { extractStateError, handlePending, handleRejected } from "@/lib/stateFunctions";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { error } from "console";
 
 /* 
 Redux Map (in progress...)
@@ -35,10 +37,10 @@ Redux Map (in progress...)
 
 export const getProjects = createAsyncThunk("project/fetchCurrentUserProjects", async (_, thunkAPI) => {
 	try {
-		const response = await axiosInstance.get(BASE_URL);
+		const response = await axiosInstance.get("/projects");
 		return response.data;
 	} catch (error) {
-		return thunkAPI.rejectWithValue(error.response?.data?.message || error.message); // Use response data for error messages
+		return thunkAPI.rejectWithValue(extractStateError(error)); // Use response data for error messages
 	}
 });
 
@@ -47,34 +49,34 @@ export const getSingleProject = createAsyncThunk("projects/getSingleProject", as
 		const response = await axiosInstance.get(`/projects/${projectId}/public`);
 		return response.data.project;
 	} catch (error) {
-		return thunkAPI.rejectWithValue(error.response.data);
+		return thunkAPI.rejectWithValue(extractStateError(error));
 	}
 });
 
 export const createProject = createAsyncThunk("projects/createProject", async (project, thunkAPI) => {
 	try {
-		const response = await axiosInstance.post(BASE_URL, project); // Pass project directly
+		const response = await axiosInstance.post("/projects", project); // Pass project directly
 		return response.data; // Return the created project data
 	} catch (error) {
-		return thunkAPI.rejectWithValue(error.response?.data || error.message);
+		return thunkAPI.rejectWithValue(extractStateError(error));
 	}
 });
 
 export const updateProject = createAsyncThunk("projects/updateProject", async (project, thunkAPI) => {
 	try {
-		const response = await axiosInstance.put(`${BASE_URL}/${project.id}`, project); // Pass project directly
+		const response = await axiosInstance.put(`/projects/${project.id}`, project); // Pass project directly
 		return response.data; // Return the updated project data
 	} catch (error) {
-		return thunkAPI.rejectWithValue(error.response?.data || error.message);
+		return thunkAPI.rejectWithValue(extractStateError(error));
 	}
 });
 
 export const deleteProject = createAsyncThunk("projects/deleteProject", async (projectId, thunkAPI) => {
 	try {
-		await axiosInstance.delete(`${BASE_URL}/${projectId}`); // No need to capture response for delete
+		await axiosInstance.delete(`/projects/${projectId}`); // No need to capture response for delete
 		return projectId; // Return the ID of the deleted project
 	} catch (error) {
-		return thunkAPI.rejectWithValue(error.response?.data || error.message);
+		return thunkAPI.rejectWithValue(extractStateError(error));
 	}
 });
 
@@ -82,6 +84,7 @@ const initialState = {
 	allProjects: [],
 	currentProject: null,
 	status: "idle",
+	error: null,
 };
 
 const projectsSlice = createSlice({
@@ -111,19 +114,13 @@ const projectsSlice = createSlice({
 			.addCase(getSingleProject.fulfilled, (state, action) => {
 				state.currentProject = action.payload;
 			})
-			// while spot is being added to the database
-			.addCase(createProject.pending, (state) => {
-				state.status = "loading";
-			})
+			
 			// when new spot has been added to the database
 			.addCase(createProject.fulfilled, (state, action) => {
 				state.status = "succeeded";
 				state.allProjects.push(action.payload);
 			})
 			// while spot is being updated in the database
-			.addCase(updateProject.pending, (state) => {
-				state.status = "loading";
-			})
 			// when spot has been updated in the database
 			.addCase(updateProject.fulfilled, (state, action) => {
 				state.status = "succeeded";
@@ -133,16 +130,17 @@ const projectsSlice = createSlice({
 					state.currentProject = action.payload;
 				}
 			})
-			.addCase(deleteProject.pending, (state) => {
-				state.status = "loading";
-			})
 			.addCase(deleteProject.fulfilled, (state, action) => {
 				state.status = "succeeded";
 				state.allProjects = state.allProjects.filter((project) => project._id !== action.payload);
 				if (state.currentProject?._id === action.payload) {
 					state.currentProject = null;
 				}
-			});
+			})
+			.addCase(createProject.pending, handlePending)
+			.addCase(updateProject.pending, handlePending)
+			.addCase(deleteProject.pending, handlePending)
+			.addCase(createProject.rejected, handleRejected)
 	},
 });
 
