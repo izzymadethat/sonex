@@ -1,11 +1,9 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader } from "@/components/ui/card";
-import { updateComment } from "@/store/commentSlice";
+import { Card } from "@/components/ui/card";
 import {
-  findProjectById,
   selectAllProjects
 } from "@/store/projectSlice";
+import { CheckCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -24,7 +22,7 @@ const UnfinishedComment = ({ comment, projects }) => {
 
   return (
     <Card
-      className={`flex items-center w-full gap-2 p-4 rounded-md shadow-md cursor-pointer hover:bg-secondary/50`}
+      className={"flex items-center w-full gap-2 p-4 rounded-md shadow-md cursor-pointer hover:bg-secondary/50"}
       variant={clicked ? "" : "secondary"}
       onClick={() => {
         setClicked(!clicked);
@@ -50,16 +48,28 @@ const UnfinishedComment = ({ comment, projects }) => {
 const UnfinishedCommentsGrid = ({ unfinishedComments }) => {
   const projects = useSelector(selectAllProjects);
   return (
-    <div className="grid grid-cols-1 gap-2 max-h-[225px] lg:max-h-[300px] overflow-scroll px-6 lg:px-0">
-      {unfinishedComments.map((comment) => (
-        <UnfinishedComment
-          key={comment._id}
-          comment={comment}
-          projects={projects}
-        />
-      ))}
-      <Button>Mark all as completed</Button>
-    </div>
+    <>
+      {unfinishedComments.length > 0 ? (
+        <div className="grid grid-cols-1 gap-2 min-h-[225px] max-h-[225px] lg:max-h-[300px] overflow-y-auto px-6 lg:px-0 relative">
+          {unfinishedComments.map((comment) => (
+            <UnfinishedComment
+              key={comment._id}
+              comment={comment}
+              projects={projects}
+            />
+          ))}
+
+          <Button className="absolute bottom-0 w-full">Mark all as completed</Button>
+
+        </div>
+      ) : (
+        <div className="flex flex-col justify-center items-center border-dashed border min-h-[225px] rounded-md gap-2 mt-8">
+          <span className="dark:text-primary"><CheckCircle size={48} /></span>
+          <span className="text-lg text-muted-foreground"><em>Awesome!</em> No comments to review!</span>
+        </div>
+      )}
+
+    </>
   );
 };
 

@@ -21,12 +21,13 @@ import { useEffect } from "react";
 
 const NewProjectFormPopup = ({ triggerElement }) => {
   const dispatch = useDispatch();
-  const { status } = useSelector((state) => state.projects);
+  const { status, error } = useSelector((state) => state.projects);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [projectCost, setProjectCost] = useState("0");
   const [date, setDate] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [errors, setErrors] = useState({});
 
   // reset form fields when dialog is closed or form is submitted
   const resetFormFields = () => {
@@ -42,7 +43,26 @@ const NewProjectFormPopup = ({ triggerElement }) => {
     }
   }, [isOpen]);
 
+  const handleErrorsFromState = () => {
+    const stateErrors = {};
+    setErrors({});
+    if (error.title) {
+      stateErrors.title = error.title;
+    }
+
+    if (error.description) {
+      stateErrors.description = error.description;
+    }
+
+    if (error.projectAmount) {
+      stateErrors.projectAmount = error.projectAmount;
+    }
+
+    return stateErrors;
+  };
+
   const handleCreateNewProject = async () => {
+    setErrors({});
     const projectInfo = {
       title,
       description,
@@ -50,14 +70,39 @@ const NewProjectFormPopup = ({ triggerElement }) => {
       date
     };
 
-    await dispatch(createProject(projectInfo));
-    await dispatch(getProjects());
-    setIsOpen(false);
-    toast({
-      title: "Project Created",
-      description: "Your project has been created",
-      variant: "success"
-    });
+    if (!title && !description) {
+      setErrors({
+        title: "Title Must Be Provided",
+        desc: "Description must be provided"
+      });
+      return;
+    }
+
+    try {
+      const result = await dispatch(createProject(projectInfo));
+
+      if (createProject.rejected.match(result)) {
+        const stateErrors = handleErrorsFromState();
+        if (Object.keys(stateErrors).length > 0) {
+          setErrors(stateErrors);
+        }
+        return;
+      }
+
+      await dispatch(getProjects());
+      setIsOpen(false);
+      toast({
+        title: "Project Created",
+        description: "Your project has been created",
+        variant: "success"
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message
+      });
+    }
+
   };
 
   return (
@@ -84,6 +129,9 @@ const NewProjectFormPopup = ({ triggerElement }) => {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
+              {errors.title && (
+                <p className="text-sm bg-red-500">{errors.title}</p>
+              )}
             </div>
             <div className="flex flex-col gap-y-2">
               <Label>Description</Label>
@@ -94,6 +142,9 @@ const NewProjectFormPopup = ({ triggerElement }) => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
+              {errors.description && (
+                <p className="text-sm text-red-500">{errors.description}</p>
+              )}
             </div>
             <div className="flex flex-col gap-y-2">
               <Label>Project Cost</Label>

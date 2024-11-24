@@ -40,6 +40,7 @@ if (isProduction) {
 		return res.sendFile(path.resolve(__dirname, "../../", "frontend", "dist", "index.html"));
 	});
 }
+
 // // If in development mode,
 // // everything works as normal,
 // // just automatically generate for each request
