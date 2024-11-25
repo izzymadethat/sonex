@@ -32,14 +32,14 @@ const corsOptions = {
 if (!isProduction) {
 	app.use(cors(corsOptions)); // Allow cross-origin requests from localhost:5173
 }
-app.use(
-	helmet.contentSecurityPolicy({
-		directives: {
-			defaultSrc: ["'self'"],
-			mediaSrc: ["*", "https://*.cloudfront.net"],
-		},
-	})
-);
+// app.use(
+// 	helmet.contentSecurityPolicy({
+// 		directives: {
+// 			defaultSrc: ["'self'"],
+// 			mediaSrc: ["*", "https://*.cloudfront.net"],
+// 		},
+// 	})
+// );
 app.use(
 	helmet.crossOriginResourcePolicy({
 		policy: "cross-origin",
