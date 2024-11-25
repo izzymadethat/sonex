@@ -40,11 +40,7 @@ if (!isProduction) {
 // 		},
 // 	})
 // );
-app.use(
-	helmet.crossOriginResourcePolicy({
-		policy: "cross-origin",
-	})
-); // Adds security in headers
+app.use(helmet.crossOriginResourcePolicy()); // Adds security in headers
 app.use(
 	session({
 		name: sessionAuth.cookieKey,
