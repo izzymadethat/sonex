@@ -43,6 +43,7 @@ const NewProjectFormPopup = ({ triggerElement }) => {
     }
   }, [isOpen]);
 
+
   const handleErrorsFromState = () => {
     const stateErrors = {};
     setErrors({});
@@ -61,22 +62,38 @@ const NewProjectFormPopup = ({ triggerElement }) => {
     return stateErrors;
   };
 
+  useEffect(() => {
+    const currentDate = new Date();
+    const selectedDate = new Date(date);
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/; // Regex for YYYY-MM-DD format
+
+    if (date && !dateRegex.test(date)) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        date: "Please enter a valid date in YYYY-MM-DD format."
+      }));
+    } else if (selectedDate < currentDate) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        date: "The selected date cannot be in the past."
+      }));
+    } else {
+      setErrors((prevErrors) => {
+        const { date, ...rest } = prevErrors; // Remove date error if it exists
+        return rest;
+      });
+    }
+  }, [date]);
+
   const handleCreateNewProject = async () => {
     setErrors({});
     const projectInfo = {
       title,
       description,
-      projectAmount: parseFloat(Number(projectCost).toFixed(2)),
+      projectAmount: projectCost ? parseFloat(Number(projectCost).toFixed(2)) : "",
       date
     };
 
-    if (!title && !description) {
-      setErrors({
-        title: "Title Must Be Provided",
-        desc: "Description must be provided"
-      });
-      return;
-    }
 
     try {
       const result = await dispatch(createProject(projectInfo));
@@ -120,7 +137,7 @@ const NewProjectFormPopup = ({ triggerElement }) => {
         <section>
           <div className="flex flex-col gap-y-8">
             <div className="flex flex-col gap-y-2">
-              <Label>Title</Label>
+              <Label>Title <span className="text-red-500">*</span></Label>
               <Input
                 required
                 type="text"
@@ -129,12 +146,15 @@ const NewProjectFormPopup = ({ triggerElement }) => {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
-              {errors.title && (
-                <p className="text-sm bg-red-500">{errors.title}</p>
-              )}
+              <div className="flex gap-2">
+                <p className="text-xs italic text-muted-foreground">minimum of 3 characters</p>
+                {errors.title && (
+                  <p className="text-sm bg-red-500">{errors.title}</p>
+                )}
+              </div>
             </div>
             <div className="flex flex-col gap-y-2">
-              <Label>Description</Label>
+              <Label>Description <span className="text-red-500">*</span></Label>
               <Textarea
                 name="description"
                 placeholder="Describe the project. 200 characters max"
@@ -142,9 +162,13 @@ const NewProjectFormPopup = ({ triggerElement }) => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
-              {errors.description && (
-                <p className="text-sm text-red-500">{errors.description}</p>
-              )}
+              <div className="flex gap-2">
+                <p className="text-xs italic text-muted-foreground">minimum of 3 characters</p>
+                {errors.description && (
+                  <p className="text-sm text-red-500">{errors.description}</p>
+                )}
+              </div>
+
             </div>
             <div className="flex flex-col gap-y-2">
               <Label>Project Cost</Label>
@@ -164,6 +188,9 @@ const NewProjectFormPopup = ({ triggerElement }) => {
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
               />
+              {errors.date && (
+                <p className="text-sm text-red-500">Date can not be in the past</p>
+              )}
             </div>
           </div>
         </section>
@@ -177,7 +204,7 @@ const NewProjectFormPopup = ({ triggerElement }) => {
           <Button
             type="button"
             onClick={handleCreateNewProject}
-            disabled={!title || title.length < 6 || status === "loading"}
+            disabled={!title || !description || title.length < 3 || status === "loading"}
           >
             {status === "loading" ? (
               <>
