@@ -1,27 +1,16 @@
 {
-	"name": "sonex",
-	"version": "1.0.0",
-	"description": "### Tech Stack:",
-	"main": "index.js",
-	"scripts": {
-		"build": "turbo run build",
-		"dev": "turbo run dev",
-		"lint": "turbo run lint",
-		"clean": "turbo run clean"
-	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
-	"devDependencies": {
-		"@types/bun": "latest",
-		"turbo": "^2.2.3"
-	},
-	"peerDependencies": {
-		"typescript": "^5.0.0"
-	},
-	"packageManager": "bun@1.1.34",
-	"workspaces": ["backend", "frontend"],
-	"engines": {
-		"bun": ">=1.0.0"
-	}
+  "name": "sonex",
+  "version": "1.0.0",
+  "description": "### Tech Stack:",
+  "main": "index.js",
+  "scripts": {
+    "install": "npm --prefix backend install backend",
+    "sequelize": "npm run --prefix backend sequelize",
+    "sequelize-cli": "npm run --prefix backend sequelize-cli",
+    "start": "npm start --prefix backend",
+    "build": "npm run --prefix backend build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

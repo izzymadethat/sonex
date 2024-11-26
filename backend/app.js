@@ -1,16 +1,13 @@
-
-require("dotenv").config();
 const express = require("express");
 require("express-async-errors");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
-const MongoStore = require("connect-mongo");
-const { sessionAuth, environment, mongodb } = require("./config");
+const { environment } = require("./config");
 const isProduction = environment === "production";
 const routes = require("./routes");
 const cors = require("cors");
 const helmet = require("helmet");
-const session = require("express-session");
+const csurf = require("csurf");
 
 // Initialize app
 const app = express();
@@ -22,42 +19,25 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Security and authentication middleware for each request
-const corsOptions = {
-	origin: "http://localhost:5173",
-	credentials: true,
-	allowedHeaders: ["Content-Type", "Authorization"],
-	methods: ["GET", "POST", "PUT", "DELETE"],
-};
 if (!isProduction) {
-	app.use(cors(corsOptions)); // Allow cross-origin requests from localhost:5173
+	app.use(cors());
 }
-// app.use(
-// 	helmet.contentSecurityPolicy({
-// 		directives: {
-// 			defaultSrc: ["'self'"],
-// 			mediaSrc: ["*", "https://*.cloudfront.net"],
-// 		},
-// 	})
-// );
-app.use(helmet.crossOriginResourcePolicy()); // Adds security in headers
+
 app.use(
-	session({
-		name: sessionAuth.cookieKey,
-		secret: sessionAuth.accessSecret,
-		saveUninitialized: false,
-		resave: false,
-		store: MongoStore.create({
-			mongoUrl: mongodb.dbURI,
-			ttl: 60 * 60 * 24 * 30 * 1000, // 30 days
-		}),
+	helmet.crossOriginResourcePolicy({
+		policy: "cross-origin",
+	})
+); // Adds security in headers
+
+app.use(
+	csurf({
 		cookie: {
-			httpOnly: true,
 			secure: isProduction,
-			sameSite: isProduction && "lax",
-			maxAge: 60 * 60 * 24 * 30 * 1000, // 30 days
+			sameSite: isProduction && "Lax",
+			httpOnly: true,
 		},
 	})
-); // Session auth middleware
+); // JWT Auth middleware
 app.use(routes);
 
 module.exports = app;
