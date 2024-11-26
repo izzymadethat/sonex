@@ -2,28 +2,11 @@ const express = require("express");
 const router = express.Router();
 const apiRouter = require("./api");
 const multer = require("multer");
-const { environment, sessionAuth } = require("../config");
+const { environment } = require("../config");
 const isProduction = environment === "production";
 
-// router.use((req, res, next) => {
-// 	const csrfToken = req.csrfToken();
-// 	res.cookie("XSRF-TOKEN", csrfToken);
-// 	next();
-// });
-
-// router.use((req, res, next) => {
-// 	if (req.session && !req.session.user) {
-// 		req.session.destroy((err) => {
-// 			if (err) return next(err);
-// 			res.clearCookie(sessionAuth.cookieKey);
-// 		});
-// 	}
-
-// 	next();
-// });
 router.use("/api", apiRouter);
 
-// // Set backend to serve static assets in production
 if (isProduction) {
 	const path = require("path");
 

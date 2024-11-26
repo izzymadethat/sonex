@@ -13,7 +13,7 @@ const validateLogin = [
 ];
 
 // Get current user
-// GET /api/auth/session
+// GET /api/auth
 router.get(
 	'/',
 	(req, res) => {
@@ -32,7 +32,7 @@ router.get(
   );
 
 // Login a user
-// POST /api/auth/session
+// POST /api/auth
 router.post("/", validateLogin, async (req, res, next) => {
 	const { credential, password } = req.body;
 
@@ -67,7 +67,7 @@ router.post("/", validateLogin, async (req, res, next) => {
 });
 
 // Logout a user
-// DELETE /api/auth/session
+// DELETE /api/auth
 router.delete(
 	'/',
 	(_req, res) => {
