@@ -2,13 +2,15 @@
 const { Model, Validator } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
 	class User extends Model {
-		/**
-		 * Helper method for defining associations.
-		 * This method is not a part of Sequelize lifecycle.
-		 * The `models/index` file will call this method automatically.
-		 */
 		static associate(models) {
-			// define association here
+			User.hasMany(models.Project, {
+				foreignKey: "ownerId",
+				as: "projects",
+			});
+			User.hasMany(models.File, {
+				foreignKey: "userId",
+				as: "files",
+			});
 		}
 	}
 	User.init(
@@ -71,7 +73,7 @@ module.exports = (sequelize, DataTypes) => {
 					exclude: ["hashedPassword", "email", "createdAt", "updatedAt"],
 				},
 			},
-		}
+		},
 	);
 	return User;
 };
