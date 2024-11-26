@@ -5,8 +5,12 @@ module.exports = (sequelize, DataTypes) => {
 		static associate(models) {
 			User.hasMany(models.Project, {
 				foreignKey: "ownerId",
-				as: "projects"
-			})
+				as: "projects",
+			});
+			User.hasMany(models.File, {
+				foreignKey: "userId",
+				as: "files",
+			});
 		}
 	}
 	User.init(
@@ -69,7 +73,7 @@ module.exports = (sequelize, DataTypes) => {
 					exclude: ["hashedPassword", "email", "createdAt", "updatedAt"],
 				},
 			},
-		}
+		},
 	);
 	return User;
 };
