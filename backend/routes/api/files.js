@@ -31,7 +31,7 @@ const upload = multer({
 			// setting custom metadata for each file
 			cb(null, {
 				projectId: req.params.projectId,
-				userId: req.session.user.id,
+				userId: req.user.id,
 				uploadedTo: "Sonex Audio Solutions",
 			});
 		},
