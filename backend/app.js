@@ -2,7 +2,7 @@ const express = require("express");
 require("express-async-errors");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
-const { sessionAuth, environment } = require("./config");
+const { environment } = require("./config");
 const isProduction = environment === "production";
 const routes = require("./routes");
 const cors = require("cors");
