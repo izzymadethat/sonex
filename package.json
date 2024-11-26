@@ -2,7 +2,6 @@
   "name": "sonex",
   "version": "1.0.0",
   "description": "### Tech Stack:",
-  "main": "index.js",
   "scripts": {
     "install": "npm --prefix backend install backend",
     "sequelize": "npm run --prefix backend sequelize",
