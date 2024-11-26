@@ -4,6 +4,7 @@ This file is used to create an axios instance with the baseURL set to /api. This
 All state actions will be fetched using this file.
 */
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const axiosInstance = axios.create({
 	baseURL: "/api",
@@ -12,8 +13,11 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
 	(config) => {
-		config.headers["Content-Type"] = config.headers["Content-Type"] || "application/json";
-
+		// Set Content-Type header for non-GET requests
+		if (config.method && config.method.toUpperCase() !== 'GET') {
+			config.headers["Content-Type"] = config.headers["Content-Type"] || "application/json";
+			config.headers["XSRF-Token"] = Cookies.get('XSRF-TOKEN'); // Set CSRF token from cookie
+		}
 		return config;
 	},
 	(error) => {

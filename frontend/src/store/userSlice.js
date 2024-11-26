@@ -5,7 +5,7 @@ import { extractStateError, handlePending, handleRejected } from "@/lib/stateFun
 // Login user with given credentials
 export const loginUser = createAsyncThunk("user/loginUser", async (userCred, thunkAPI) => {
 	try {
-		const response = await axiosInstance.post("/auth/session", userCred);
+		const response = await axiosInstance.post("/auth", userCred);
 		return response.data;
 	} catch (error) {
 		return thunkAPI.rejectWithValue(extractStateError(error));
@@ -15,7 +15,7 @@ export const loginUser = createAsyncThunk("user/loginUser", async (userCred, thu
 // Fetch current user's data
 export const restoreUser = createAsyncThunk("user/restoreUser", async (_, thunkAPI) => {
 	try {
-		const res = await axiosInstance.get("/auth/session");
+		const res = await axiosInstance.get("/auth");
 		return res.data.user;
 	} catch (error) {
 		return thunkAPI.rejectWithValue(extractStateError(error));
@@ -44,7 +44,7 @@ export const updateUser = createAsyncThunk("user/updateUser", async ({ user, id 
 
 export const logoutUser = createAsyncThunk("user/logoutUser", async (_, thunkAPI) => {
 	try {
-		const res = await axiosInstance.delete("/auth/session");
+		const res = await axiosInstance.delete("/auth");
 		return res.data;
 	} catch (error) {
 		return thunkAPI.rejectWithValue(extractStateError(error));

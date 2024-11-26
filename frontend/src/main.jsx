@@ -5,8 +5,10 @@ import "./index.css";
 import { Provider } from "react-redux";
 import { store } from "./store/store.js";
 import axiosInstance from "@/lib/axiosInstance.js";
+import { restoreCsrfToken } from "./lib/restoreCsrf.js";
 
 if (process.env.NODE_ENV !== "production") {
+  restoreCsrfToken();
   window.axiosInstance = axiosInstance;
   window.store = store;
 }

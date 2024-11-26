@@ -9,31 +9,34 @@ router.use("/api", apiRouter);
 
 if (isProduction) {
 	const path = require("path");
-
-	// Serve static files (JS, CSS, images, etc.)
-	router.use(express.static(path.resolve(__dirname, "../../", "frontend", "dist")));
-
+	const frontendDistPath = path.resolve("../frontend/dist")
+	const indexPath = path.resolve(__dirname, "../../", "frontend", "dist", "index.html")
 	// Serve index.html for the homepage
 	router.get("/", (req, res) => {
-		return res.sendFile(path.resolve(__dirname, "../../", "frontend", "dist", "index.html"));
+		res.cookie("XSRF-TOKEN", req.csrfToken())
+		return res.sendFile(indexPath);
 	});
+
+	// Serve static files (JS, CSS, images, etc.)
+	router.use(express.static(frontendDistPath));
 
 	// Catch-all route for non-API routes (client-side routing for SPA)
 	router.get(/^(?!\/?api).*/, (req, res) => {
-		return res.sendFile(path.resolve(__dirname, "../../", "frontend", "dist", "index.html"));
+		res.cookie("XSRF-TOKEN", req.csrfToken())
+		return res.sendFile(indexPath);
 	});
 }
 
-// // If in development mode,
-// // everything works as normal,
-// // just automatically generate for each request
-// // but don't send as a response, only cookie
-// if (!isProduction) {
-// 	router.get("/api/csrf/restore", (req, res) => {
-// 		res.cookie("XSRF-TOKEN", req.csrfToken());
-// 		return res.json({});
-// 	});
-// }
+// If in development mode,
+// everything works as normal,
+// just automatically generate for each request
+// but don't send as a response, only cookie
+if (!isProduction) {
+	router.get("/api/csrf/restore", (req, res) => {
+		res.cookie("XSRF-TOKEN", req.csrfToken());
+		return res.json({});
+	});
+}
 
 // ==== Error handling ==== //
 
