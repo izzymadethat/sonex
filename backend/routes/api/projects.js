@@ -66,6 +66,7 @@ router.get("/", requireAuth, async (req, res, next) => {
 				storageUsed: projectSize,
 			};
 		});
+		console.log(projectResults);
 		res.json({ Projects: projectResults, User: req.user });
 	} catch (error) {
 		next(error);
@@ -87,6 +88,7 @@ router.post("/", requireAuth, validateProjectInput, async (req, res, next) => {
 			paymentStatus: projectData.projectAmount ? "unpaid" : "no-charge",
 			dueDate: projectData.dueDate ? new Date(projectData.dueDate) : null,
 		});
+		console.log(newProject);
 		res.status(201).json(newProject);
 	} catch (error) {
 		next(error);
@@ -126,6 +128,8 @@ router.get("/:projectId", async (req, res, next) => {
 			...project.get(),
 			storageUsed,
 		};
+
+		console.log(projectResult);
 
 		res.status(200).json({ project: projectResult });
 	} catch (error) {

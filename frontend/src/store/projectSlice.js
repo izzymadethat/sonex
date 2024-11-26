@@ -1,5 +1,9 @@
 import axiosInstance from "@/lib/axiosInstance";
-import { extractStateError, handlePending, handleRejected } from "@/lib/stateFunctions";
+import {
+	extractStateError,
+	handlePending,
+	handleRejected,
+} from "@/lib/stateFunctions";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 /* 
@@ -34,50 +38,68 @@ Redux Map (in progress...)
   status: enum ("idle" | "loading" | "succeeded" | "failed")  
 */
 
-export const getProjects = createAsyncThunk("project/fetchCurrentUserProjects", async (_, thunkAPI) => {
-	try {
-		const response = await axiosInstance.get("/projects");
-		return response.data;
-	} catch (error) {
-		return thunkAPI.rejectWithValue(extractStateError(error));
-	}
-});
+export const getProjects = createAsyncThunk(
+	"project/fetchCurrentUserProjects",
+	async (_, thunkAPI) => {
+		try {
+			const response = await axiosInstance.get("/projects");
+			return response.data;
+		} catch (error) {
+			return thunkAPI.rejectWithValue(extractStateError(error));
+		}
+	},
+);
 
-export const getSingleProject = createAsyncThunk("projects/getSingleProject", async (projectId, thunkAPI) => {
-	try {
-		const response = await axiosInstance.get(`/projects/${projectId}`);
-		return response.data.project;
-	} catch (error) {
-		return thunkAPI.rejectWithValue(extractStateError(error));
-	}
-});
+export const getSingleProject = createAsyncThunk(
+	"projects/getSingleProject",
+	async (projectId, thunkAPI) => {
+		try {
+			const response = await axiosInstance.get(`/projects/${projectId}`);
+			return response.data.project;
+		} catch (error) {
+			return thunkAPI.rejectWithValue(extractStateError(error));
+		}
+	},
+);
 
-export const createProject = createAsyncThunk("projects/createProject", async (project, thunkAPI) => {
-	try {
-		const response = await axiosInstance.post("/projects", project);
-		return response.data;
-	} catch (error) {
-		return thunkAPI.rejectWithValue(extractStateError(error));
-	}
-});
+export const createProject = createAsyncThunk(
+	"projects/createProject",
+	async (project, thunkAPI) => {
+		try {
+			const response = await axiosInstance.post("/projects", project);
+			return response.data;
+		} catch (error) {
+			return thunkAPI.rejectWithValue(extractStateError(error));
+		}
+	},
+);
 
-export const updateProject = createAsyncThunk("projects/updateProject", async (project, thunkAPI) => {
-	try {
-		const response = await axiosInstance.put(`/projects/${project.id}`, project);
-		return response.data;
-	} catch (error) {
-		return thunkAPI.rejectWithValue(extractStateError(error));
-	}
-});
+export const updateProject = createAsyncThunk(
+	"projects/updateProject",
+	async (project, thunkAPI) => {
+		try {
+			const response = await axiosInstance.put(
+				`/projects/${project.id}`,
+				project,
+			);
+			return response.data;
+		} catch (error) {
+			return thunkAPI.rejectWithValue(extractStateError(error));
+		}
+	},
+);
 
-export const deleteProject = createAsyncThunk("projects/deleteProject", async (projectId, thunkAPI) => {
-	try {
-		await axiosInstance.delete(`/projects/${projectId}`);
-		return projectId;
-	} catch (error) {
-		return thunkAPI.rejectWithValue(extractStateError(error));
-	}
-});
+export const deleteProject = createAsyncThunk(
+	"projects/deleteProject",
+	async (projectId, thunkAPI) => {
+		try {
+			await axiosInstance.delete(`/projects/${projectId}`);
+			return projectId;
+		} catch (error) {
+			return thunkAPI.rejectWithValue(extractStateError(error));
+		}
+	},
+);
 
 const initialState = {
 	allProjects: [],
@@ -97,7 +119,7 @@ const projectsSlice = createSlice({
 		},
 		findProjectById: (state, action) => {
 			const { projectId } = action.payload;
-			const project = state.allProjects.find((p) => p._id === projectId);
+			const project = state.allProjects.find((p) => p.id === projectId);
 			if (project) {
 				return project;
 			}
@@ -123,7 +145,9 @@ const projectsSlice = createSlice({
 			// when spot has been updated in the database
 			.addCase(updateProject.fulfilled, (state, action) => {
 				state.status = "succeeded";
-				const index = state.allProjects.findIndex((project) => project._id === action.payload._id);
+				const index = state.allProjects.findIndex(
+					(project) => project.id === action.payload.id,
+				);
 				if (index !== -1) {
 					state.allProjects[index] = action.payload;
 					state.currentProject = action.payload;
@@ -131,8 +155,10 @@ const projectsSlice = createSlice({
 			})
 			.addCase(deleteProject.fulfilled, (state, action) => {
 				state.status = "succeeded";
-				state.allProjects = state.allProjects.filter((project) => project._id !== action.payload);
-				if (state.currentProject?._id === action.payload) {
+				state.allProjects = state.allProjects.filter(
+					(project) => project.id !== action.payload,
+				);
+				if (state.currentProject?.id === action.payload) {
 					state.currentProject = null;
 				}
 			})
@@ -145,6 +171,7 @@ const projectsSlice = createSlice({
 
 export const { unloadProjects, findProjectById } = projectsSlice.actions;
 export const selectAllProjects = (state) => state.projects.allProjects;
-export const selectProjectById = (state, projectId) => state.projects.allProjects.find((p) => p._id === projectId);
+export const selectProjectById = (state, projectId) =>
+	state.projects.allProjects.find((p) => p.id === projectId);
 export const selectCurrentProject = (state) => state.projects.currentProject;
 export default projectsSlice.reducer;

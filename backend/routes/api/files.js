@@ -85,6 +85,8 @@ router.post("/", upload.array("tracks"), async (req, res, next) => {
 				return savedFile;
 			}),
 		);
+
+		console.log(fileResults);
 		return res.status(201).json({ Files: fileResults });
 	} catch (error) {
 		next(error);
@@ -98,6 +100,7 @@ router.get("/", async (req, res, next) => {
 		const files = await File.findAll({
 			where: { projectId },
 		});
+		console.log(files);
 		res.send(files);
 	} catch (error) {
 		next(error);

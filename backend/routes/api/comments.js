@@ -82,13 +82,15 @@ router.get("/", requireAuth, async (req, res, next) => {
 		// 	},
 		// });
 
-		const comments = Comment.findAll({
+		const comments = await Comment.findAll({
 			include: {
 				model: Project,
 				where: { ownerId: user.id },
 				attributes: [],
 			},
 		});
+
+		console.log(comments);
 
 		res.json({ Comments: comments });
 	} catch (error) {
