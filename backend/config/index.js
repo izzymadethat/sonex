@@ -21,7 +21,7 @@ module.exports = {
 		keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
 	},
 	sessionAuth: {
-		accessSecret: process.env.JWT_ACCESS_TOKEN_SECRET,
-		accessExpiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION,
+		secret: process.env.JWT_ACCESS_TOKEN_SECRET,
+		expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION,
 	},
 };
