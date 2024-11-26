@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
 		static associate(models) {
 			File.belongsTo(models.Project, {
 				foreignKey: "projectId",
-				as: "project",
+				as: "projects",
 			});
 			File.belongsTo(models.User, {
 				foreignKey: "userId",
@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
 			},
 			userId: {
 				type: DataTypes.INTEGER,
-				allowNull: false,
+				allowNull: true,
 			},
 			path: {
 				type: DataTypes.STRING,

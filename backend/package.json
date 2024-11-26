@@ -13,7 +13,8 @@
 		"undo-migrate": "npx dotenv sequelize db:migrate:undo:all",
 		"create:model": "npx sequelize model:generate",
 		"seed": "npx dotenv sequelize db:seed:all",
-		"undo-seed": "npx dotenv sequelize db:seed:undo:all"
+		"undo-seed": "npx dotenv sequelize db:seed:undo:all",
+		"db:reset": "npm run undo-seed && npm run undo-migrate && npm run migrate && npm run seed"
 	},
 	"keywords": [],
 	"author": "",

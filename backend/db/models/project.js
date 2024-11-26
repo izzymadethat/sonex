@@ -10,10 +10,14 @@ module.exports = (sequelize, DataTypes) => {
 
 			Project.hasMany(models.File, {
 				foreignKey: "projectId",
+				onDelete: "CASCADE",
+				as: "files",
 			});
 
 			Project.hasMany(models.Comment, {
 				foreignKey: "projectId",
+				onDelete: "CASCADE",
+				as: "comments",
 			});
 		}
 	}
@@ -57,6 +61,12 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.INTEGER,
 				allowNull: false,
 				defaultValue: 0,
+			},
+			dueDate: {
+				type: {
+					type: DataTypes.DATE,
+					allowNull: true,
+				},
 			},
 		},
 		{

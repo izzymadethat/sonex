@@ -5,8 +5,7 @@ const { DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/cloudfront-signer");
 const multer = require("multer");
 const multerS3 = require("multer-s3");
-const File = require("../../models/file");
-const Project = require("../../models/project");
+const { File, Project } = require("../../db/models");
 const { awsS3, cloudFront } = require("../../config");
 const { s3Client } = require("../../config/aws-s3.config");
 
@@ -48,11 +47,11 @@ const upload = multer({
 
 // Upload files and create a new file object for each file uploaded
 router.post("/", upload.array("tracks"), async (req, res, next) => {
-	const { projectId } = req.params;
+	const projectId = req.params.projectId;
 	const files = req.files;
 	const fileSizes = JSON.parse(req.body.fileSizes);
 	try {
-		const project = await Project.findById(projectId);
+		const project = await Project.findByPk(projectId);
 		if (!project) {
 			return res.status(404).json({
 				message: "Project not found",
@@ -70,22 +69,19 @@ router.post("/", upload.array("tracks"), async (req, res, next) => {
 				const fileSize = fileSizes[file.originalname];
 				const s3Key = file.key;
 
-				const savedFile = await new File({
+				const savedFile = await File.create({
 					name: file.originalname,
 					size: fileSize,
 					type: file.mimetype.split("/")[1],
 					path: s3Key,
 					projectId,
-					userId: req.session.user.id,
+					userId: req.user.id || null,
 					isDownloadable:
 						project.paymentStatus === "no-charge" ||
 						project.paymentStatus === "paid" ||
 						project.projectAmount === 0 ||
 						false,
-				}).save();
-
-				project.files.push(savedFile._id);
-				await project.save();
+				});
 				return savedFile;
 			}),
 		);
@@ -97,9 +93,11 @@ router.post("/", upload.array("tracks"), async (req, res, next) => {
 
 // Get all files for a project
 router.get("/", async (req, res, next) => {
-	const { projectId } = req.params;
+	const projectId = req.params.projectId;
 	try {
-		const files = await File.find({ projectId }, "-__v -updatedAt").exec();
+		const files = await File.findAll({
+			where: { projectId },
+		});
 		res.send(files);
 	} catch (error) {
 		next(error);
@@ -111,7 +109,7 @@ const distName = "https://d1v3tj0sy1kmbm.cloudfront.net";
 router.get("/:fileName/stream", async (req, res, next) => {
 	const { projectId, fileName } = req.params;
 	try {
-		const file = await File.findOne({ name: fileName }, "-__v");
+		const file = await File.findOne({ where: { name: fileName } });
 
 		if (!file) {
 			return res.status(404).json({ message: "File not found" });
@@ -135,7 +133,8 @@ router.get("/:fileName/stream", async (req, res, next) => {
 router.get("/:fileName/download", async (req, res, next) => {
 	const { projectId, fileName } = req.params;
 	try {
-		const file = await File.findOne({ name: fileName }, "-__v");
+		const file = await File.findOne({ where: { name: fileName, projectId } });
+
 		if (!file) {
 			return res.status(404).json({ message: "File not found" });
 		}
@@ -157,7 +156,7 @@ router.delete("/:fileName", async (req, res, next) => {
 	// files are deleted from S3 and database
 	const { projectId, fileName } = req.params;
 	try {
-		const file = await File.findOne({ name: fileName, projectId });
+		const file = await File.findOne({ where: { name: fileName, projectId } });
 		if (!file) return res.status(404).json({ message: "File not found" });
 		// delete file from S3
 		const s3Params = {
@@ -167,10 +166,10 @@ router.delete("/:fileName", async (req, res, next) => {
 		const response = await s3Client.send(new DeleteObjectCommand(s3Params));
 		// delete file from database only if S3 delete is successful
 		if (response.$metadata.httpStatusCode === 204) {
-			await File.findByIdAndDelete(file._id);
+			await File.destroy({ where: { id: file.id } });
 			return res
 				.status(204)
-				.json({ message: "File deleted successfully", fileId: file._id });
+				.json({ message: "File deleted successfully", fileId: file.id });
 		}
 		res.status(500).json({ message: "Error deleting file" });
 	} catch (error) {
